@@ -837,6 +837,95 @@ async function main() {
     },
   });
 
+  // A sales pipeline, so the agent and developer portals have real work in them.
+  const riverside = await prisma.project.create({
+    data: {
+      orgId: org.id, name: "Riverside Gardens", location: "Riverside Drive", city: "Nairobi",
+      description: "Forty-eight apartments over six floors, with a rooftop garden and covered parking.",
+      currency: "KES", status: "SELLING", completion: 62,
+      expectedCompletionAt: days(300), createdById: owner.id,
+    },
+  });
+
+  // Three floors' worth. Prices rise with the floor, as they do.
+  const projectUnits = [];
+  for (let floor = 1; floor <= 6; floor++) {
+    for (const suffix of ["A", "B"]) {
+      projectUnits.push({
+        projectId: riverside.id,
+        unitNo: `${floor}${suffix}`,
+        type: suffix === "A" ? "2-bed" : "3-bed",
+        floor,
+        bedrooms: suffix === "A" ? 2 : 3,
+        bathrooms: suffix === "A" ? 2 : 3,
+        areaSqm: suffix === "A" ? 92 : 118,
+        price: (suffix === "A" ? 11_500_000 : 15_200_000) + floor * 250_000,
+      });
+    }
+  }
+  await prisma.projectUnit.createMany({ data: projectUnits });
+
+  // Some of it has sold, at figures that are not the asking price — which is
+  // the normal case and the reason agreedPrice exists.
+  const stock = await prisma.projectUnit.findMany({ where: { projectId: riverside.id }, orderBy: { unitNo: "asc" } });
+  await prisma.projectUnit.update({
+    where: { id: stock[0].id },
+    data: { status: "SOLD", buyerName: "Grace Wanjiru", agreedPrice: stock[0].price - 300_000, soldAt: days(-40) },
+  });
+  await prisma.projectUnit.update({
+    where: { id: stock[1].id },
+    data: { status: "SOLD", buyerName: "Peter Kimani", agreedPrice: stock[1].price, soldAt: days(-22) },
+  });
+  await prisma.projectUnit.update({
+    where: { id: stock[2].id },
+    data: { status: "RESERVED", buyerName: "Aisha Mohamed", reservedAt: days(-5) },
+  });
+
+  const leadRows = [
+    { name: "Grace Wanjiru", email: "grace.w@example.com", phone: "+254 722 111 222",
+      interestedIn: "2-bed at Riverside", budget: 12_000_000, stage: "CLOSED",
+      projectId: riverside.id, closedAt: days(-40), lastContactAt: days(-40) },
+    { name: "Aisha Mohamed", email: "aisha.m@example.com", phone: "+254 733 444 555",
+      interestedIn: "3-bed, high floor", budget: 16_000_000, stage: "RESERVED",
+      projectId: riverside.id, lastContactAt: days(-5) },
+    { name: "Tom Odhiambo", email: "tom.o@example.com", phone: "+254 711 666 777",
+      interestedIn: "Kilimani 1-bed to rent", budget: 55_000, stage: "OFFER",
+      propertyId: kilimani.id, lastContactAt: days(-2) },
+    { name: "Nadia Hassan", email: "nadia.h@example.com", phone: "+254 700 888 999",
+      interestedIn: "Anything near the beach", budget: 9_000_000, stage: "VIEWING",
+      lastContactAt: days(-1) },
+    { name: "Michael Otieno", phone: "+254 720 121 212",
+      interestedIn: "2-bed, ready to move", budget: 13_500_000, stage: "CONTACTED",
+      projectId: riverside.id, lastContactAt: days(-3) },
+    { name: "Wanjiku Njoroge", email: "wanjiku@example.com",
+      interestedIn: "Investment, 2 units", budget: 24_000_000, stage: "NEW" },
+    { name: "Daniel Kiptoo", email: "dkiptoo@example.com", phone: "+254 799 000 111",
+      interestedIn: "Penthouse", budget: 30_000_000, stage: "LOST",
+      lostReason: "Bought elsewhere — we had nothing above the sixth floor.",
+      projectId: riverside.id, closedAt: days(-15), lastContactAt: days(-15) },
+  ];
+  for (const l of leadRows) {
+    await prisma.lead.create({
+      data: { orgId: org.id, currency: "KES", source: "Website enquiry",
+              assignedToId: manager.id, createdById: manager.id, ...l },
+    });
+  }
+
+  const nadia = await prisma.lead.findFirst({ where: { orgId: org.id, name: "Nadia Hassan" } });
+  const tom = await prisma.lead.findFirst({ where: { orgId: org.id, name: "Tom Odhiambo" } });
+  await prisma.viewing.createMany({
+    data: [
+      { orgId: org.id, leadId: nadia?.id ?? null, clientName: "Nadia Hassan",
+        scheduledAt: hours(30), durationMins: 45, status: "SCHEDULED",
+        notes: "Wants to see the sea-facing side.", agentId: manager.id },
+      { orgId: org.id, leadId: tom?.id ?? null, clientName: "Tom Odhiambo",
+        propertyId: kilimani.id, scheduledAt: days(-2), durationMins: 30,
+        status: "COMPLETED", outcome: "Liked it. Offered slightly under asking.", agentId: manager.id },
+      { orgId: org.id, clientName: "Walk-in viewer", propertyId: kilimani.id,
+        scheduledAt: days(-6), status: "NO_SHOW", agentId: manager.id },
+    ],
+  });
+
   const demoGuest = await prisma.guest.create({
     data: {
       email: "guest@example.com", name: "Fatuma Njeri",

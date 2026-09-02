@@ -154,6 +154,26 @@ export const PERMISSIONS = {
   LISTING_REVIEW: "listing.review",
 
   // -- Bookings and inventory -----------------------------------------------
+  // -- Sales pipeline: leads, viewings, developments -------------------------
+  LEAD_VIEW: "lead.view",
+  LEAD_CREATE: "lead.create",
+  LEAD_UPDATE: "lead.update",
+  /** Moving a lead along the pipeline, including closing or losing it. */
+  LEAD_ADVANCE: "lead.advance",
+  LEAD_DELETE: "lead.delete",
+  /** Handing a lead to a different agent. */
+  LEAD_ASSIGN: "lead.assign",
+
+  VIEWING_VIEW: "viewing.view",
+  VIEWING_SCHEDULE: "viewing.schedule",
+  VIEWING_UPDATE: "viewing.update",
+
+  PROJECT_VIEW: "project.view",
+  PROJECT_MANAGE: "project.manage",
+  PROJECT_UNIT_MANAGE: "project.unit.manage",
+  /** Recording a sale. Separate because it moves money and inventory at once. */
+  PROJECT_UNIT_SELL: "project.unit.sell",
+
   // -- External listing sources ---------------------------------------------
   /** Seeing what third-party inventory has been ingested. */
   EXTERNAL_VIEW: "external.view",
@@ -405,6 +425,25 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: P.LISTING_PUBLISH, label: "Publish listings", hint: "Make a listing visible to the public.", sensitive: true },
       { key: P.LISTING_UNPUBLISH, label: "Unpublish listings", hint: "Take a listing down." },
       { key: P.LISTING_REVIEW, label: "Review listings", hint: "Approve or reject what appears on the marketplace.", sensitive: true },
+    ],
+  },
+  {
+    key: "pipeline",
+    label: "Sales pipeline",
+    permissions: [
+      { key: P.LEAD_VIEW, label: "View leads", hint: "Buyers and tenants in the pipeline." },
+      { key: P.LEAD_CREATE, label: "Add leads", hint: "Log a new enquiry." },
+      { key: P.LEAD_UPDATE, label: "Edit leads", hint: "Update contact details and notes." },
+      { key: P.LEAD_ADVANCE, label: "Move leads along", hint: "Advance, close or mark a lead lost.", sensitive: true },
+      { key: P.LEAD_ASSIGN, label: "Reassign leads", hint: "Hand a lead to another agent.", sensitive: true },
+      { key: P.LEAD_DELETE, label: "Delete leads", hint: "Remove a lead entirely.", sensitive: true },
+      { key: P.VIEWING_VIEW, label: "View viewings", hint: "The viewing diary." },
+      { key: P.VIEWING_SCHEDULE, label: "Schedule viewings", hint: "Book a client in to see a property." },
+      { key: P.VIEWING_UPDATE, label: "Update viewings", hint: "Record what happened, or cancel." },
+      { key: P.PROJECT_VIEW, label: "View developments", hint: "Projects, unit stock and progress." },
+      { key: P.PROJECT_MANAGE, label: "Manage developments", hint: "Create and edit projects.", sensitive: true },
+      { key: P.PROJECT_UNIT_MANAGE, label: "Manage project units", hint: "Add units and set asking prices.", sensitive: true },
+      { key: P.PROJECT_UNIT_SELL, label: "Record sales", hint: "Reserve or sell a unit at an agreed price.", sensitive: true },
     ],
   },
   {

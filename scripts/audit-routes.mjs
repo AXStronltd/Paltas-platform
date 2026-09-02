@@ -81,7 +81,11 @@ for (const file of files) {
   const methods = [...src.matchAll(/export async function (GET|POST|PATCH|PUT|DELETE)\s*\(/g)].map((m) => m[1]);
   handlers += methods.length;
 
-  const guards = (src.match(/await guard\(/g) ?? []).length + (src.match(/await guardList\(/g) ?? []).length;
+  // guardMaybeScoped is guard() or guardList() depending on whether the record
+  // has a property yet; either way it authorises before acting.
+  const guards = (src.match(/await guard\(/g) ?? []).length
+    + (src.match(/await guardList\(/g) ?? []).length
+    + (src.match(/await guardMaybeScoped\(/g) ?? []).length;
   const usesActor = src.includes("currentActor()");
   const guestGuards = (src.match(/await requireGuest\(/g) ?? []).length;
 

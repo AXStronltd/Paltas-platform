@@ -217,6 +217,7 @@ jobs:
           node tests/publishing.e2e.mjs
           node tests/booking.e2e.mjs
           node tests/external.e2e.mjs
+          node tests/pipeline.e2e.mjs
 
       - name: Container logs on failure
         if: failure()

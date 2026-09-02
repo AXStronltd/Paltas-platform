@@ -93,6 +93,7 @@ jobs:
       - run: npm run test:publishing
       - run: npm run test:booking
       - run: npm run test:external
+      - run: npm run test:pipeline
 
   # A secret reaching the repository is the one failure that cannot be undone by
   # reverting, so it is checked on every push rather than trusted to review.

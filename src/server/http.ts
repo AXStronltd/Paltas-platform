@@ -162,3 +162,29 @@ export async function handle(fn: () => Promise<NextResponse>): Promise<NextRespo
     return fail(500, { code: "server_error", message: "Something went wrong on our side." });
   }
 }
+
+/**
+ * Authorise a record that may not belong to a property yet.
+ *
+ * Leads and developments are the awkward case: an enquiry from someone still
+ * browsing, or a development not yet built, has no property to scope against.
+ * Guarding those at organisation scope would refuse every property-scoped
+ * agent, since their grants live one level down — which is exactly the bug this
+ * exists to have fixed.
+ *
+ * So when there is a property, it is guarded normally. When there is not, the
+ * question becomes "may this person do this anywhere at all?", which `guardList`
+ * already answers. Someone who can log leads for any property they hold may log
+ * a general enquiry; someone who can log none still cannot.
+ */
+export async function guardMaybeScoped(
+  permission: string,
+  propertyId?: string | null,
+): Promise<{ ok: true; actor: Actor } | { ok: false; response: NextResponse }> {
+  if (propertyId) {
+    const g = await guard(permission, { propertyId });
+    return g.ok ? { ok: true, actor: g.actor } : g;
+  }
+  const g = await guardList(permission);
+  return g.ok ? { ok: true, actor: g.actor } : g;
+}

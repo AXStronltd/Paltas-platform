@@ -47,7 +47,19 @@
       "roomtype.view",
       "roomtype.manage",
       "availability.manage",
-      "review.reply"
+      "review.reply",
+      "lead.view",
+      "lead.create",
+      "lead.update",
+      "lead.advance",
+      "lead.assign",
+      "viewing.view",
+      "viewing.schedule",
+      "viewing.update",
+      "project.view",
+      "project.manage",
+      "project.unit.manage",
+      "project.unit.sell"
     ]
   },
   {
@@ -154,7 +166,9 @@
       "payroll.approve",
       "payment.settlement.view",
       "listing.view",
-      "booking.view"
+      "booking.view",
+      "lead.view",
+      "project.view"
     ]
   },
   {

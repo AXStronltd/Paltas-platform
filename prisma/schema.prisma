@@ -75,6 +75,9 @@ model Organization {
   charges       Charge[]
   salaries      SalaryProfile[]
   payRuns       PayRun[]
+  leads    Lead[]
+  viewings Viewing[]
+  projects Project[]
 }
 
 /// Every human the system authenticates: the owner, staff, guards and the
@@ -249,6 +252,9 @@ model Property {
   blocks        AvailabilityBlock[]
 
   @@index([orgId])
+  leads    Lead[]
+  viewings Viewing[]
+  projects Project[]
 }
 
 model Building {
@@ -298,6 +304,8 @@ model Unit {
 
   @@index([propertyId])
   @@index([buildingId])
+  leads    Lead[]
+  viewings Viewing[]
 }
 
 enum ResidentType {
@@ -1338,6 +1346,8 @@ model PropertyListing {
   @@index([status, kind])
   @@index([orgId])
   @@index([propertyId])
+  leads    Lead[]
+  viewings Viewing[]
 }
 
 // ============================================================
@@ -1727,4 +1737,186 @@ model ExternalSyncRun {
   source ExternalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
   @@index([sourceId, startedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Sales pipeline — agents and developers.
+//
+// One Lead model serves both, because an agent chasing a buyer for a resale and
+// a developer chasing one for an off-plan unit are the same object with a
+// different target. Two near-identical tables would have drifted within a
+// month.
+//
+// Everything here is scoped by propertyId like the rest of the platform, so a
+// scoped agent sees their own pipeline and no one else's without any new
+// authorisation machinery.
+// ---------------------------------------------------------------------------
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  VIEWING
+  OFFER
+  RESERVED
+  CLOSED
+  LOST
+}
+
+model Lead {
+  id     String @id @default(cuid())
+  orgId  String
+  /// The property this lead is about. Null while they are still only browsing.
+  propertyId String?
+  unitId     String?
+  listingId  String?
+  projectId  String?
+
+  name  String
+  email String?
+  phone String?
+  /// What they said they want, in their words.
+  interestedIn String?
+  /// Minor units, in the currency below. Null when they have not said.
+  budget   Int?
+  currency String  @default("KES")
+
+  stage  LeadStage @default(NEW)
+  source String?
+  notes  String?
+
+  /// The staff member responsible. Null means unassigned, which is a state
+  /// worth being able to see and filter on.
+  assignedToId String?
+  lastContactAt DateTime?
+  createdById   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  closedAt      DateTime?
+  /// Why it was lost. The most useful field on the whole model at review time.
+  lostReason    String?
+
+  org      Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  unit     Unit?            @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  listing  PropertyListing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  project  Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  viewings Viewing[]
+
+  @@index([orgId, stage])
+  @@index([propertyId])
+  @@index([assignedToId, stage])
+}
+
+enum ViewingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model Viewing {
+  id     String @id @default(cuid())
+  orgId  String
+  leadId String?
+  propertyId String?
+  unitId     String?
+  listingId  String?
+
+  /// Denormalised so a viewing still reads sensibly after a lead is deleted.
+  clientName String
+  scheduledAt DateTime
+  durationMins Int @default(30)
+  status ViewingStatus @default(SCHEDULED)
+  notes  String?
+  /// Recorded after the fact — did they like it, what put them off.
+  outcome String?
+
+  agentId     String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  org      Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  lead     Lead?            @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  property Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  unit     Unit?            @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  listing  PropertyListing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, scheduledAt])
+  @@index([leadId])
+}
+
+enum ProjectStatus {
+  PLANNING
+  SELLING
+  COMPLETED
+  ON_HOLD
+}
+
+/// A development. Distinct from Property: a project is sold off-plan unit by
+/// unit and may not exist yet, whereas a Property is somewhere people already
+/// live and which the security and maintenance modules act on.
+model Project {
+  id    String @id @default(cuid())
+  orgId String
+  /// Set once built, so a completed development can be managed like any other.
+  propertyId String?
+
+  name     String
+  location String?
+  city     String?
+  country  String  @default("KE")
+  description String?
+  currency String @default("KES")
+
+  status     ProjectStatus @default(PLANNING)
+  /// Percent complete, 0-100. Stated by the developer, not computed.
+  completion Int           @default(0)
+  startedAt  DateTime?
+  expectedCompletionAt DateTime?
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  org      Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  units    ProjectUnit[]
+  leads    Lead[]
+
+  @@index([orgId, status])
+}
+
+enum ProjectUnitStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+model ProjectUnit {
+  id        String @id @default(cuid())
+  projectId String
+
+  unitNo    String
+  type      String?
+  floor     Int?
+  bedrooms  Int?
+  bathrooms Int?
+  areaSqm   Float?
+  /// Minor units, in the project's currency.
+  price     Int
+  status    ProjectUnitStatus @default(AVAILABLE)
+
+  /// Who bought or reserved it, and for how much. `price` is the asking figure;
+  /// this is what was actually agreed, which is frequently not the same.
+  buyerName    String?
+  agreedPrice  Int?
+  reservedAt   DateTime?
+  soldAt       DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, unitNo])
+  @@index([projectId, status])
 }
