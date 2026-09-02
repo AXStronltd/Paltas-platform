@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.github
+tests
+.test-build
+*.md
+!README.md
+PROTOTYPE-reference.html
+.env
+.env.*

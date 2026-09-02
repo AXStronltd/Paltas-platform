@@ -35,6 +35,53 @@ rather than in a dashboard whose state nobody can see.
    Copy the signing secret into `STRIPE_WEBHOOK_SECRET` and redeploy. Until it is
    set, the endpoint rejects every delivery — which is the correct default.
 
+## Why the build happens in CI, not on Render
+
+`next build` on this codebase peaks at **620–650 MB**, measured. A Render free
+instance has **512 MB**. Every way of shrinking it was tried and none worked:
+
+| | Peak |
+| --- | --- |
+| baseline | 622 MB |
+| `output: standalone` | 700 MB — worse |
+| single build worker | 700 MB — worse |
+| no static generation | 646 MB |
+| typecheck and lint left to CI | 645 MB |
+| `--max-old-space-size=400` | **fails** — heap exhausted |
+
+So the build runs on a GitHub runner, which has gigabytes, and Render pulls the
+finished image. The **runtime** fits in 512 MB comfortably — it is only the build
+that does not. This costs nothing and is faster to deploy than building on the
+host would be.
+
+```
+push to main  →  GitHub Actions builds the image  →  ghcr.io/axstronltd/paltas-platform:latest
+                                                  →  Render pulls and deploys
+```
+
+### One-time setup
+
+1. Push to `main`. The **Publish image** workflow builds and pushes to GHCR.
+2. **Make the package public**, once, at
+   `https://github.com/orgs/AXStronltd/packages` → the package → Package settings
+   → Change visibility → Public. Otherwise Render gets a 403 pulling it.
+   (Alternatively give Render a read-only token under Registry Credentials.)
+3. **Render → New → Blueprint** → this repository. It reads `render.yaml`, sees
+   `runtime: image`, and deploys the published image rather than building.
+4. Enter the four secrets when prompted.
+
+### Deploying a change
+
+Push to `main`. Actions rebuilds the image and Render redeploys it. To roll back,
+point the service at a specific `sha-…` tag instead of `latest`.
+
+### Migrations
+
+The image `CMD` runs `prisma migrate deploy` before starting the server, so
+schema changes apply on boot, in the network where the database is reachable.
+That is what fixes the original `P1001` permanently — nothing touches the
+database at build time any more, because there is no build on Render at all.
+
 ## If the build fails
 
 Two things went wrong the first time, and both are fixed in `render.yaml` — but

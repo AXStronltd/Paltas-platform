@@ -17,25 +17,22 @@ databases:
 services:
   - type: web
     name: paltas-platform
-    runtime: node
     plan: free
     region: frankfurt
-    branch: main
 
-    # Migrations deliberately do NOT run here. The build step has no reliable
-    # connection to the database — DATABASE_URL may be injected but the instance
-    # is not yet attached to the network the database sits on, and `prisma
-    # migrate deploy` then fails the whole build.
-    buildCommand: npm ci && npx prisma generate && npm run build
-
-    # They run at start instead, where the service is on the network and can
-    # reach the database. `migrate deploy` only applies what is pending, so
-    # running it on every boot is safe and idempotent.
+    # Deployed from a prebuilt image rather than built here. `next build` peaks
+    # around 620-650 MB on this codebase and a free instance has 512 MB, so the
+    # build runs in GitHub Actions and this pulls the result. The runtime itself
+    # fits comfortably.
     #
-    # On a paid instance, `preDeployCommand: npx prisma migrate deploy` is
-    # tidier — it runs once before the new version takes traffic, rather than on
-    # each boot. It is not available on the free plan.
-    startCommand: npx prisma migrate deploy && npm run start
+    # The image is published by .github/workflows/image.yml on every push to
+    # main. Make the GHCR package public once, or Render cannot pull it.
+    runtime: image
+    image:
+      url: ghcr.io/axstronltd/paltas-platform:latest
+
+    # No build or start command: the image carries both. Its CMD applies
+    # pending migrations and then serves — see the Dockerfile.
     healthCheckPath: /api/public/listings
 
     envVars:
@@ -44,18 +41,6 @@ services:
           name: paltas-db
           property: connectionString
 
-      - key: NODE_VERSION
-        value: "20"
-
-      # The build peaks around 650 MB, measured. Capping the heap makes V8
-      # collect rather than grow to fill whatever is available, which keeps it
-      # inside a small instance — at the cost of a slower build.
-      #
-      # If the build still dies with "JavaScript heap out of memory", the
-      # instance is genuinely too small and needs a plan with more RAM. No
-      # amount of tuning compiles this in 512 MB.
-      - key: NODE_OPTIONS
-        value: "--max-old-space-size=1536"
 
       - key: NEXT_PUBLIC_DATA_SOURCE
         value: mock
