@@ -172,10 +172,25 @@ middleware runs on the Edge runtime where `src/server` does not exist.
 
 ### Markets are data
 
-Adding Norway is an entry in `MARKETS` plus a catalogue — not a search through
-components for `if (country === …)`. Each market carries its currency, default
-language, popular cities, local payment methods, the tax label (VAT / Moms /
-PVM), and the tenancy rule a renter there asks about first.
+Adding a country is **one entry** in `MARKETS`. No component anywhere branches on
+a country code — a grep for `country === ` returns nothing outside the config —
+so nothing else changes. Each market carries its currency, default language,
+popular cities, local payment methods, the tax label, and the tenancy rule a
+renter there asks about first.
+
+Eight markets ship: Kenya, Tanzania, Uganda, Saudi Arabia, the UAE, the United
+Kingdom, Sweden and Lithuania. That set follows the product — East Africa is the
+home market, Makkah and Madinah matter because Hajj and Umrah are a headline
+journey, and the UK is where much of the diaspora books from.
+
+A market may default to a language we do not fully serve. Saudi Arabia and the
+UAE read in English because Arabic is right-to-left and that layout work has not
+been done; the `Locale` type already carries an `rtl` flag for when it is. A test
+asserts those markets are still complete and format their own currency.
+
+`tenancyNote` is drafted, not settled. It is the field most worth checking with
+someone who operates in that country, because a wrong letting rule is a
+liability rather than a rough edge.
 
 ### Two things deliberately not done
 

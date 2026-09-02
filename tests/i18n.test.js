@@ -171,3 +171,49 @@ test("markets are data, and each carries what a local actually needs", () => {
   const currencies = new Set(L.MARKETS.map((m) => m.currency));
   assert.equal(currencies.size, L.MARKETS.length);
 });
+
+test("every market is self-describing, so adding one needs no code changes", () => {
+  // The point of markets-as-data: a new country is an entry, not a branch. This
+  // holds each entry to what a local visitor actually needs to see.
+  for (const m of L.MARKETS) {
+    assert.match(m.code, /^[A-Z]{2}$/, `${m.code} should be an ISO 3166 code`);
+    assert.match(m.currency, /^[A-Z]{3}$/, `${m.code} needs an ISO 4217 currency`);
+    assert.ok(m.name.length > 1, `${m.code} needs a display name`);
+    assert.ok(m.popularCities.length >= 3, `${m.code} needs cities people search for`);
+    assert.ok(m.paymentMethods.length >= 2, `${m.code} needs local payment methods`);
+    assert.ok(m.tenancyNote.length > 30, `${m.code} needs a real tenancy note`);
+    assert.ok(m.taxLabel.length > 0, `${m.code} needs a tax label`);
+    assert.ok(L.LOCALES.some((l) => l.code === m.defaultLocale),
+      `${m.code} defaults to a locale that must exist`);
+  }
+});
+
+test("no two markets share a currency or a code", () => {
+  const codes = L.MARKETS.map((m) => m.code);
+  const currencies = L.MARKETS.map((m) => m.currency);
+  assert.equal(new Set(codes).size, codes.length, "duplicate market code");
+  assert.equal(new Set(currencies).size, currencies.length,
+    "two markets share a currency — likely a copy-paste");
+});
+
+test("a market whose language we do not serve still works", () => {
+  // Saudi Arabia and the UAE default to English because Arabic is right-to-left
+  // and that layout work has not been done. The market must still be complete.
+  for (const code of ["SA", "AE"]) {
+    const m = L.marketOf(code);
+    assert.equal(m.defaultLocale, "en");
+    const t = T.createTranslator("en", code);
+    assert.equal(t.t("price.taxes"), m.taxLabel);
+    assert.ok(t.money(1000).length > 0, `${code} must format its own currency`);
+  }
+});
+
+test("each market formats its own currency distinctly", () => {
+  const seen = new Set();
+  for (const m of L.MARKETS) {
+    const formatted = T.createTranslator(m.defaultLocale, m.code).money(1234);
+    assert.ok(formatted.length > 0, `${m.code} produced nothing`);
+    seen.add(formatted);
+  }
+  assert.equal(seen.size, L.MARKETS.length, "two markets format money identically");
+});

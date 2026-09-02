@@ -14,7 +14,7 @@
  */
 
 export type LocaleCode = "en" | "sv" | "lt";
-export type MarketCode = "KE" | "SE" | "LT";
+export type MarketCode = "KE" | "SE" | "SA" | "AE" | "TZ" | "UG" | "GB" | "LT";
 
 export interface Locale {
   code: LocaleCode;
@@ -58,8 +58,14 @@ export interface Market {
 }
 
 /**
- * Markets are data, not code branches. Adding Norway is a new entry here plus a
- * message catalogue — not a search through components for `if (country === …)`.
+ * Markets are data, not code branches. Adding a country is one entry here — no
+ * component anywhere branches on a country code, so nothing else changes.
+ *
+ * `tenancyNote` and `paymentMethods` are the parts that make a market feel local
+ * rather than translated, and they are also the parts most worth checking with
+ * someone who actually operates there. The notes below are accurate in outline;
+ * treat them as drafts for local counsel, not as legal advice — a wrong letting
+ * rule is a liability, not a rough edge.
  */
 export const MARKETS: Market[] = [
   {
@@ -85,6 +91,68 @@ export const MARKETS: Market[] = [
     tenancyNote:
       "Andrahandsuthyrning kräver tillstånd från hyresvärden eller bostadsrättsföreningen.",
     taxLabel: "Moms",
+  },
+  {
+    code: "SA",
+    name: "المملكة العربية السعودية",
+    currency: "SAR",
+    // Arabic is right-to-left and the layout work for it has not been done, so
+    // this market reads in English until that is a deliberate piece of work.
+    defaultLocale: "en",
+    regionLabel: "Region",
+    popularCities: ["Makkah", "Madinah", "Jeddah", "Riyadh", "Taif"],
+    paymentMethods: ["mada", "Card", "Apple Pay", "Bank transfer"],
+    tenancyNote:
+      "Short-term rentals require a licence from the Ministry of Tourism, and Ejar registration applies to longer leases.",
+    taxLabel: "VAT",
+  },
+  {
+    code: "AE",
+    name: "الإمارات العربية المتحدة",
+    currency: "AED",
+    defaultLocale: "en",
+    regionLabel: "Emirate",
+    popularCities: ["Dubai", "Abu Dhabi", "Sharjah", "Ras Al Khaimah", "Fujairah"],
+    paymentMethods: ["Card", "Apple Pay", "Bank transfer"],
+    tenancyNote:
+      "Holiday-home operators must hold a DET permit in Dubai; longer tenancies are registered through Ejari.",
+    taxLabel: "VAT",
+  },
+  {
+    code: "TZ",
+    name: "Tanzania",
+    currency: "TZS",
+    defaultLocale: "en",
+    regionLabel: "Region",
+    popularCities: ["Dar es Salaam", "Zanzibar", "Arusha", "Dodoma", "Mwanza"],
+    paymentMethods: ["M-Pesa", "Tigo Pesa", "Airtel Money", "Card"],
+    tenancyNote:
+      "Written tenancy agreements are standard and stamp duty applies; deposits are commonly one to three months.",
+    taxLabel: "VAT",
+  },
+  {
+    code: "UG",
+    name: "Uganda",
+    currency: "UGX",
+    defaultLocale: "en",
+    regionLabel: "District",
+    popularCities: ["Kampala", "Entebbe", "Jinja", "Gulu", "Mbarara"],
+    paymentMethods: ["MTN MoMo", "Airtel Money", "Card", "Bank transfer"],
+    tenancyNote:
+      "Rent is frequently quoted and paid in advance by the quarter or year; agreements should state the currency.",
+    taxLabel: "VAT",
+  },
+  {
+    code: "GB",
+    name: "United Kingdom",
+    currency: "GBP",
+    defaultLocale: "en",
+    regionLabel: "County",
+    popularCities: ["London", "Manchester", "Birmingham", "Edinburgh", "Bristol"],
+    paymentMethods: ["Card", "Apple Pay", "Bank transfer", "Direct Debit"],
+    tenancyNote:
+      "Deposits on assured shorthold tenancies are capped and must be protected in an approved scheme within 30 days.",
+    taxLabel: "VAT",
   },
   {
     code: "LT",
