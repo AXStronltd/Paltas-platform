@@ -1,0 +1,116 @@
+name: CI
+
+# Auto-deploy is on: every push to main reaches production. This runs the same
+# checks first, so a broken commit shows red in GitHub rather than only in
+# Render's logs after it is already live.
+#
+# To make it a gate rather than a warning, turn on "Wait for CI to pass before
+# deploying" in the Render service settings.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # No database needed: typecheck, the pure engine tests, and the two structural
+  # audits. Fast, so it fails in under a minute when it is going to fail.
+  static:
+    name: Typecheck, pure tests, structural audits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx tsc --noEmit
+      - run: npm run test:auth
+      - run: npm run audit:routes
+      - run: npm run audit:layers
+
+  # The suites that need a real database and a running server.
+  integration:
+    name: End-to-end against Postgres
+    runs-on: ubuntu-latest
+    needs: static
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: paltas
+          POSTGRES_PASSWORD: paltas
+          POSTGRES_DB: paltas
+        ports: ["5432:5432"]
+        # Without this the steps below can start before Postgres accepts
+        # connections, and the failure looks like a bug rather than a race.
+        options: >-
+          --health-cmd "pg_isready -U paltas"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://paltas:paltas@localhost:5432/paltas
+      PALTAS_URL: http://localhost:3000
+      SEED_PASSWORD: ci-only-not-a-real-password
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+
+      # Exactly what Render runs, so a build failure surfaces here first.
+      - name: Build the way Render does
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+          npm run build
+
+      - name: Start the production server
+        run: |
+          npm run start &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:3000/api/public/listings > /dev/null; then
+              echo "up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "server did not start"; exit 1
+
+      - run: npm run test:e2e
+      - run: npm run test:platform
+      - run: npm run test:commerce
+      - run: npm run test:finance
+      - run: npm run test:publishing
+
+  # A secret reaching the repository is the one failure that cannot be undone by
+  # reverting, so it is checked on every push rather than trusted to review.
+  secrets:
+    name: No credentials committed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan tracked files for credential patterns
+        run: |
+          if git ls-files -z | xargs -0 grep -lE \
+            'sk_live_[A-Za-z0-9]{20,}|sk_test_[A-Za-z0-9]{20,}|whsec_[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY' \
+            2>/dev/null | grep -v '^tests/stripe.test.js$'; then
+            echo "::error::A credential-shaped string is committed. Roll the key, then remove it."
+            exit 1
+          fi
+          echo "No credentials found in tracked files."
+      - name: .env must never be tracked
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked. It must stay gitignored."
+            exit 1
+          fi
+          echo ".env is not tracked."
