@@ -1580,3 +1580,151 @@ model Review {
 
   @@index([listingId, createdAt])
 }
+
+// ---------------------------------------------------------------------------
+// External listings — inventory from third parties.
+//
+// Kept in its own tables and NEVER written into PropertyListing. A row here is
+// someone else's property, described in someone else's words, usually with
+// someone else's photographs. Merging the two would make it impossible to
+// answer the only question that matters in a takedown notice or an IP claim:
+// which of these did we have the right to publish?
+//
+// Nothing here reaches the public shopfront unless its source carries a
+// recorded licence that grants display rights. See src/lib/external/licence.ts
+// for the gate, which is pure and machine-checked.
+// ---------------------------------------------------------------------------
+
+/// How a source's data may be used. The default is the safe one.
+enum ExternalLicenceStatus {
+  /// No licence. Ingest for internal analysis only; never display.
+  NONE
+  /// Explicitly research/pricing only. Never display.
+  RESEARCH_ONLY
+  /// A written licence exists. Display is governed by the flags below.
+  LICENSED
+}
+
+model ExternalSource {
+  id       String @id @default(cuid())
+  /// Stable key used in code and config, e.g. "apify-truefetch-global".
+  key      String @unique
+  name     String
+  /// Who operates it — "apify", "licensed-feed", "partner-api", "mls".
+  provider String
+
+  licenceStatus ExternalLicenceStatus @default(NONE)
+  /// Contract reference, so a claim can be answered with a document.
+  licenceRef    String?
+  /// Who at the counterparty granted it, and when it was checked.
+  licensedBy    String?
+  licenceNote   String?
+  /// Absent means no end date was agreed; a past date disables display.
+  licenceExpiry DateTime?
+
+  /// Each right is granted separately because they genuinely are.
+  /// Facts (price, beds, area) are the least protected; photographs are the
+  /// most, and agent contact details are personal data under GDPR.
+  displayRights     Boolean @default(false)
+  imageRights       Boolean @default(false)
+  contactDataRights Boolean @default(false)
+  /// ISO country codes the licence covers. Empty means unrestricted.
+  territories       String[] @default([])
+  /// Attribution the licence obliges us to show.
+  attribution       String?
+
+  active     Boolean   @default(true)
+  lastSyncAt DateTime?
+  lastError  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  listings ExternalListing[]
+  runs     ExternalSyncRun[]
+}
+
+model ExternalListing {
+  id       String @id @default(cuid())
+  sourceId String
+  /// The provider's own id. Unique per source, not globally.
+  externalId String
+  /// Where it came from, shown to the visitor and used for takedowns.
+  sourceUrl  String?
+  /// The originating marketplace, when the aggregator names one.
+  sourceSite String?
+
+  title       String
+  description String?
+  kind        String  @default("SALE")
+  price       Int?
+  currency    String?
+  /// Whole units, as published. Not converted.
+  priceRaw    String?
+
+  country   String?
+  city      String?
+  district  String?
+  address   String?
+  latitude  Float?
+  longitude Float?
+
+  bedrooms  Int?
+  bathrooms Int?
+  areaSqm   Float?
+  amenities String[] @default([])
+  images    String[] @default([])
+
+  /// Personal data. Withheld unless the licence covers it.
+  agentName    String?
+  agentPhone   String?
+  agentEmail   String?
+  agencyName   String?
+
+  /// The untouched payload, so a mapping bug can be diagnosed without re-fetching.
+  raw Json?
+
+  /// Set by the licence gate at write time, and re-evaluated on every sync.
+  /// Public queries filter on this column rather than recomputing, so a query
+  /// that forgets the rule returns nothing rather than everything.
+  displayable Boolean @default(false)
+  /// Why it is or is not displayable, in words, for whoever asks later.
+  displayNote String?
+
+  /// Set when a rights holder asks us to take it down. Survives re-ingestion.
+  suppressed       Boolean   @default(false)
+  suppressedReason String?
+  suppressedAt     DateTime?
+
+  firstSeenAt DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+  /// Absent from the latest sync — delisted at the source.
+  goneAt      DateTime?
+
+  source ExternalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, externalId])
+  @@index([displayable, country])
+  @@index([sourceId, lastSeenAt])
+  @@index([city])
+}
+
+/// One ingestion run. Kept so "where did this row come from" always has an answer.
+model ExternalSyncRun {
+  id        String    @id @default(cuid())
+  sourceId  String
+  startedAt DateTime  @default(now())
+  finishedAt DateTime?
+  status    String    @default("RUNNING")
+  fetched   Int       @default(0)
+  created   Int       @default(0)
+  updated   Int       @default(0)
+  skipped   Int       @default(0)
+  displayableCount Int @default(0)
+  error     String?
+  /// Who or what started it — a user id, or "cron".
+  triggeredBy String?
+
+  source ExternalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId, startedAt])
+}

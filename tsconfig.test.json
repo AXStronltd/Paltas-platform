@@ -25,6 +25,7 @@
     "src/server/stripe.ts",
     "src/lib/i18n/**/*.ts",
     "src/lib/i18n/**/*.json",
-    "src/lib/booking/**/*.ts"
+    "src/lib/booking/**/*.ts",
+    "src/lib/external/**/*.ts"
   ]
 }

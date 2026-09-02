@@ -31,6 +31,7 @@ jobs:
       - run: npm run test:auth
       - run: npm run audit:routes
       - run: npm run audit:layers
+      - run: npm run audit:external
 
   # The suites that need a real database and a running server.
   integration:
@@ -91,6 +92,7 @@ jobs:
       - run: npm run test:finance
       - run: npm run test:publishing
       - run: npm run test:booking
+      - run: npm run test:external
 
   # A secret reaching the repository is the one failure that cannot be undone by
   # reverting, so it is checked on every push rather than trusted to review.

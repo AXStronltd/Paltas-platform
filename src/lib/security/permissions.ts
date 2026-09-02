@@ -154,6 +154,20 @@ export const PERMISSIONS = {
   LISTING_REVIEW: "listing.review",
 
   // -- Bookings and inventory -----------------------------------------------
+  // -- External listing sources ---------------------------------------------
+  /** Seeing what third-party inventory has been ingested. */
+  EXTERNAL_VIEW: "external.view",
+  /** Running a sync against a source. */
+  EXTERNAL_SYNC: "external.sync",
+  /**
+   * Recording that a licence exists and what it grants. This is the permission
+   * that decides whether someone else's photographs appear on the marketplace,
+   * so it is platform-level and deliberately hard to hold.
+   */
+  EXTERNAL_LICENCE_MANAGE: "external.licence.manage",
+  /** Honouring a takedown. */
+  EXTERNAL_SUPPRESS: "external.suppress",
+
   BOOKING_VIEW: "booking.view",
   /** Accepting a requested stay. */
   BOOKING_CONFIRM: "booking.confirm",
@@ -391,6 +405,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: P.LISTING_PUBLISH, label: "Publish listings", hint: "Make a listing visible to the public.", sensitive: true },
       { key: P.LISTING_UNPUBLISH, label: "Unpublish listings", hint: "Take a listing down." },
       { key: P.LISTING_REVIEW, label: "Review listings", hint: "Approve or reject what appears on the marketplace.", sensitive: true },
+    ],
+  },
+  {
+    key: "external",
+    label: "External listing sources",
+    permissions: [
+      { key: P.EXTERNAL_VIEW, label: "View external sources", hint: "Third-party inventory and what has been ingested." },
+      { key: P.EXTERNAL_SYNC, label: "Run a sync", hint: "Fetch the latest listings from a source.", sensitive: true },
+      { key: P.EXTERNAL_LICENCE_MANAGE, label: "Record a licence", hint: "Decides whether third-party listings may be shown publicly.", sensitive: true },
+      { key: P.EXTERNAL_SUPPRESS, label: "Honour a takedown", hint: "Remove a listing after a rights holder objects.", sensitive: true },
     ],
   },
   {

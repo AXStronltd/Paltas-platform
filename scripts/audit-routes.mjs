@@ -33,6 +33,7 @@ const UNGUARDED_BY_DESIGN = {
   "/public/listings/route.ts": "public marketplace feed — PUBLISHED listings only, own projection",
   "/public/listings/[id]/route.ts": "public listing detail — PUBLISHED only, own projection",
   "/public/listings/[id]/quote/route.ts": "public price check — reads inventory, writes and holds nothing",
+  "/public/external/route.ts": "third-party listings — gated by the licence engine, not by permissions; see src/lib/external/licence.ts",
   "/guest/register/route.ts": "creates a guest account — verifies nothing because there is nothing yet to verify",
   "/guest/login/route.ts": "authenticates a guest — verifies the password itself",
   "/guest/logout/route.ts": "destroys only the caller's own guest session",
