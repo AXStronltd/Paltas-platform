@@ -35,6 +35,46 @@ rather than in a dashboard whose state nobody can see.
    Copy the signing secret into `STRIPE_WEBHOOK_SECRET` and redeploy. Until it is
    set, the endpoint rejects every delivery — which is the correct default.
 
+## If the build fails
+
+Two things went wrong the first time, and both are fixed in `render.yaml` — but
+they are worth knowing, because the error messages point elsewhere.
+
+### `Environment variable not found: DATABASE_URL`
+
+Migrations used to run in `buildCommand`. Render's build step has no reliable
+connection to the database: `DATABASE_URL` may be injected, but the build is not
+yet on the network the database sits on, so `prisma migrate deploy` fails and
+takes the whole build with it — even though the database itself deployed fine.
+
+Migrations now run in `startCommand`, where the service is on the network.
+`migrate deploy` only applies what is pending, so running it on every boot is
+safe. On a paid instance, `preDeployCommand` is tidier; it is not on the free plan.
+
+### `JavaScript heap out of memory`
+
+Measured on this codebase:
+
+| | Peak resident memory |
+| --- | --- |
+| default build | **~650 MB** |
+| with `--max-old-space-size=400` | **fails** — heap exhausted after compiling |
+
+Render's free instance type has **512 MB**. That is not enough to build this, and
+no amount of configuration changes it — `output: standalone`, single-worker
+builds and dropping static generation were all tried and none brought it under.
+
+`NODE_OPTIONS=--max-old-space-size=1536` is set, which helps on an instance that
+*has* the memory. If the build still dies with a heap error, the instance is too
+small and the options are:
+
+1. **Move to a plan with at least 1 GB** — the direct fix.
+2. **Build elsewhere and deploy an image.** CI already builds this on GitHub
+   Actions, which has far more memory; switching Render to a Docker deploy of a
+   prebuilt image sidesteps the constraint entirely and keeps the free runtime.
+
+The runtime itself is comfortable in 512 MB. It is only the build that is not.
+
 ## Seeding
 
 The seed creates demo accounts with a **known password**. On a public host that
