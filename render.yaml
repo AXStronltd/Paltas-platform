@@ -13,6 +13,14 @@ databases:
     databaseName: paltas
     plan: free
     postgresMajorVersion: "16"
+    # MUST match the web service's region. Render's internal connection string
+    # only resolves within a single region — a service in Frankfurt cannot reach
+    # a database in Oregon over the internal hostname, and the failure it
+    # produces is exactly `P1001: Can't reach database server at dpg-…:5432`.
+    #
+    # Omitting this does not inherit the service's region; it silently falls
+    # back to Render's default, which is how the two ended up apart.
+    region: frankfurt
 
 services:
   - type: web
