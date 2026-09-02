@@ -1,0 +1,1373 @@
+// PALTAS — data model.
+//
+// The marketplace side of PALTAS (listings, bookings, escrow) stays where it is:
+// in the service layer, backed by mock data or Supabase. What lives here is the
+// side of the product that must never be guessed at — the property portfolio and
+// Paltas Security Management — because every read and write against it is
+// authorised on the server against the permission model below.
+//
+// The authorisation spine is: Organization -> Property -> Building -> Unit.
+// Every grant is pinned to one node of that tree and inherits downward, which is
+// what makes "staff see only what they are assigned to" a property of the data
+// model rather than a rule the UI is trusted to remember.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// AUTHORISATION SPINE
+// ============================================================
+
+enum ScopeType {
+  ORGANIZATION
+  PROPERTY
+  BUILDING
+  UNIT
+}
+
+enum Effect {
+  ALLOW
+  DENY
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  INVITED
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  country   String   @default("KE")
+  currency  String   @default("KES")
+  /// True for the single organisation that holds Paltas's own staff. It owns no
+  /// properties and is excluded from every tenant-facing listing.
+  isPlatform Boolean @default(false)
+
+  /// Stripe Connect: the connected account money is settled into for this
+  /// property owner. Null until they complete onboarding, at which point
+  /// payments for their properties route to them with PALTAS taking an
+  /// application fee, rather than landing in one pooled balance that then has to
+  /// be reconciled and paid out by hand.
+  stripeAccountId       String?  @unique
+  stripeOnboarded       Boolean  @default(false)
+  /// Basis points PALTAS retains on payments to this account (250 = 2.5%).
+  platformFeeBasisPoints Int     @default(0)
+  createdAt DateTime @default(now())
+
+  users      User[]
+  roles      Role[]
+  properties Property[]
+  auditLogs  AuditLog[]
+  campaigns  Campaign[]
+  discounts  Discount[]
+  groups     GroupBooking[]
+  loyalty    LoyaltyMember[]
+  listings   PropertyListing[]
+  feeCategories FeeCategory[]
+  charges    Charge[]
+  salaries   SalaryProfile[]
+  payRuns    PayRun[]
+}
+
+/// Every human the system authenticates: the owner, staff, guards and the
+/// residents who raise their own visitor invitations. `isOwner` is deliberately
+/// a column and not a role, so that no amount of role or permission editing by
+/// staff can manufacture owner authority.
+///
+/// `isPlatformAdmin` is the same idea one level up: Paltas staff who operate the
+/// service itself and whose authority crosses organisations. It is the only
+/// thing in the system that does, which is why it is a column too — nothing a
+/// tenant can edit should be able to produce it.
+model User {
+  id              String  @id @default(cuid())
+  orgId           String
+  email           String  @unique
+  name            String
+  phone           String?
+  passwordHash    String
+  isOwner         Boolean @default(false)
+  isPlatformAdmin Boolean @default(false)
+  status          UserStatus @default(ACTIVE)
+  title           String?
+  createdAt       DateTime   @default(now())
+  createdById     String?
+
+  org             Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  createdBy       User?             @relation("UserCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdUsers    User[]            @relation("UserCreatedBy")
+  roleAssignments RoleAssignment[]
+  grants          PermissionGrant[]
+  sessions        Session[]
+  guard           Guard?
+  resident        Resident?
+  salaryProfiles  SalaryProfile[]
+  payslips        Payslip[]
+
+  @@index([orgId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  ip        String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A named bundle of permissions. System roles (Property Manager, Security
+/// Manager, Security Guard, Maintenance, Accountant) ship as seed data; an
+/// organisation can add its own. A role is only ever a starting point — the
+/// per-user grants below can add to it or carve holes in it.
+model Role {
+  id          String  @id @default(cuid())
+  orgId       String?
+  key         String
+  name        String
+  description String?
+  isSystem    Boolean @default(false)
+
+  org         Organization?    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  permissions RolePermission[]
+  assignments RoleAssignment[]
+
+  @@unique([orgId, key])
+}
+
+model RolePermission {
+  id         String @id @default(cuid())
+  roleId     String
+  permission String
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permission])
+}
+
+/// "This user holds this role, but only over this part of the tree."
+/// A Security Manager assigned at PROPERTY scope for Property A has no reach
+/// into Property B, and nothing in the API needs to remember that specially.
+model RoleAssignment {
+  id         String    @id @default(cuid())
+  userId     String
+  roleId     String
+  scopeType  ScopeType
+  scopeId    String
+  createdAt  DateTime  @default(now())
+  grantedById String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, scopeType, scopeId])
+  @@index([userId])
+}
+
+/// A single permission switched on or off for one user, at one scope.
+/// This is what makes the system not merely role-driven: John can hold the
+/// Security Guard role and additionally be granted `resident.view`, or be
+/// explicitly denied `visitor.approve`, without inventing a new role for him.
+model PermissionGrant {
+  id          String    @id @default(cuid())
+  userId      String
+  permission  String
+  effect      Effect    @default(ALLOW)
+  scopeType   ScopeType
+  scopeId     String
+  createdAt   DateTime  @default(now())
+  grantedById String?
+  note        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permission, scopeType, scopeId])
+  @@index([userId])
+}
+
+// ============================================================
+// PORTFOLIO
+// ============================================================
+
+enum UnitStatus {
+  OCCUPIED
+  VACANT
+  NOTICE
+  MAINTENANCE
+}
+
+model Property {
+  id        String   @id @default(cuid())
+  orgId     String
+  name      String
+  address   String?
+  city      String?
+  country   String   @default("KE")
+  kind      String   @default("residential")
+  createdAt DateTime @default(now())
+
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  buildings  Building[]
+  units      Unit[]
+  residents  Resident[]
+  visitors   Visitor[]
+  invitations VisitorInvitation[]
+  visits     VisitorVisit[]
+  cards      AccessCard[]
+  vehicles   Vehicle[]
+  gates      Gate[]
+  guards     Guard[]
+  shifts     GuardShift[]
+  incidents  SecurityIncident[]
+  alerts     EmergencyAlert[]
+  accessEvents AccessEvent[]
+  maintenance MaintenanceRequest[]
+  payments   Payment[]
+  expenses   Expense[]
+  campaigns  Campaign[]
+  discounts  Discount[]
+  groups     GroupBooking[]
+  feeCategories FeeCategory[]
+  charges    Charge[]
+  salaries   SalaryProfile[]
+  payRuns    PayRun[]
+  listings   PropertyListing[]
+
+  @@index([orgId])
+}
+
+model Building {
+  id         String   @id @default(cuid())
+  propertyId String
+  name       String
+  floors     Int      @default(1)
+  createdAt  DateTime @default(now())
+
+  property  Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  units     Unit[]
+  incidents SecurityIncident[]
+  maintenance MaintenanceRequest[]
+
+  @@index([propertyId])
+}
+
+/// `propertyId` is denormalised onto Unit (and onto every security record) on
+/// purpose: scope filtering runs on nearly every request, and it should never
+/// need a join to answer "which property does this row belong to?".
+model Unit {
+  id         String     @id @default(cuid())
+  buildingId String
+  propertyId String
+  name       String
+  floor      Int?
+  bedrooms   Int?
+  rentAmount Int?
+  currency   String     @default("KES")
+  status     UnitStatus @default(VACANT)
+  createdAt  DateTime   @default(now())
+
+  building    Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  residents   Resident[]
+  invitations VisitorInvitation[]
+  visits      VisitorVisit[]
+  cards       AccessCard[]
+  vehicles    Vehicle[]
+  incidents   SecurityIncident[]
+  accessEvents AccessEvent[]
+  maintenance MaintenanceRequest[]
+  payments    Payment[]
+  charges     Charge[]
+  listings    PropertyListing[]
+
+  @@index([propertyId])
+  @@index([buildingId])
+}
+
+enum ResidentType {
+  OWNER_OCCUPIER
+  TENANT
+  FAMILY_MEMBER
+}
+
+model Resident {
+  id         String       @id @default(cuid())
+  unitId     String
+  propertyId String
+  userId     String?      @unique
+  fullName   String
+  email      String?
+  phone      String?
+  type       ResidentType @default(TENANT)
+  isPrimary  Boolean      @default(false)
+  moveInAt   DateTime?
+  moveOutAt  DateTime?
+  leaseEnd   DateTime?
+  active     Boolean      @default(true)
+
+  unit        Unit                @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user        User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  invitations VisitorInvitation[]
+  cards       AccessCard[]
+  vehicles    Vehicle[]
+  payments    Payment[]
+  maintenance MaintenanceRequest[]
+  charges     Charge[]
+
+  @@index([propertyId])
+  @@index([unitId])
+}
+
+// ============================================================
+// PALTAS SECURITY MANAGEMENT
+// ============================================================
+
+enum VisitorType {
+  FAMILY_FRIEND
+  DELIVERY
+  CONTRACTOR
+  DOMESTIC_WORKER
+  DRIVER
+  OTHER
+}
+
+enum InvitationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  CANCELLED
+  USED
+}
+
+enum VisitStatus {
+  ON_SITE
+  CHECKED_OUT
+  DENIED
+}
+
+/// A person known to the property. Kept separate from the invitation so a
+/// regular visitor — the domestic worker who comes daily, the courier who comes
+/// weekly — has one identity and one searchable history rather than one row per
+/// arrival.
+model Visitor {
+  id         String      @id @default(cuid())
+  propertyId String
+  fullName   String
+  phone      String?
+  idType     String?
+  idNumber   String?
+  type       VisitorType @default(FAMILY_FRIEND)
+  company    String?
+  photoUrl   String?
+  blacklisted Boolean    @default(false)
+  blacklistReason String?
+  createdAt  DateTime    @default(now())
+
+  property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  invitations VisitorInvitation[]
+  visits      VisitorVisit[]
+  vehicles    Vehicle[]
+  incidents   SecurityIncident[]
+
+  @@index([propertyId])
+  @@index([propertyId, fullName])
+}
+
+/// The invitation a resident (or an authorised staff member) raises ahead of a
+/// visit. `qrToken` is the secret behind the QR pass; `passCode` is the short
+/// human-readable fallback a guard can type when a phone screen won't scan.
+/// Recurring passes carry `maxUses` and count down, so a contractor's week-long
+/// pass expires on its own rather than living forever.
+model VisitorInvitation {
+  id            String           @id @default(cuid())
+  propertyId    String
+  unitId        String
+  residentId    String?
+  visitorId     String?
+  visitorName   String
+  visitorPhone  String?
+  visitorType   VisitorType      @default(FAMILY_FRIEND)
+  purpose       String?
+  validFrom     DateTime
+  validTo       DateTime
+  recurring     Boolean          @default(false)
+  recurrenceRule String?
+  maxUses       Int              @default(1)
+  useCount      Int              @default(0)
+  passCode      String           @unique
+  qrToken       String           @unique
+  vehiclePlate  String?
+  status        InvitationStatus @default(PENDING)
+  createdById   String?
+  approvedById  String?
+  approvedAt    DateTime?
+  rejectedReason String?
+  createdAt     DateTime         @default(now())
+
+  property Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  resident Resident?      @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  visitor  Visitor?       @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  visits   VisitorVisit[]
+  accessEvents AccessEvent[]
+
+  @@index([propertyId, status])
+  @@index([unitId])
+}
+
+/// One arrival. Created at check-in and closed at check-out, so "who is on site
+/// right now" is a single indexed query rather than a reconstruction from events.
+model VisitorVisit {
+  id           String      @id @default(cuid())
+  propertyId   String
+  unitId       String?
+  invitationId String?
+  visitorId    String?
+  visitorName  String
+  visitorPhone String?
+  visitorType  VisitorType @default(FAMILY_FRIEND)
+  gateId       String?
+  badgeNo      String?
+  vehiclePlate String?
+  checkInAt    DateTime    @default(now())
+  checkInById  String?
+  checkOutAt   DateTime?
+  checkOutById String?
+  status       VisitStatus @default(ON_SITE)
+  notes        String?
+
+  property   Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit       Unit?              @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  invitation VisitorInvitation? @relation(fields: [invitationId], references: [id], onDelete: SetNull)
+  visitor    Visitor?           @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  gate       Gate?              @relation(fields: [gateId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, status])
+  @@index([propertyId, checkInAt])
+}
+
+enum CardType {
+  RESIDENT
+  FAMILY
+  STAFF
+  TEMPORARY
+  CONTRACTOR
+}
+
+enum CardStatus {
+  ACTIVE
+  SUSPENDED
+  LOST
+  EXPIRED
+  REVOKED
+}
+
+model AccessCard {
+  id            String     @id @default(cuid())
+  propertyId    String
+  unitId        String?
+  residentId    String?
+  holderName    String
+  cardNumber    String     @unique
+  type          CardType   @default(RESIDENT)
+  status        CardStatus @default(ACTIVE)
+  accessZones   String[]   @default([])
+  issuedAt      DateTime   @default(now())
+  expiresAt     DateTime?
+  issuedById    String?
+  suspendedAt   DateTime?
+  suspendedById String?
+  suspendReason String?
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  accessEvents AccessEvent[]
+
+  @@index([propertyId, status])
+}
+
+enum VehicleType {
+  RESIDENT
+  VISITOR
+  STAFF
+  DELIVERY
+}
+
+model Vehicle {
+  id         String      @id @default(cuid())
+  propertyId String
+  unitId     String?
+  residentId String?
+  visitorId  String?
+  plate      String
+  make       String?
+  model      String?
+  colour     String?
+  type       VehicleType @default(RESIDENT)
+  permitNo   String?
+  parkingBay String?
+  active     Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  visitor  Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  incidents SecurityIncident[]
+  accessEvents AccessEvent[]
+
+  @@unique([propertyId, plate])
+  @@index([propertyId])
+}
+
+enum GateKind {
+  MAIN
+  PEDESTRIAN
+  SERVICE
+  PARKING
+}
+
+model Gate {
+  id         String   @id @default(cuid())
+  propertyId String
+  name       String
+  kind       GateKind @default(MAIN)
+  isActive   Boolean  @default(true)
+
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  shifts   GuardShift[]
+  visits   VisitorVisit[]
+  accessEvents AccessEvent[]
+
+  @@index([propertyId])
+}
+
+model Guard {
+  id          String   @id @default(cuid())
+  propertyId  String
+  userId      String   @unique
+  badgeNumber String   @unique
+  phone       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shifts   GuardShift[]
+
+  @@index([propertyId])
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  MISSED
+}
+
+model GuardShift {
+  id         String      @id @default(cuid())
+  propertyId String
+  guardId    String
+  gateId     String?
+  startsAt   DateTime
+  endsAt     DateTime
+  status     ShiftStatus @default(SCHEDULED)
+  checkInAt  DateTime?
+  checkOutAt DateTime?
+  notes      String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  guard    Guard    @relation(fields: [guardId], references: [id], onDelete: Cascade)
+  gate     Gate?    @relation(fields: [gateId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, startsAt])
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+}
+
+model SecurityIncident {
+  id          String           @id @default(cuid())
+  propertyId  String
+  buildingId  String?
+  unitId      String?
+  reference   String           @unique
+  category    String
+  severity    IncidentSeverity @default(MEDIUM)
+  title       String
+  description String
+  location    String?
+  occurredAt  DateTime         @default(now())
+  reportedById String?
+  reportedByName String?
+  status      IncidentStatus   @default(OPEN)
+  visitorId   String?
+  vehicleId   String?
+  resolvedAt  DateTime?
+  resolvedById String?
+  resolutionNotes String?
+  createdAt   DateTime         @default(now())
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  building Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  visitor  Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  vehicle  Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, status])
+  @@index([propertyId, occurredAt])
+}
+
+enum AlertType {
+  PANIC
+  FIRE
+  MEDICAL
+  INTRUSION
+  EVACUATION
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+model EmergencyAlert {
+  id               String      @id @default(cuid())
+  propertyId       String
+  type             AlertType
+  message          String?
+  location         String?
+  raisedById       String?
+  raisedByName     String?
+  status           AlertStatus @default(ACTIVE)
+  acknowledgedById String?
+  acknowledgedAt   DateTime?
+  resolvedAt       DateTime?
+  createdAt        DateTime    @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, status])
+}
+
+enum AccessDirection {
+  IN
+  OUT
+}
+
+enum AccessMethod {
+  CARD
+  QR
+  MANUAL
+  PLATE
+}
+
+enum AccessResult {
+  GRANTED
+  DENIED
+}
+
+/// The immutable access history: every card tap, QR scan, plate check and manual
+/// wave-through, granted or denied. Written by the same handlers that perform the
+/// action, never edited afterwards.
+model AccessEvent {
+  id           String          @id @default(cuid())
+  propertyId   String
+  gateId       String?
+  unitId       String?
+  direction    AccessDirection @default(IN)
+  method       AccessMethod
+  result       AccessResult
+  subjectType  String
+  subjectId    String?
+  subjectName  String
+  cardId       String?
+  invitationId String?
+  vehicleId    String?
+  reason       String?
+  recordedById String?
+  at           DateTime        @default(now())
+
+  property   Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  gate       Gate?              @relation(fields: [gateId], references: [id], onDelete: SetNull)
+  unit       Unit?              @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  card       AccessCard?        @relation(fields: [cardId], references: [id], onDelete: SetNull)
+  invitation VisitorInvitation? @relation(fields: [invitationId], references: [id], onDelete: SetNull)
+  vehicle    Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, at])
+}
+
+// ============================================================
+// OPERATIONS & FINANCE (what the owner dashboard aggregates)
+// ============================================================
+
+enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MaintenanceStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model MaintenanceRequest {
+  id           String              @id @default(cuid())
+  propertyId   String
+  buildingId   String?
+  unitId       String?
+  residentId   String?
+  title        String
+  description  String
+  priority     MaintenancePriority @default(MEDIUM)
+  status       MaintenanceStatus   @default(OPEN)
+  assignedToId String?
+  raisedByName String?
+  createdAt    DateTime            @default(now())
+  resolvedAt   DateTime?
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  building Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, status])
+}
+
+enum PaymentKind {
+  RENT
+  DEPOSIT
+  SERVICE_CHARGE
+  FINE
+}
+
+enum PaymentStatus {
+  PAID
+  DUE
+  OVERDUE
+}
+
+model Payment {
+  id         String        @id @default(cuid())
+  propertyId String
+  unitId     String?
+  residentId String?
+  /// Set when this payment settles a specific charge from the fee schedule.
+  chargeId   String?
+  kind       PaymentKind   @default(RENT)
+  amount     Int
+  currency   String        @default("KES")
+  dueDate    DateTime
+  paidAt     DateTime?
+  status     PaymentStatus @default(DUE)
+  reference  String?
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  charge   Charge?   @relation(fields: [chargeId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, status])
+  @@index([chargeId])
+}
+
+model Expense {
+  id           String   @id @default(cuid())
+  propertyId   String
+  category     String
+  description  String?
+  amount       Int
+  currency     String   @default("KES")
+  incurredAt   DateTime @default(now())
+  recordedById String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, incurredAt])
+}
+
+// ============================================================
+// AUDIT TRAIL
+// ============================================================
+
+/// Who did what, to which part of the portfolio, when, and what the value was
+/// before and after. Written inside the same transaction as the change wherever
+/// the change is a single write, so an action cannot succeed unlogged.
+model AuditLog {
+  id         String   @id @default(cuid())
+  orgId      String
+  actorId    String?
+  actorName  String
+  actorRole  String?
+  action     String
+  permission String?
+  entityType String
+  entityId   String?
+  propertyId String?
+  buildingId String?
+  unitId     String?
+  summary    String
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  at         DateTime @default(now())
+
+  org Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, at])
+  @@index([propertyId, at])
+  @@index([actorId, at])
+}
+
+// ============================================================
+// PRICING — discounts and campaigns
+//
+// Owners, property managers and agents set these; the marketplace reads the
+// live ones through a public endpoint. Kept in the same database as the
+// portfolio rather than in the marketplace's mock layer, because a discount is
+// a commercial commitment and needs the same authorisation and audit trail as
+// anything else that moves money.
+// ============================================================
+
+enum DiscountKind {
+  GROUP
+  SEASONAL
+  EARLY_BIRD
+  LONG_STAY
+  PROMO_CODE
+  MEMBER
+}
+
+enum DiscountValueType {
+  PERCENTAGE
+  FIXED
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  LIVE
+  PAUSED
+  ENDED
+}
+
+/// A named, scheduled bundle of discounts — "Hajj season 2027", "Long weekend
+/// in Diani". Publishing is a separate permission from creating, so a junior can
+/// draft a campaign without being able to put prices in front of the public.
+model Campaign {
+  id          String         @id @default(cuid())
+  orgId       String
+  propertyId  String?
+  name        String
+  description String?
+  status      CampaignStatus @default(DRAFT)
+  startsAt    DateTime
+  endsAt      DateTime
+  bannerText  String?
+  createdById String?
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property  Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  discounts Discount[]
+
+  @@index([orgId, status])
+  @@index([propertyId])
+}
+
+/// One rule. `value` is a whole percent for PERCENTAGE and a minor-unit amount
+/// for FIXED, so nothing is ever stored as a float — money and rounding do not
+/// mix well, and a 12.5% discount is better expressed as basis points than as
+/// a number that cannot be represented exactly.
+model Discount {
+  id          String            @id @default(cuid())
+  orgId       String
+  propertyId  String?
+  campaignId  String?
+  name        String
+  description String?
+  kind        DiscountKind      @default(SEASONAL)
+  valueType   DiscountValueType @default(PERCENTAGE)
+  /// Percent (1–100) when PERCENTAGE; minor units when FIXED.
+  value       Int
+  currency    String            @default("KES")
+  code        String?           @unique
+
+  /// Thresholds. A GROUP discount uses minGuests/minUnits — this is what makes
+  /// "book for twelve pilgrims and the rate drops" expressible as data.
+  minNights   Int?
+  minGuests   Int?
+  minUnits    Int?
+  /// Booked this far ahead, for EARLY_BIRD.
+  minLeadDays Int?
+
+  maxRedemptions  Int?
+  redemptionCount Int      @default(0)
+  startsAt        DateTime
+  endsAt          DateTime
+  active          Boolean  @default(true)
+  createdById     String?
+  createdAt       DateTime @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  campaign Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  groups   GroupBooking[]
+
+  @@index([orgId, active])
+  @@index([propertyId])
+}
+
+// ============================================================
+// GROUP BOOKING & SPLIT PAYMENTS
+//
+// The differentiator for the journeys this platform actually serves: a Hajj or
+// Umrah party, an extended family, a corporate block. One reference, many
+// travellers, and each traveller paying their own share — rather than one person
+// fronting the whole cost and chasing everyone else afterwards.
+// ============================================================
+
+enum GroupPurpose {
+  HAJJ
+  UMRAH
+  FAMILY
+  CORPORATE
+  LEISURE
+  OTHER
+}
+
+enum GroupStatus {
+  DRAFT
+  COLLECTING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum ShareStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+model GroupBooking {
+  id             String       @id @default(cuid())
+  orgId          String
+  propertyId     String?
+  reference      String       @unique
+  name           String
+  purpose        GroupPurpose @default(FAMILY)
+  destination    String
+  organiserName  String
+  organiserEmail String?
+  organiserPhone String?
+  checkIn        DateTime
+  checkOut       DateTime
+  unitsRequested Int          @default(1)
+  guests         Int          @default(1)
+  /// Gross total in minor units, before any discount.
+  totalAmount    Int
+  currency       String       @default("KES")
+  discountId     String?
+  /// What the discount took off, stored rather than recomputed so a later
+  /// change to the rule cannot silently restate what a group was quoted.
+  discountAmount Int          @default(0)
+  status         GroupStatus  @default(DRAFT)
+  createdById    String?
+  createdAt      DateTime     @default(now())
+  confirmedAt    DateTime?
+
+  org      Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  discount Discount?     @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  members  GroupMember[]
+
+  @@index([orgId, status])
+  @@index([propertyId])
+}
+
+/// One traveller and the share they owe. Shares are held as explicit amounts
+/// rather than derived from a headcount, because groups rarely split evenly —
+/// a child, a shared room, someone paying for their parents.
+model GroupMember {
+  id             String      @id @default(cuid())
+  groupBookingId String
+  name           String
+  email          String?
+  phone          String?
+  shareAmount    Int
+  shareStatus    ShareStatus @default(PENDING)
+  paidAt         DateTime?
+  reference      String?
+  isOrganiser    Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+
+  group GroupBooking @relation(fields: [groupBookingId], references: [id], onDelete: Cascade)
+
+  @@index([groupBookingId])
+}
+
+// ============================================================
+// PALTAS REWARDS — loyalty
+//
+// Balances are derived from a ledger rather than stored in a mutable column: a
+// balance field is one bad write away from being wrong with no way to tell,
+// whereas a ledger can always be re-derived and reconciled. Same reasoning as
+// the audit trail.
+// ============================================================
+
+enum LoyaltyEntryKind {
+  EARN
+  REDEEM
+  ADJUST
+  EXPIRE
+}
+
+model LoyaltyMember {
+  id        String   @id @default(cuid())
+  orgId     String
+  email     String
+  name      String
+  phone     String?
+  joinedAt  DateTime @default(now())
+  active    Boolean  @default(true)
+
+  org     Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  entries LoyaltyEntry[]
+
+  @@unique([orgId, email])
+  @@index([orgId])
+}
+
+model LoyaltyEntry {
+  id       String           @id @default(cuid())
+  memberId String
+  kind     LoyaltyEntryKind
+  /// Signed: positive earns and adjustments up, negative redemptions and expiry.
+  points   Int
+  /// Spend that produced an EARN, in minor units. Drives rolling tier status.
+  qualifyingSpend Int?
+  reason      String
+  reference   String?
+  at          DateTime @default(now())
+  createdById String?
+
+  member LoyaltyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId, at])
+}
+
+// ============================================================
+// FINANCIAL MANAGEMENT — fee categories, charges, payroll
+//
+// The chart of charges an estate actually runs on: rent, service charge, water,
+// security levy, parking, penalties — each a configurable category rather than a
+// hard-coded enum, because every property runs a slightly different book and a
+// finance module that cannot express theirs is a finance module they will not use.
+// ============================================================
+
+enum FeeKind {
+  INCOME
+  EXPENSE
+}
+
+enum Recurrence {
+  ONE_OFF
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+/// A line in the chart of charges. Scoped to a property or the whole
+/// organisation, so a group can standardise while one estate keeps its quirks.
+model FeeCategory {
+  id            String     @id @default(cuid())
+  orgId         String
+  propertyId    String?
+  code          String
+  name          String
+  description   String?
+  kind          FeeKind    @default(INCOME)
+  /// Suggested amount in minor units; a charge may still override it.
+  defaultAmount Int?
+  currency      String     @default("KES")
+  recurrence    Recurrence @default(MONTHLY)
+  taxable       Boolean    @default(false)
+  active        Boolean    @default(true)
+  createdById   String?
+  createdAt     DateTime   @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  charges  Charge[]
+
+  @@unique([orgId, code])
+  @@index([orgId, active])
+}
+
+enum ChargeStatus {
+  DRAFT
+  ISSUED
+  PART_PAID
+  PAID
+  WAIVED
+  OVERDUE
+}
+
+/// One amount owed by one unit or resident, under one category.
+model Charge {
+  id          String       @id @default(cuid())
+  orgId       String
+  propertyId  String
+  unitId      String?
+  residentId  String?
+  categoryId  String
+  reference   String       @unique
+  description String?
+  amount      Int
+  currency    String       @default("KES")
+  dueDate     DateTime
+  periodLabel String?
+  status      ChargeStatus @default(ISSUED)
+  waivedReason String?
+  createdById String?
+  createdAt   DateTime     @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?        @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident Resident?    @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  category FeeCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  payments Payment[]
+
+  @@index([propertyId, status])
+  @@index([unitId])
+}
+
+enum PayRunStatus {
+  DRAFT
+  APPROVED
+  PAID
+}
+
+/// What a staff member is paid, effective from a date. Superseded rather than
+/// edited, so a payslip can always be explained by the profile in force at the
+/// time it was produced.
+model SalaryProfile {
+  id            String   @id @default(cuid())
+  orgId         String
+  userId        String
+  propertyId    String?
+  jobTitle      String?
+  grossMonthly  Int
+  currency      String   @default("KES")
+  effectiveFrom DateTime @default(now())
+  active        Boolean  @default(true)
+  bankReference String?
+  createdById   String?
+  createdAt     DateTime @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property?    @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, active])
+  @@index([userId])
+}
+
+model PayRun {
+  id           String       @id @default(cuid())
+  orgId        String
+  propertyId   String?
+  periodLabel  String
+  periodStart  DateTime
+  periodEnd    DateTime
+  status       PayRunStatus @default(DRAFT)
+  currency     String       @default("KES")
+  totalGross   Int          @default(0)
+  totalDeductions Int       @default(0)
+  totalNet     Int          @default(0)
+  createdById  String?
+  approvedById String?
+  approvedAt   DateTime?
+  paidAt       DateTime?
+  createdAt    DateTime     @default(now())
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?    @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  payslips Payslip[]
+
+  @@index([orgId, status])
+}
+
+/// One person's pay for one period.
+///
+/// Deductions are stored as explicit named lines rather than computed by a tax
+/// engine. PALTAS is not a certified payroll calculator for any jurisdiction,
+/// and pretending otherwise would be worse than useless — the organisation
+/// configures its own statutory lines and remains responsible for them.
+model Payslip {
+  id              String   @id @default(cuid())
+  payRunId        String
+  userId          String
+  staffName       String
+  jobTitle        String?
+  gross           Int
+  /// [{ label, amount }] — PAYE, NSSF, SHIF, advances, and anything else.
+  deductions      Json
+  totalDeductions Int      @default(0)
+  net             Int
+  currency        String   @default("KES")
+  bankReference   String?
+  createdAt       DateTime @default(now())
+
+  payRun PayRun @relation(fields: [payRunId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([payRunId, userId])
+  @@index([userId])
+}
+
+// ============================================================
+// PUBLISHING — owners, landlords and agents listing their properties
+//
+// The bridge between the management side and the marketplace. A unit in the
+// portfolio becomes a listing the public can see only when someone with the
+// publish permission says so, and the public projection is a separate query
+// rather than a filtered view of the private record.
+// ============================================================
+
+enum ListingKind {
+  STAY
+  RENT
+  SALE
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  UNPUBLISHED
+  REJECTED
+}
+
+model PropertyListing {
+  id          String        @id @default(cuid())
+  orgId       String
+  propertyId  String
+  unitId      String?
+  title       String
+  summary     String?
+  description String
+  kind        ListingKind   @default(STAY)
+  status      ListingStatus @default(DRAFT)
+
+  /// Minor units. Nightly for STAY, monthly for RENT, total for SALE.
+  price       Int
+  currency    String   @default("KES")
+  maxGuests   Int      @default(2)
+  bedrooms    Int      @default(1)
+  bathrooms   Int      @default(1)
+  amenities   String[] @default([])
+  images      String[] @default([])
+  city        String?
+  location    String?
+
+  /// Who is publicly answerable for the listing — landlord, agent or developer.
+  hostName    String
+  hostKind    String   @default("Landlord")
+
+  submittedAt    DateTime?
+  publishedAt    DateTime?
+  publishedById  String?
+  reviewedById   String?
+  rejectionReason String?
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?        @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  @@index([status, kind])
+  @@index([orgId])
+  @@index([propertyId])
+}
+
+// ============================================================
+// PAYMENTS — Stripe settlement records
+//
+// The authoritative record of what Stripe told us, kept separately from the
+// booking so a webhook arriving twice, out of order, or for something we have
+// no record of is still stored rather than silently dropped.
+// ============================================================
+
+enum SettlementStatus {
+  REQUIRES_PAYMENT
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+model PaymentIntentRecord {
+  id             String           @id @default(cuid())
+  orgId          String?
+  /// Stripe's own id — the idempotency anchor for every webhook about it.
+  stripeIntentId String           @unique
+  amount         Int
+  currency       String
+  status         SettlementStatus @default(REQUIRES_PAYMENT)
+  purpose        String
+  reference      String?
+  listingId      String?
+  groupBookingId String?
+  chargeId       String?
+  customerEmail  String?
+  failureReason  String?
+  /// The last webhook payload seen, for reconciliation when something disagrees.
+  lastEvent      Json?
+  createdById    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([status])
+  @@index([reference])
+}

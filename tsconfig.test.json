@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": ".test-build",
+    "incremental": false,
+    "jsx": "react-jsx",
+    "rootDir": "src",
+    "paths": {
+      "@/lib/*": [
+        "src/lib/*"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "include": [
+    "src/lib/security/**/*.ts",
+    "src/lib/security/**/*.json",
+    "src/lib/pricing/**/*.ts",
+    "src/lib/services/pricingService.ts",
+    "src/lib/models/index.ts",
+    "src/lib/loyalty/**/*.ts",
+    "src/server/stripe.ts"
+  ]
+}
