@@ -35,52 +35,53 @@ rather than in a dashboard whose state nobody can see.
    Copy the signing secret into `STRIPE_WEBHOOK_SECRET` and redeploy. Until it is
    set, the endpoint rejects every delivery — which is the correct default.
 
-## Why the build happens in CI, not on Render
+## How this deploys
 
-`next build` on this codebase peaks at **620–650 MB**, measured. A Render free
-instance has **512 MB**. Every way of shrinking it was tried and none worked:
+Render builds the `Dockerfile` itself. No registry, no image to publish, no
+package visibility to configure — those were removed because they blocked more
+deploys than they solved.
 
-| | Peak |
-| --- | --- |
-| baseline | 622 MB |
-| `output: standalone` | 700 MB — worse |
-| single build worker | 700 MB — worse |
-| no static generation | 646 MB |
-| typecheck and lint left to CI | 645 MB |
-| `--max-old-space-size=400` | **fails** — heap exhausted |
+The same Dockerfile is built and fully exercised in CI on every push:
+`.github/workflows/image.yml` runs the resulting container against a real
+Postgres and passes all five e2e suites against it. So what Render builds is an
+artifact already proven to start, apply migrations on boot, and serve.
 
-So the build runs on a GitHub runner, which has gigabytes, and Render pulls the
-finished image. The **runtime** fits in 512 MB comfortably — it is only the build
-that does not. This costs nothing and is faster to deploy than building on the
-host would be.
+### Both halves must share a region
 
-```
-push to main  →  GitHub Actions builds the image  →  ghcr.io/axstronltd/paltas-platform:latest
-                                                  →  Render pulls and deploys
+```yaml
+services:  [{ name: paltas-platform, region: frankfurt }]
+databases: [{ name: paltas-db,       region: frankfurt }]
 ```
 
-### One-time setup
+Render's internal connection string **only resolves within one region**. A
+service in Frankfurt cannot reach a database in Oregon, and the failure is
+`P1001: Can't reach database server at dpg-…:5432`.
 
-1. Push to `main`. The **Publish image** workflow builds and pushes to GHCR.
-2. **Make the package public**, once, at
-   `https://github.com/orgs/AXStronltd/packages` → the package → Package settings
-   → Change visibility → Public. Otherwise Render gets a 403 pulling it.
-   (Alternatively give Render a read-only token under Registry Credentials.)
-3. **Render → New → Blueprint** → this repository. It reads `render.yaml`, sees
-   `runtime: image`, and deploys the published image rather than building.
-4. Enter the four secrets when prompted.
+Omitting a database's region does not inherit the service's — it silently takes
+Render's default, which is Oregon. That is how the two ended up apart, and it is
+why both are now stated explicitly.
 
-### Deploying a change
-
-Push to `main`. Actions rebuilds the image and Render redeploys it. To roll back,
-point the service at a specific `sha-…` tag instead of `latest`.
+Frankfurt because the users are in Nairobi, Stockholm and Vilnius: roughly
+130 ms, 25 ms and 35 ms respectively, against roughly 280 ms, 155 ms and 165 ms
+from Oregon. For East Africa the cables run north to Europe regardless, so
+Oregon pays that leg and then crosses the Atlantic as well.
 
 ### Migrations
 
-The image `CMD` runs `prisma migrate deploy` before starting the server, so
-schema changes apply on boot, in the network where the database is reachable.
-That is what fixes the original `P1001` permanently — nothing touches the
-database at build time any more, because there is no build on Render at all.
+The image `CMD` runs `prisma migrate deploy` before starting the server, so the
+schema is applied on boot, inside the network where the database is reachable.
+Nothing touches the database at build time — which is what caused the original
+`P1001`.
+
+### If the build runs out of memory
+
+`next build` peaks around 650 MB locally. Render's build machines are
+provisioned separately from the instance, so the 512 MB instance limit does not
+necessarily apply — and Render has never actually reported an out-of-memory
+build here. If one does occur, the options are a larger instance, or publishing
+a prebuilt image from CI and setting `runtime: image` with
+`image.url: ghcr.io/axstronltd/paltas-platform:latest`. The workflow that
+publishes it is already in the repository and green.
 
 ## If the build fails
 

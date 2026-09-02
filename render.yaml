@@ -28,16 +28,21 @@ services:
     plan: free
     region: frankfurt
 
-    # Deployed from a prebuilt image rather than built here. `next build` peaks
-    # around 620-650 MB on this codebase and a free instance has 512 MB, so the
-    # build runs in GitHub Actions and this pulls the result. The runtime itself
-    # fits comfortably.
+    # Render builds the Dockerfile itself. No registry is involved, so there is
+    # no package to make public and no pull credential to configure — the two
+    # things that blocked every previous attempt.
     #
-    # The image is published by .github/workflows/image.yml on every push to
-    # main. Make the GHCR package public once, or Render cannot pull it.
-    runtime: image
-    image:
-      url: ghcr.io/axstronltd/paltas-platform:latest
+    # The same Dockerfile is built and fully exercised in CI on every push
+    # (.github/workflows/image.yml runs the container against a real Postgres
+    # and passes all five e2e suites against it), so what Render builds here is
+    # an artifact already proven to start, migrate and serve.
+    #
+    # The build is heavy — around 650 MB locally. Render's build machines are
+    # provisioned separately from the instance, so the 512 MB instance limit
+    # does not necessarily apply; if a build does fail on memory, the fix is a
+    # larger instance, and the GHCR route in DEPLOY.md is the fallback.
+    runtime: docker
+    dockerfilePath: ./Dockerfile
 
     # No build or start command: the image carries both. Its CMD applies
     # pending migrations and then serves — see the Dockerfile.
