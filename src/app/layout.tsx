@@ -5,6 +5,7 @@ import { SiteChrome } from "@/components/ui/SiteChrome";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { PWARegister } from "@/components/ui/PWARegister";
 import { ToastProvider } from "@/components/ui/Toast";
+import { GuestProvider } from "@/components/booking/GuestProvider";
 
 export const metadata: Metadata = {
   title: "PALTAS — Smart Living",
@@ -43,8 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <LocaleProvider initialLocale={locale} initialMarket={market}>
           <ToastProvider>
-            <SiteChrome>{children}</SiteChrome>
-            <PWARegister />
+            {/* Who is browsing, if anyone. Guests are a separate authority from
+                staff — different table, different cookie — so this sits apart
+                from SessionProvider rather than inside it. */}
+            <GuestProvider>
+              <SiteChrome>{children}</SiteChrome>
+              <PWARegister />
+            </GuestProvider>
           </ToastProvider>
         </LocaleProvider>
       </body>

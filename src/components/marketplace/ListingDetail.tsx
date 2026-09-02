@@ -8,6 +8,7 @@ import { PricePanel } from "./PricePanel";
 import { HostTrust, TrustBadges } from "./TrustBadges";
 import { priceBreakdown, paymentModeFor } from "@/lib/services/pricingService";
 import { CheckoutModal } from "@/components/booking/CheckoutModal";
+import { BookingPanel } from "@/components/booking/BookingPanel";
 import { SafeImage } from "@/components/ui/SafeImage";
 
 const NIGHTS = 3; // in a full build this comes from a date picker
@@ -94,30 +95,49 @@ export function ListingDetail({
               <span>⚡ Instant confirmation</span>
               <span>✓ No hidden fees</span>
             </div>
-            <div className="book-price">
-              <b>KSh {listing.price.toLocaleString()}</b> <span>/ night</span>
-              {listing.priceFreeze && (
-                <span className="price-freeze">Price frozen — this will not change after you book</span>
-              )}
-            </div>
-            <div className="book-fields">
-              <div className="bf-row">
-                <div className="bf"><label>Check-in</label><div className="v">Sat, 30 Aug</div></div>
-                <div className="bf"><label>Check-out</label><div className="v">Tue, 2 Sep</div></div>
-              </div>
-              <div className="bf"><label>Guests</label><div className="v">2 guests</div></div>
-            </div>
-            <button className="btn btn-primary" onClick={() => setCheckoutOpen(true)}>
-              Reserve now
-            </button>
-            {/* Same component as the checkout, so the two cannot disagree. */}
-            <PricePanel listing={listing} nights={NIGHTS} />
-            <div className="reassure">You won&apos;t be charged yet · Full price shown above</div>
+            {listing.priceFreeze && (
+              <span className="price-freeze">Price frozen — this will not change after you book</span>
+            )}
+
+            {/* A real published listing can actually be sold, so it gets the
+                real panel: live dates, a server-priced quote and a booking that
+                claims inventory. The demo catalogue cannot, and must not offer
+                to take money for a room nobody has. */}
+            {listing.bookable ? (
+              <BookingPanel listing={listing} />
+            ) : (
+              <>
+                <div className="book-price">
+                  <b>{listing.currency} {listing.price.toLocaleString()}</b> <span>/ night</span>
+                </div>
+                <div className="book-fields">
+                  <div className="bf-row">
+                    <div className="bf"><label>Check-in</label><div className="v">Sat, 30 Aug</div></div>
+                    <div className="bf"><label>Check-out</label><div className="v">Tue, 2 Sep</div></div>
+                  </div>
+                  <div className="bf"><label>Guests</label><div className="v">2 guests</div></div>
+                </div>
+                <div className="book-note">
+                  This is an example listing, here to show how the marketplace looks. It cannot be
+                  booked. <Link href="/">Browse the listings that can.</Link>
+                </div>
+                <button className="btn btn-primary" onClick={() => setCheckoutOpen(true)}>
+                  Preview the checkout
+                </button>
+              </>
+            )}
+            {!listing.bookable && (
+              <>
+                {/* Same component as the checkout, so the two cannot disagree. */}
+                <PricePanel listing={listing} nights={NIGHTS} />
+                <div className="reassure">You won&apos;t be charged yet · Full price shown above</div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {checkoutOpen && (
+      {checkoutOpen && !listing.bookable && (
         <CheckoutModal
           listing={listing}
           nights={NIGHTS}

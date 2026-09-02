@@ -1370,6 +1370,8 @@ model PaymentIntentRecord {
   listingId      String?
   groupBookingId String?
   chargeId       String?
+  /// Set when a guest is paying for their own stay.
+  bookingId      String?
   customerEmail  String?
   failureReason  String?
   /// The last webhook payload seen, for reconciliation when something disagrees.

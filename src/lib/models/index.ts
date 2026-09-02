@@ -8,7 +8,12 @@
  * change confined to the service layer, invisible to pages and components.
  */
 
-export type Currency = "KES" | "USD" | "AED" | "EUR" | "GBP";
+/**
+ * Any ISO 4217 code. The named ones are the demo catalogue's, kept for
+ * autocomplete; the union stays open because the platform serves every country
+ * and a listing priced in TZS or SEK is not an error.
+ */
+export type Currency = "KES" | "USD" | "AED" | "EUR" | "GBP" | (string & {});
 
 export type ListingType =
   | "villa"
@@ -24,6 +29,7 @@ export type ListingType =
 /** How a listing is booked/paid — drives the escrow-vs-instant decision. */
 export type StayMode = "stays" | "hotel" | "rent";
 
+/** Open for the same reason as Currency: hosts write their own. */
 export type Amenity =
   | "wifi"
   | "pool"
@@ -32,7 +38,8 @@ export type Amenity =
   | "ac"
   | "pets"
   | "workspace"
-  | "beach";
+  | "beach"
+  | (string & {});
 
 /**
  * What was actually checked, and when.
@@ -114,6 +121,19 @@ export interface Listing {
   /** Set when the host has committed to the price not moving after booking. */
   priceFreeze?: boolean;
   cancellation?: "flexible" | "moderate" | "strict";
+  /**
+   * True when this is a real published listing backed by the database, and so
+   * genuinely bookable. The demo catalogue is not: it exists to fill the
+   * shopfront, and offering a Book button on it would take money for a room
+   * that does not exist.
+   */
+  bookable?: boolean;
+  /** Hotel room types, when the listing sells rooms rather than the whole place. */
+  roomTypes?: {
+    id: string; name: string; description: string | null; rate: number;
+    currency: string; totalRooms: number; maxGuests: number; beds: string | null;
+    amenities: string[];
+  }[];
 }
 
 /**

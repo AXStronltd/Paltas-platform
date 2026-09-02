@@ -1058,3 +1058,40 @@ img { display: block; max-width: 100%; }
 @media (max-width: 640px) {
   .locale-menu { width: min(300px, calc(100vw - 32px)); }
 }
+
+/* ---------------------------------------------------------------------------
+   Booking panel and My bookings.
+
+   The price breakdown is deliberately itemised rather than rolled into one
+   figure: the platform's claim is that what you see is what you pay, and a
+   single "total" with no working shown is exactly what that claim is against.
+--------------------------------------------------------------------------- */
+
+.book-breakdown { margin: 14px 0; font-size: 14px; }
+.book-breakdown > div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; color: var(--muted); }
+.book-breakdown > div > span:last-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.book-total { border-top: 1px solid var(--line-2); margin-top: 6px; padding-top: 12px !important; font-size: 16px; }
+.book-total > span { color: var(--ink) !important; font-weight: 800 !important; }
+
+.book-note { font-size: 13px; line-height: 1.5; color: var(--muted); background: var(--bg-2);
+  border-radius: 12px; padding: 10px 12px; margin: 12px 0; }
+.book-note.bad { color: #c0453a; background: rgba(224, 87, 74, .1); }
+.book-note a { color: inherit; text-decoration: underline; }
+
+.book-card select,
+.book-card input[type="date"],
+.book-card input[type="number"] {
+  width: 100%; padding: 9px 10px; border: 1px solid var(--line-2); border-radius: 10px;
+  background: var(--bg); color: var(--ink); font: inherit; font-size: 14px;
+}
+.book-card .bf { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.book-card .bf label { font-size: 12px; font-weight: 700; color: var(--muted); }
+.book-card .book-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.book-card .btn { width: 100%; margin-top: 4px; }
+.book-card .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.empty-state { text-align: center; padding: 40px 20px; border: 1px dashed var(--line-2); border-radius: 16px; }
+.empty-state a { color: var(--teal-ink); font-weight: 700; }
+
+.muted { color: var(--muted); }
+.bad { color: #c0453a; }

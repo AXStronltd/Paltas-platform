@@ -2,11 +2,25 @@ import { isMock } from "@/lib/config";
 import type { Listing, Review, SearchFilters, Result, StayMode } from "@/lib/models";
 import { LISTINGS, reviewsForListing } from "@/lib/data/mock";
 import { apiGet, mockDelay } from "./apiClient";
+import { fetchRealListing, fetchRealListings, looksReal } from "./publicListings";
 
 /**
  * Listing service — the ONLY module that knows where listing data comes from.
  * Pages and components call these functions and never touch mock data or fetch
- * directly. To go live, implement the `// API:` branches; callers stay identical.
+ * directly.
+ *
+ * There are now two sources, and they are not interchangeable:
+ *
+ *   Real listings come from /api/public/listings — actual rows a host has
+ *   published, which can actually be booked and paid for. They carry
+ *   `bookable: true` and are always shown first.
+ *
+ *   The demo catalogue fills the rest of the shopfront so it does not look
+ *   empty. It is not bookable, and the UI must not offer to take money for it.
+ *
+ * Real listings are merged in regardless of the mock/api switch, because they
+ * are real either way: `NEXT_PUBLIC_DATA_SOURCE` decides where the *catalogue*
+ * comes from, not whether genuine inventory exists.
  */
 
 function classifyMode(l: Listing): StayMode {
@@ -16,6 +30,14 @@ function classifyMode(l: Listing): StayMode {
 }
 
 export async function searchListings(filters: SearchFilters = {}): Promise<Result<Listing[]>> {
+  // Real inventory first, always. A visitor should meet a property that exists
+  // before they meet one that does not.
+  const real = await fetchRealListings({
+    city: filters.city,
+    guests: filters.guests,
+    kind: filters.mode === "rent" ? "RENT" : filters.mode === "hotel" || filters.mode === "stays" ? "STAY" : undefined,
+  });
+
   if (isMock()) {
     let list = [...LISTINGS];
     if (filters.city) list = list.filter((l) => l.city.toLowerCase() === filters.city!.toLowerCase());
@@ -23,13 +45,22 @@ export async function searchListings(filters: SearchFilters = {}): Promise<Resul
     if (filters.guests) list = list.filter((l) => l.maxGuests >= filters.guests!);
     if (filters.maxPrice) list = list.filter((l) => l.price <= filters.maxPrice!);
     if (filters.amenities?.length) list = list.filter((l) => filters.amenities!.every((a) => l.amenities.includes(a)));
-    return mockDelay({ data: list, error: null });
+    return mockDelay({ data: [...real, ...list], error: null });
   }
   // API: return apiGet<Listing[]>(`/listings?${new URLSearchParams(filters as any)}`);
   return apiGet<Listing[]>(`/listings`);
 }
 
 export async function getListing(id: string): Promise<Result<Listing | null>> {
+  // A cuid-shaped id can only be a real listing, so this costs nothing on
+  // catalogue ids and saves a round trip on every one of them.
+  if (looksReal(id)) {
+    const found = await fetchRealListing(id);
+    if (found) return { data: found.listing, error: null };
+    // Fall through: an unknown id is a 404 either way, and the catalogue lookup
+    // below is what produces it.
+  }
+
   if (isMock()) {
     // Generated catalog listings (discovery rows) have ids like "g123".
     if (id.startsWith("g")) {
@@ -47,6 +78,11 @@ export async function getListing(id: string): Promise<Result<Listing | null>> {
 }
 
 export async function getReviews(listingId: string): Promise<Result<Review[]>> {
+  if (looksReal(listingId)) {
+    const found = await fetchRealListing(listingId);
+    if (found) return { data: found.reviews, error: null };
+  }
+
   if (isMock()) {
     return mockDelay({ data: reviewsForListing(listingId), error: null });
   }

@@ -316,6 +316,42 @@ check((await mgr.patch(`/maintenance/${open.id}`, { assignedToId: "not-a-real-us
 check((await salim.patch(`/maintenance/${open.id}`, { status: "RESOLVED" })).status === 404,
   "the other tenant gets a flat 404");
 
+console.log("\nPAYING FOR YOUR OWN BOOKING");
+// The staff payment endpoint is behind payment.intent.create, which a guest
+// will never hold. This is their own path, authorised by owning the booking.
+const payable = await fatuma.post("/bookings", {
+  listingId: hotel.id, roomTypeId: garden.id, checkIn: day(90), checkOut: day(92),
+  guests: 2, rooms: 1, idempotencyKey: `e2e-${Date.now()}-pay`,
+});
+check(payable.status === 201, "a booking to pay for");
+
+const anonPay = await anon.post(`/bookings/${payable.json.booking.id}/pay`);
+check(anonPay.status === 401, "paying requires a session");
+const otherPay = await other.post(`/bookings/${payable.json.booking.id}/pay`);
+check(otherPay.status === 404, "another guest cannot pay for — or discover — your booking", `${otherPay.status}`);
+
+// Stripe is unconfigured in CI, so 503 is the honest answer. What matters is
+// that it comes *after* authorisation: an unauthorised caller must not learn
+// how this platform takes money.
+const ownPay = await fatuma.post(`/bookings/${payable.json.booking.id}/pay`);
+check(ownPay.status === 503 || ownPay.status === 200,
+  "the owner gets a real answer, not a refusal", `${ownPay.status}`);
+check(otherPay.status === 404 && ownPay.status !== 404,
+  "and the config state is only revealed to the booking's owner");
+
+const cancelledForPay = await fatuma.post(`/bookings/${payable.json.booking.id}/cancel`, { reason: "test" });
+check(cancelledForPay.status === 200, "cancelling it");
+check((await fatuma.post(`/bookings/${payable.json.booking.id}/pay`)).status === 409,
+  "a cancelled booking cannot be paid for");
+
+console.log("\nTHE GUEST'S OWN VIEW");
+const listedIds = (await fatuma.get("/bookings")).json.bookings.map((b) => b.id);
+check(listedIds.includes(b1.json.booking.id), "their bookings list contains their booking");
+check(!listedIds.includes(backToBack.json.booking.id), "and not the other guest's");
+const blob2 = JSON.stringify((await fatuma.get("/bookings")).json);
+check(!blob2.includes("orgId") && !blob2.includes("idempotencyKey"),
+  "and leaks no tenant ids or idempotency keys");
+
 console.log("\nTHE TRAIL");
 const trail = await owner.get("/audit?limit=200");
 const actions = (trail.json.entries ?? trail.json.logs ?? []).map((e) => e.action);

@@ -80,6 +80,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         reference: intent.metadata?.reference ?? null,
         chargeId: intent.metadata?.chargeId ?? null,
         groupBookingId: intent.metadata?.groupBookingId ?? null,
+        bookingId: intent.metadata?.bookingId ?? null,
         failureReason: intent.last_payment_error?.message ?? null,
         lastEvent: event as never,
       },
@@ -136,6 +137,50 @@ export async function POST(req: Request): Promise<NextResponse> {
           where: { id: memberId, shareStatus: "PENDING" },
           data: { shareStatus: "PAID", paidAt: new Date(), reference: intent.id },
         });
+      }
+
+      // A guest paying for their own stay. This is where a booking actually
+      // becomes confirmed — not when the browser reaches the success screen,
+      // which the guest can close, lose signal on, or never see at all.
+      const bookingId = record.bookingId ?? intent.metadata?.bookingId ?? null;
+      if (bookingId) {
+        const confirmed = await prisma.booking.updateMany({
+          // PENDING is the idempotency guard: a repeat delivery updates nothing,
+          // and a booking cancelled in the meantime is not silently revived.
+          where: { id: bookingId, status: "PENDING" },
+          data: { status: "CONFIRMED", confirmedAt: new Date(), stripeIntentId: intent.id },
+        });
+        if (confirmed.count > 0) {
+          await prisma.bookingEvent.create({
+            data: { bookingId, status: "CONFIRMED", note: "Payment received.", actor: "system" },
+          });
+        }
+      }
+    }
+
+    // A failed payment leaves the booking PENDING — it is not cancelled, so the
+    // guest can try again with another card and keep the room they chose. The
+    // attempt is recorded either way, so the timeline shows what happened.
+    if (status === "FAILED") {
+      const bookingId = record.bookingId ?? intent.metadata?.bookingId ?? null;
+      if (bookingId) {
+        const already = await prisma.bookingEvent.findFirst({
+          where: { bookingId, note: { startsWith: "Payment failed" }, status: "PENDING" },
+          orderBy: { at: "desc" },
+          select: { at: true },
+        });
+        // Stripe retries deliveries; one failure should not become five events.
+        const recent = already && Date.now() - already.at.getTime() < 60_000;
+        if (!recent) {
+          await prisma.bookingEvent.create({
+            data: {
+              bookingId,
+              status: "PENDING",
+              note: `Payment failed${intent.last_payment_error?.message ? `: ${intent.last_payment_error.message}` : "."}`,
+              actor: "system",
+            },
+          });
+        }
       }
     }
 

@@ -1,110 +1,183 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import type { EscrowTransaction } from "@/lib/models";
-import { getMyEscrows, confirmAsBuyer, confirmAsHost } from "@/lib/services/escrowService";
-import { getCurrentUser } from "@/lib/services/authService";
+import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
+import { useGuest } from "./GuestProvider";
+import {
+  getMyBookings, cancelBooking, payForBooking, money,
+  type GuestBooking, type BookingStatus,
+} from "@/lib/services/guestService";
+
+/**
+ * A guest's own bookings.
+ *
+ * Scoped entirely by the session cookie — there is no guest id in any request
+ * here, because a `?guestId=` parameter would be a lookup table of everyone
+ * else's travel plans. A booking that is not yours returns 404 rather than 403,
+ * so this screen cannot be used to discover which references are real.
+ *
+ * A PENDING booking is one that was reserved but not paid for. It still holds
+ * the room, so it can be paid later rather than being silently lost.
+ */
+
+let stripePromise: Promise<Stripe | null> | null = null;
+function getStripe(): Promise<Stripe | null> | null {
+  const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  if (!key) return null;
+  if (!stripePromise) stripePromise = loadStripe(key);
+  return stripePromise;
+}
+
+const LABEL: Record<BookingStatus, string> = {
+  PENDING: "Awaiting payment",
+  CONFIRMED: "Confirmed",
+  CHECKED_IN: "You're staying now",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+  REFUNDED: "Refunded",
+};
 
 export function MyBookings() {
-  const [items, setItems] = useState<EscrowTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { guest, loading: guestLoading } = useGuest();
+  const [bookings, setBookings] = useState<GuestBooking[] | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [paying, setPaying] = useState<{ id: string; secret: string; label: string } | null>(null);
 
   const load = useCallback(async () => {
-    const user = getCurrentUser();
-    const res = await getMyEscrows(user?.id ?? "guest");
-    setItems(res.data ?? []);
-    setLoading(false);
-  }, []);
+    if (!guest) { setBookings([]); return; }
+    const res = await getMyBookings();
+    if (res.error) { setNotice(res.error.message); setBookings([]); return; }
+    setBookings(res.data!.bookings);
+  }, [guest]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
-  async function release(id: string) {
-    await confirmAsBuyer(id);
-    await load();
+  async function cancel(b: GuestBooking) {
+    const reason = prompt(`Cancel booking ${b.reference}? Tell the host why:`);
+    if (!reason?.trim()) return;
+    setBusy(b.id);
+    const res = await cancelBooking(b.id, reason.trim());
+    setBusy(null);
+    if (res.error) { setNotice(res.error.message); return; }
+    setNotice(`Booking ${b.reference} cancelled. The dates are back on sale.`);
+    void load();
   }
 
-  // Demo helper so you can see the two-sided completion without a second device.
-  async function hostConfirm(id: string) {
-    await confirmAsHost(id);
-    await load();
+  async function pay(b: GuestBooking) {
+    setBusy(b.id);
+    const res = await payForBooking(b.id);
+    setBusy(null);
+    if (res.error) { setNotice(res.error.message); return; }
+    setPaying({ id: b.id, secret: res.data!.clientSecret, label: money(b.total, b.currency) });
   }
 
-  if (loading) return <div className="loading">Loading your bookings…</div>;
+  if (guestLoading) return <p className="muted">Loading…</p>;
 
-  if (items.length === 0) {
+  if (!guest) {
     return (
-      <div style={{ textAlign: "center", padding: "60px 20px" }}>
-        <div style={{ fontSize: 40 }}>🧳</div>
-        <p style={{ fontWeight: 800, margin: "10px 0 4px" }}>No bookings yet</p>
-        <p style={{ color: "var(--muted)", marginBottom: 16 }}>
-          When you book a stay, your confirmed bookings appear here.
+      <div className="empty-state">
+        <p>Sign in to see your bookings.</p>
+        <p className="muted">
+          You are given an account when you make your first booking.{" "}
+          <Link href="/">Find somewhere to stay.</Link>
         </p>
-        <Link href="/" className="btn btn-primary" style={{ display: "inline-flex", width: "auto", padding: "12px 22px" }}>
-          Find a place to stay
-        </Link>
       </div>
     );
   }
 
+  if (bookings === null) return <p className="muted">Loading your bookings…</p>;
+
+  if (bookings.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>You have no bookings yet.</p>
+        <p className="muted"><Link href="/">Browse places to stay.</Link></p>
+      </div>
+    );
+  }
+
+  const stripe = getStripe();
+
   return (
-    <div style={{ display: "grid", gap: 16, maxWidth: 620 }}>
-      {items.map((t) => {
-        const complete = t.status === "released";
-        return (
-          <div key={t.id} className="book-card" style={{ position: "static" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-              <b style={{ fontSize: 17 }}>{t.property}</b>
-              <span style={{ fontSize: 12, fontWeight: 800, color: complete ? "var(--teal-ink)" : "#2278c4" }}>
-                {complete ? "✓ Stay completed" : "✓ Confirmed"}
-              </span>
-            </div>
-            <div style={{ color: "var(--muted)", fontSize: 13, marginBottom: 12 }}>
-              {t.location} · {t.dates} · {t.code}
-            </div>
+    <>
+      {notice && <div className="book-note">{notice}</div>}
 
-            <div className="host-card" style={{ margin: "0 0 12px" }}>
-              <div className="host-av">{t.host.initials}</div>
-              <div className="host-info">
-                <b>{t.host.name}{t.host.verified && <span className="verified">✓ Verified</span>}</b>
-                <span>{t.host.type} · ★ {t.host.rating}</span>
-              </div>
-            </div>
-
-            <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>
-              KSh {t.amount.toLocaleString()} <span style={{ fontSize: 13, color: "var(--muted)", fontWeight: 600 }}>paid</span>
-            </div>
-
-            <div className="check-both">
-              <div className="cb"><span className={`cb-dot ${t.buyerConfirmed ? "ok" : "wait"}`}>{t.buyerConfirmed ? "✓" : "•"}</span> You {t.buyerConfirmed ? "confirmed" : "not yet"}</div>
-              <div className="cb"><span className={`cb-dot ${t.hostConfirmed ? "ok" : "wait"}`}>{t.hostConfirmed ? "✓" : "•"}</span> {t.host.name.split(" ")[0]} {t.hostConfirmed ? "confirmed" : "not yet"}</div>
-            </div>
-
-            {complete ? (
-              <div className="complete-banner">
-                <div className="c">✓</div>
-                <div>
-                  <b>Booking complete</b>
-                  <div style={{ fontSize: 12.5, color: "var(--ink-2)" }}>
-                    Both you and {t.host.name.split(" ")[0]} confirmed the stay. 🎉
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <button className="btn btn-primary" disabled={t.buyerConfirmed} onClick={() => release(t.id)}>
-                  {t.buyerConfirmed ? `Waiting on ${t.host.name.split(" ")[0]}` : "Confirm my stay"}
-                </button>
-                {t.buyerConfirmed && !t.hostConfirmed && (
-                  <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => hostConfirm(t.id)}>
-                    Confirm as host (demo)
-                  </button>
-                )}
-              </>
-            )}
+      {bookings.map((b) => (
+        <div key={b.id} className="lrow">
+          <div style={{ flex: 1 }}>
+            <b>{b.listing?.title ?? "Stay"}</b>
+            <span>
+              {b.reference} · {b.checkIn.slice(0, 10)} → {b.checkOut.slice(0, 10)} · {b.nights} nights
+              {b.roomType ? ` · ${b.roomType.name}` : ""}
+              {b.rooms > 1 ? ` · ${b.rooms} rooms` : ""}
+            </span>
+            {b.cancelReason && <span className="bad">{b.cancelReason}</span>}
           </div>
-        );
-      })}
-    </div>
+          <div style={{ textAlign: "right" }}>
+            <b>{money(b.total, b.currency)}</b>
+            <div className={`pill pill-${b.status === "CANCELLED" || b.status === "REFUNDED" ? "red" : b.status === "PENDING" ? "amber" : "green"}`}>
+              {LABEL[b.status]}
+            </div>
+            <div className="room-acts">
+              {b.status === "PENDING" && (
+                <button disabled={busy === b.id} onClick={() => pay(b)}>
+                  {busy === b.id ? "…" : "Pay now"}
+                </button>
+              )}
+              {(b.status === "PENDING" || b.status === "CONFIRMED") && (
+                <button disabled={busy === b.id} onClick={() => cancel(b)}>Cancel</button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {paying && stripe && (
+        <div className="scrim" onClick={(e) => e.target === e.currentTarget && setPaying(null)}>
+          <div className="modal">
+            <Elements stripe={stripe} options={{ clientSecret: paying.secret, appearance: { theme: "flat" } }}>
+              <PayLater
+                label={paying.label}
+                onDone={() => { setPaying(null); setNotice("Payment sent. Your booking updates once it clears."); void load(); }}
+              />
+            </Elements>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PayLater({ label, onDone }: { label: string; onDone: () => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+    setBusy(true);
+    setError(null);
+    const res = await stripe.confirmPayment({ elements, redirect: "if_required" });
+    setBusy(false);
+    if (res.error) { setError(res.error.message ?? "That payment could not be completed."); return; }
+    // The webhook is what confirms the booking; this only reports the attempt.
+    onDone();
+  }
+
+  return (
+    <form onSubmit={submit}>
+      <h2>Pay {label}</h2>
+      <p className="lede">Your card details go straight to Stripe and never reach this site.</p>
+      <PaymentElement />
+      {error && <div className="book-note bad">{error}</div>}
+      <button className="btn btn-primary" type="submit" disabled={!stripe || busy}>
+        {busy ? "Paying…" : `Pay ${label}`}
+      </button>
+    </form>
   );
 }
