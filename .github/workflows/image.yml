@@ -132,6 +132,25 @@ jobs:
         env:
           REGISTRY: ${{ env.REGISTRY }}
 
+      # Before running anything, show what is actually inside the image. A
+      # missing COPY is invisible from the outside and produces a bare fs error
+      # at boot, which is not enough to act on.
+      - name: What is in the image
+        run: |
+          IMG=${{ steps.img.outputs.ref }}:latest
+          echo "── /app"
+          docker run --rm --entrypoint sh "$IMG" -c 'ls -la /app' || true
+          echo "── files the entrypoint needs"
+          docker run --rm --entrypoint sh "$IMG" -c '
+            for f in server.js package.json prisma/schema.prisma \
+                     node_modules/prisma/build/index.js \
+                     node_modules/.prisma/client/index.js \
+                     .next/static public; do
+              if [ -e "/app/$f" ]; then echo "  present  $f"; else echo "  MISSING  $f"; fi
+            done' || true
+          echo "── migrations"
+          docker run --rm --entrypoint sh "$IMG" -c 'ls /app/prisma/migrations' || true
+
       - name: Start the image exactly as Render will
         run: |
           docker run -d --name paltas \
@@ -144,12 +163,23 @@ jobs:
           # The container migrates on boot, so allow for that before polling.
           for i in $(seq 1 90); do
             if curl -sf http://localhost:10000/api/public/listings > /dev/null 2>&1; then
-              echo "container serving after ${i}s"; exit 0
+              echo "container serving after ${i}s"
+              exit 0
+            fi
+            # Stop early if it has already died; waiting 90s for a dead
+            # container tells us nothing we do not already know.
+            if [ "$(docker inspect -f '{{.State.Running}}' paltas 2>/dev/null)" != "true" ]; then
+              echo "::error::The container exited after ${i}s."
+              echo "── exit code: $(docker inspect -f '{{.State.ExitCode}}' paltas 2>/dev/null)"
+              echo "── full container output ──"
+              docker logs paltas 2>&1
+              exit 1
             fi
             sleep 1
           done
-          echo "::error::The container never served a request."
-          docker logs paltas
+          echo "::error::The container is running but never served a request."
+          echo "── full container output ──"
+          docker logs paltas 2>&1
           exit 1
 
       - name: Did the migration actually run inside the container?
