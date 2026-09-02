@@ -11,7 +11,10 @@
 databases:
   - name: paltas-db
     databaseName: paltas
-    plan: free
+    # Not `free`: Render deletes a free database after 30 days, taking every
+    # resident, charge and audit entry with it. This is the cheapest plan that
+    # persists.
+    plan: basic-256mb
     postgresMajorVersion: "16"
     # MUST match the web service's region. Render's internal connection string
     # only resolves within a single region — a service in Frankfurt cannot reach
@@ -25,7 +28,10 @@ databases:
 services:
   - type: web
     name: paltas-platform
-    plan: free
+    # `next build` peaks around 650 MB on this codebase, measured. Both `free`
+    # and `starter` cap at 512 MB, so the build would be killed. `standard` has
+    # 2 GB, which clears it with room to spare.
+    plan: standard
     region: frankfurt
 
     # Render builds the Dockerfile itself. No registry is involved, so there is
@@ -41,6 +47,7 @@ services:
     # provisioned separately from the instance, so the 512 MB instance limit
     # does not necessarily apply; if a build does fail on memory, the fix is a
     # larger instance, and the GHCR route in DEPLOY.md is the fallback.
+    branch: main
     runtime: docker
     dockerfilePath: ./Dockerfile
 

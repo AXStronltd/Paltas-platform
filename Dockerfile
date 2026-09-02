@@ -31,6 +31,11 @@ COPY . .
 # No DATABASE_URL here on purpose: the build must not need a database. Needing
 # one at build time is what produced P1001 in the first place.
 ENV NEXT_TELEMETRY_DISABLED=1
+# `next build` peaks around 650 MB here. Capping the heap explicitly stops V8
+# growing to fill whatever the daemon reports and colliding with the container
+# limit. Set in the builder stage because a Render env var would only reach the
+# runtime container, not the image build.
+ENV NODE_OPTIONS=--max-old-space-size=1536
 RUN npx prisma generate && npm run build
 
 # ---- runtime -----------------------------------------------------------
