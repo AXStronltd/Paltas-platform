@@ -16,7 +16,7 @@ databases:
 
 services:
   - type: web
-    name: paltas
+    name: paltas-platform
     runtime: node
     plan: free
     region: frankfurt
