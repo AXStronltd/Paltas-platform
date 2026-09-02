@@ -1,0 +1,57 @@
+# Render blueprint for PALTAS.
+#
+# Two services: the Next.js app and the Postgres it depends on. Committing this
+# means the deployment is described in the repository rather than in a dashboard
+# somebody has to remember the state of.
+#
+# Secrets are deliberately NOT here. `sync: false` tells Render to prompt for the
+# value and store it encrypted, so no key is ever committed. That is why
+# STRIPE_SECRET_KEY has no `value:` line — a blueprint is a public document.
+
+databases:
+  - name: paltas-db
+    databaseName: paltas
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: paltas
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+
+    # `prisma migrate deploy` rather than `db push`: production schema changes
+    # should be applied from reviewed migration files, not inferred from the
+    # schema at deploy time.
+    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/public/listings
+
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: paltas-db
+          property: connectionString
+
+      - key: NODE_VERSION
+        value: "20"
+
+      - key: NEXT_PUBLIC_DATA_SOURCE
+        value: mock
+
+      # ---- Secrets: entered in the Render dashboard, never committed --------
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+
+      # Publishable key. Safe in the browser, but still set per-environment.
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+
+      # Password for the seeded demo accounts. Set it, or seeding uses a default
+      # that is fine locally and not fine on a public host.
+      - key: SEED_PASSWORD
+        sync: false
