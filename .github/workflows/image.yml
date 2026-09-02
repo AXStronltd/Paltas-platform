@@ -14,7 +14,13 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE: ${{ github.repository }}
+  # github.repository preserves the owner's capitalisation (AXStronltd/…), and
+  # Docker rejects an uppercase repository name outright:
+  #   invalid reference format: repository name must be lowercase
+  #
+  # GHCR lowercases the namespace when the image is pushed, so every reference
+  # that pulls or runs it has to be lowercase too or it will not match. Each job
+  # derives it once, rather than a literal that would drift if the repo moves.
 
 jobs:
   publish:
@@ -25,6 +31,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Lowercase the image reference
+        id: img
+        run: |
+          echo "ref=${REGISTRY}/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
 
       - uses: docker/setup-buildx-action@v3
 
@@ -40,7 +53,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE }}
+          images: ${{ steps.img.outputs.ref }}
           # `latest` is what Render follows; the sha tag makes a rollback
           # possible by pointing Render at a specific build.
           tags: |
@@ -62,7 +75,7 @@ jobs:
       - name: Where it went
         run: |
           echo "Published:"
-          echo "  ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest"
+          echo "  ${{ steps.img.outputs.ref }}:latest"
           echo ""
           echo "The package is private by default. Make it public once, at"
           echo "  https://github.com/orgs/AXStronltd/packages"
@@ -109,6 +122,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase the image reference
+        id: img
+        run: |
+          echo "ref=${REGISTRY}/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+
       - name: Start the image exactly as Render will
         run: |
           docker run -d --name paltas \
@@ -116,7 +136,7 @@ jobs:
             -e DATABASE_URL="postgresql://paltas:paltas@localhost:5432/paltas" \
             -e PORT=10000 \
             -e SEED_PASSWORD=ci-only-not-a-real-password \
-            ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest
+            ${{ steps.img.outputs.ref }}:latest
 
           # The container migrates on boot, so allow for that before polling.
           for i in $(seq 1 90); do
