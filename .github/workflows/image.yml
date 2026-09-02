@@ -65,6 +65,9 @@ jobs:
         with:
           context: .
           push: true
+          # Plain output so a failure shows the failing RUN and its stderr in
+          # the job log, instead of a collapsed progress display.
+          no-cache-filters: builder
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # Layer cache in the registry, so unchanged dependencies are not
