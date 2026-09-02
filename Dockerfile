@@ -60,6 +60,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 # copying a symlink without its target is how the entrypoint ends up "not
 # found". The CMD invokes the CLI's entry file directly for the same reason.
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+# The seed reads the system role definitions from src/. Without this the
+# first-boot seed dies on a missing file and the site comes up with no accounts
+# anyone can sign in with — which looks like a successful deploy.
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/security/system-roles.json ./src/lib/security/system-roles.json
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
@@ -69,6 +73,9 @@ EXPOSE 10000
 ENV PORT=10000
 ENV HOSTNAME=0.0.0.0
 
-# Apply pending migrations, then serve. `migrate deploy` is idempotent, so this
-# is safe on every boot.
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node server.js"]
+# Migrate, seed an empty database, then serve.
+#
+# `migrate deploy` is idempotent. `first-boot.mjs` counts users and does nothing
+# unless there are none, so it cannot overwrite real data however often it runs
+# — and it never blocks the boot if it fails.
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node prisma/first-boot.mjs; node server.js"]

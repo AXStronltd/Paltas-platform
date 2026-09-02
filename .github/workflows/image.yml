@@ -80,9 +80,15 @@ jobs:
           echo "Published:"
           echo "  ${{ steps.img.outputs.ref }}:latest"
           echo ""
-          echo "The package is private by default. Make it public once, at"
-          echo "  https://github.com/orgs/AXStronltd/packages"
-          echo "or give Render a read token, otherwise the pull will 403."
+          echo "This image is a byproduct: render.yaml uses runtime: docker and"
+          echo "builds from source, so Render never pulls it. It exists to prove"
+          echo "the Dockerfile produces something that boots, migrates and serves."
+          echo ""
+          echo "If you ever switch Render to pull the image instead, the package"
+          echo "is private by default. AXStronltd is a user account, not an"
+          echo "organisation, so the visibility toggle is under"
+          echo "  https://github.com/users/AXStronltd/packages"
+          echo "not /orgs/ — that URL 404s."
 
   # Prove the published image actually runs before Render is asked to run it.
   #
@@ -209,6 +215,8 @@ jobs:
           node tests/commerce.e2e.mjs
           node tests/finance.e2e.mjs
           node tests/publishing.e2e.mjs
+          node tests/booking.e2e.mjs
+          node tests/external.e2e.mjs
 
       - name: Container logs on failure
         if: failure()

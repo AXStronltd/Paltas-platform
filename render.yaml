@@ -38,10 +38,10 @@ services:
     # no package to make public and no pull credential to configure — the two
     # things that blocked every previous attempt.
     #
-    # The same Dockerfile is built and fully exercised in CI on every push
-    # (.github/workflows/image.yml runs the container against a real Postgres
-    # and passes all five e2e suites against it), so what Render builds here is
-    # an artifact already proven to start, migrate and serve.
+    # The same Dockerfile is built and fully exercised in CI on every push:
+    # .github/workflows/image.yml runs the container against a real Postgres and
+    # puts all seven end-to-end suites through it. So what Render builds here is
+    # an artifact already proven to start, migrate, seed and serve.
     #
     # The build is heavy — around 650 MB locally. Render's build machines are
     # provisioned separately from the instance, so the 512 MB instance limit
@@ -75,7 +75,13 @@ services:
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
 
-      # Password for the seeded demo accounts. Set it, or seeding uses a default
-      # that is fine locally and not fine on a public host.
+      # Password for the seeded demo accounts. Set it: the fallback is a
+      # published default, and these accounts can sign in.
+      #
+      # On an empty database the container seeds demo data on first boot, so the
+      # site is usable the moment it is live rather than an empty marketplace
+      # nobody can sign into. The seed is guarded — it counts users first and
+      # does nothing if there are any — so it cannot overwrite real data.
+      # Set SKIP_FIRST_BOOT_SEED=true to start genuinely empty instead.
       - key: SEED_PASSWORD
         sync: false
