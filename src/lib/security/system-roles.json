@@ -39,7 +39,15 @@
       "listing.view",
       "listing.create",
       "listing.update",
-      "listing.unpublish"
+      "listing.unpublish",
+      "booking.view",
+      "booking.confirm",
+      "booking.cancel",
+      "booking.checkin",
+      "roomtype.view",
+      "roomtype.manage",
+      "availability.manage",
+      "review.reply"
     ]
   },
   {
@@ -64,7 +72,9 @@
       "report.view",
       "staff.view",
       "visitor.blacklist",
-      "card.revoke"
+      "card.revoke",
+      "booking.view",
+      "booking.checkin"
     ]
   },
   {
@@ -90,7 +100,9 @@
       "security.emergency.view",
       "shift.view",
       "unit.view",
-      "resident.view"
+      "resident.view",
+      "booking.view",
+      "booking.checkin"
     ]
   },
   {
@@ -141,7 +153,8 @@
       "finance.charge.waive",
       "payroll.approve",
       "payment.settlement.view",
-      "listing.view"
+      "listing.view",
+      "booking.view"
     ]
   },
   {

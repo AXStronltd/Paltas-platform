@@ -153,6 +153,22 @@ export const PERMISSIONS = {
   /** Platform-side approval of what appears on the marketplace. */
   LISTING_REVIEW: "listing.review",
 
+  // -- Bookings and inventory -----------------------------------------------
+  BOOKING_VIEW: "booking.view",
+  /** Accepting a requested stay. */
+  BOOKING_CONFIRM: "booking.confirm",
+  /** Cancelling someone else's booking — the host side, not the guest's own. */
+  BOOKING_CANCEL: "booking.cancel",
+  /** Front-desk arrival and departure. */
+  BOOKING_CHECKIN: "booking.checkin",
+  /** Rooms, rates and how many of each exist. */
+  ROOMTYPE_VIEW: "roomtype.view",
+  ROOMTYPE_MANAGE: "roomtype.manage",
+  /** Withholding dates from sale — maintenance, an owner stay, a closed season. */
+  AVAILABILITY_MANAGE: "availability.manage",
+  /** Answering a guest review in public. */
+  REVIEW_REPLY: "review.reply",
+
   // -- Payments -------------------------------------------------------------
   PAYMENT_INTENT_CREATE: "payment.intent.create",
   PAYMENT_SETTLEMENT_VIEW: "payment.settlement.view",
@@ -375,6 +391,20 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: P.LISTING_PUBLISH, label: "Publish listings", hint: "Make a listing visible to the public.", sensitive: true },
       { key: P.LISTING_UNPUBLISH, label: "Unpublish listings", hint: "Take a listing down." },
       { key: P.LISTING_REVIEW, label: "Review listings", hint: "Approve or reject what appears on the marketplace.", sensitive: true },
+    ],
+  },
+  {
+    key: "bookings",
+    label: "Bookings & inventory",
+    permissions: [
+      { key: P.BOOKING_VIEW, label: "View bookings", hint: "Who is arriving, when, and what they paid." },
+      { key: P.BOOKING_CONFIRM, label: "Confirm bookings", hint: "Accept a requested stay.", sensitive: true },
+      { key: P.BOOKING_CANCEL, label: "Cancel bookings", hint: "Cancel a guest's booking on their behalf.", sensitive: true },
+      { key: P.BOOKING_CHECKIN, label: "Check guests in and out", hint: "Front-desk arrival and departure." },
+      { key: P.ROOMTYPE_VIEW, label: "View room types", hint: "Rooms, rates and inventory counts." },
+      { key: P.ROOMTYPE_MANAGE, label: "Manage room types", hint: "Add rooms, set nightly rates and how many exist.", sensitive: true },
+      { key: P.AVAILABILITY_MANAGE, label: "Manage availability", hint: "Withhold dates from sale.", sensitive: true },
+      { key: P.REVIEW_REPLY, label: "Reply to reviews", hint: "Answer a guest review in public." },
     ],
   },
   {

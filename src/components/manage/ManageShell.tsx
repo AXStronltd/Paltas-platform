@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "@/components/security/SessionProvider";
-import { signIn } from "@/lib/services/managementService";
+import { SignIn } from "@/components/security/SignIn";
 import { PERMISSIONS } from "@/lib/security/permissions";
 
 /**
@@ -98,55 +98,6 @@ export function ManageShell({ children }: { children: React.ReactNode }) {
         <Link href="/" className="manage-exit">← Back to PALTAS</Link>
       </aside>
       <main className="manage-body">{children}</main>
-    </div>
-  );
-}
-
-function SignIn() {
-  const { refresh } = useSession();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    setError(null);
-    const res = await signIn(email.trim(), password);
-    setBusy(false);
-    if (res.error) {
-      setError(res.error.message);
-      return;
-    }
-    await refresh();
-  }
-
-  return (
-    <div className="signin-wrap">
-      <form className="signin" onSubmit={submit}>
-        <div className="manage-brand center">
-          <b>PALTAS</b>
-          <small>MANAGEMENT</small>
-        </div>
-        <h1>Sign in</h1>
-        <p>Property owners and staff. What you see next depends on the permissions assigned to your account.</p>
-
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" placeholder="you@paltas.co.ke" />
-        </label>
-        <label>
-          Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
-        </label>
-
-        {error && <div className="signin-error">{error}</div>}
-
-        <button type="submit" disabled={busy} className="signin-submit">
-          {busy ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
     </div>
   );
 }

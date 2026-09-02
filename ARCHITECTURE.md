@@ -40,22 +40,23 @@ stops it.
 
 ```
                     ┌─────────────────────────────────────────┐
-  browser           │  src/components/     47 client parts    │
-                    │  src/app/*/page.tsx  21 pages           │
+  browser           │  src/components/     51 client parts    │
+                    │  src/app/*/page.tsx  19 pages           │
                     └──────────────────┬──────────────────────┘
                                        │  fetch, cookie session
                     ┌──────────────────▼──────────────────────┐
-  HTTP boundary     │  src/app/api/        101 handlers       │
+  HTTP boundary     │  src/app/api/        122 handlers       │
                     │  every one authorises before it acts    │
                     └──────────────────┬──────────────────────┘
                                        │
                     ┌──────────────────▼──────────────────────┐
-  server only       │  src/server/         11 modules         │
+  server only       │  src/server/         13 modules         │
                     │  db · session · scope · audit · stripe  │
+                    │  guest · booking                        │
                     └──────────────────┬──────────────────────┘
                                        │
                     ┌──────────────────▼──────────────────────┐
-  data              │  prisma/schema.prisma   40+ models      │
+  data              │  prisma/schema.prisma   46 models       │
                     └─────────────────────────────────────────┘
 
   src/lib/  — isomorphic. Pure logic and types, safe on both sides:
@@ -129,11 +130,68 @@ Two endpoints are unauthenticated on purpose, and both are **separate queries
 rather than filtered views** of the private ones:
 
 - `/api/public/listings` — PUBLISHED listings only
+- `/api/public/listings/[id]` — one PUBLISHED listing, with its room types
+- `/api/public/listings/[id]/quote` — what a stay would cost, and whether it is free
 - `/api/public/offers` — LIVE campaigns only
 
 Built as their own projections so a new private field cannot leak by default.
-Neither returns a tenant identifier, an internal id, a draft, or a redemption
-count.
+None returns a tenant identifier, an internal id, a draft, or a redemption count.
+Reviews carry a first name only — someone reviewing a hotel is not consenting to
+have their full name indexed next to the dates they were there.
+
+The quote endpoint writes nothing and holds nothing. Its answer is explicitly
+`provisional: true`, because between quoting and booking someone else may take
+the last room. `POST /api/bookings` re-checks under a transaction, and that
+check is the one that decides.
+
+## Two authority systems
+
+Staff and guests are authenticated separately, by different tables, cookies and
+code paths.
+
+| | Staff | Guest |
+| --- | --- | --- |
+| Table | `User` / `Session` | `Guest` / `GuestSession` |
+| Cookie | `paltas_session` | `paltas_guest` |
+| Entry point | `guard()` / `guardList()` | `requireGuest()` |
+| Authority | permissions, scoped to properties | ownership of their own rows |
+| Recorded in | `AuditLog` | `BookingEvent` |
+
+A guest holds no permissions at all. The separation is the point: a leaked guest
+cookie must be worth nothing on the staff side, and the e2e suite asserts in
+both directions that neither session satisfies the other's check.
+
+`npm run audit:routes` knows about both, so a guest route that forgets
+`requireGuest()` fails the audit rather than hiding among exemptions.
+
+## Bookings
+
+Two hazards shape `src/server/booking.ts`:
+
+**The race.** Two guests requesting the last room at the same moment will both
+read "1 available" if the check and the write are separate steps. The re-check
+therefore happens *inside* a `Serializable` transaction, so Postgres aborts one
+of the pair rather than letting both commit.
+
+**The retry.** A guest on a bad connection taps *Book* twice. `idempotencyKey`
+is unique in the database, so the second attempt returns the first booking
+instead of creating a second one — enforced by the schema rather than by a prior
+lookup, because a lookup is itself racy. A replayed request answers `200`, not
+`201`, and says `reused: true`.
+
+Prices are never taken from the client. The rate comes from the room type or the
+listing and the total is recomputed server-side, so a tampered payload buys
+nothing.
+
+The arithmetic lives apart from all of it, in `src/lib/booking/availability.ts`:
+pure, dependency-free, and tested without a database. It fixes one convention —
+**a stay occupies `[checkIn, checkOut)`**, so check-out day is free and
+back-to-back stays never collide — and measures **peak** occupancy across a
+range rather than the sum, because five consecutive one-night bookings occupy
+one room at a time, not five.
+
+`/api/host/calendar` uses that same engine, so the host's availability grid
+cannot disagree with what the booking endpoint will actually sell.
 
 ## Payments
 
@@ -229,23 +287,25 @@ by the rules the language actually uses rather than anything hand-rolled.
 
 ```
 npm run verify        typecheck + engine tests + both structural audits
-npm run test:all      everything, 318 checks across six suites
+npm run test:all      everything, 425 checks across seven suites
 ```
 
 | Suite | Checks | Needs a database |
 | --- | --- | --- |
-| `test:auth` | 80 | no — pure engine, pricing, loyalty, Stripe signatures |
+| `test:auth` | 99 | no — pure engine, availability, pricing, loyalty, Stripe |
 | `test:e2e` | 100 | yes — permissions over real HTTP |
 | `test:platform` | 17 | yes — cross-organisation isolation |
 | `test:commerce` | 38 | yes — pricing, groups, shopfront |
 | `test:finance` | 50 | yes — fee schedule, payroll, rewards |
-| `test:publishing` | 33 | yes — listings, Stripe, Connect |
+| `test:publishing` | 36 | yes — listings, Stripe, Connect |
+| `test:booking` | 85 | yes — guests, bookings, overbooking, hotel desk |
 
 Two structural invariants are machine-checked rather than trusted:
 
 ```
 npm run audit:routes    ✓ Every handler authorises before acting
                         ✓ Every mutating handler leaves a record
+                        ✓ Staff and guest authority stay separate
 npm run audit:layers    ✓ The frontend/backend boundary holds
 ```
 

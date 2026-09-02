@@ -52,6 +52,13 @@ async function main() {
     console.log(`  removed ${stale.length} previous demo organisation(s)`);
   }
 
+  // Guests belong to no organisation — that is the point of them, a guest books
+  // across tenants — so the cascade above does not reach them. Demo guests are
+  // cleared by address instead. Real guest accounts are never touched.
+  const DEMO_GUESTS = ["guest@example.com", "other.guest@example.com"];
+  const staleGuests = await prisma.guest.deleteMany({ where: { email: { in: DEMO_GUESTS } } });
+  if (staleGuests.count) console.log(`  removed ${staleGuests.count} previous demo guest(s)`);
+
   const org = await prisma.organization.create({
     data: { name: "Paltas Properties", country: "KE", currency: "KES" },
   });
@@ -782,6 +789,81 @@ async function main() {
       publishedAt: days(-9), publishedById: owner.id, createdById: manager.id,
     },
   });
+  // A hotel, so the booking engine has real inventory to sell. Whole-property
+  // stays sell once; a room type sells the same room many times over, and those
+  // are the two cases the availability rules have to tell apart.
+  const nyaliListing = await prisma.propertyListing.create({
+    data: {
+      orgId: org.id, propertyId: nyali.id,
+      title: "Nyali Court Hotel — rooms and suites",
+      summary: "Sea-facing rooms a short walk from Nyali beach.",
+      description:
+        "Nyali Court is a small hotel of twenty-eight rooms set back from the beach road, "
+        + "with a pool, secure parking and breakfast included in every rate. Rooms face "
+        + "either the garden or the sea; the suites have their own balconies.",
+      kind: "STAY", status: "PUBLISHED", price: 9500, currency: "KES",
+      maxGuests: 2, bedrooms: 1, bathrooms: 1,
+      amenities: ["wifi", "pool", "breakfast", "parking", "air conditioning"],
+      images: ["/paltas-logo.png"],
+      city: "Mombasa", location: "Nyali Road",
+      hostName: "Hassan Omar", hostKind: "Hotel",
+      publishedAt: days(-20), publishedById: owner.id, createdById: manager.id,
+    },
+  });
+
+  const gardenRoom = await prisma.hotelRoomType.create({
+    data: {
+      propertyId: nyali.id, listingId: nyaliListing.id,
+      name: "Garden double", description: "A double room facing the courtyard garden.",
+      rate: 9500, currency: "KES", totalRooms: 12, maxGuests: 2,
+      beds: "1 double", amenities: ["wifi", "breakfast", "air conditioning"],
+    },
+  });
+  await prisma.hotelRoomType.create({
+    data: {
+      propertyId: nyali.id, listingId: nyaliListing.id,
+      name: "Sea-view suite", description: "A suite with a private balcony over the water.",
+      rate: 18000, currency: "KES", totalRooms: 4, maxGuests: 4,
+      beds: "1 king, 1 sofa bed", amenities: ["wifi", "breakfast", "air conditioning", "balcony", "sea view"],
+    },
+  });
+
+  // The pool is resurfaced every year once the long rains end.
+  await prisma.availabilityBlock.create({
+    data: {
+      propertyId: nyali.id, listingId: nyaliListing.id,
+      from: days(120), to: days(127),
+      reason: "Pool resurfacing — hotel closed", createdById: manager.id,
+    },
+  });
+
+  const demoGuest = await prisma.guest.create({
+    data: {
+      email: "guest@example.com", name: "Fatuma Njeri",
+      passwordHash: await hashPassword(DEMO_PASSWORD), phone: "+254 722 000 111",
+      country: "KE", locale: "en",
+    },
+  });
+
+  await prisma.booking.create({
+    data: {
+      reference: "PLT-SEED-0001",
+      guestId: demoGuest.id, listingId: nyaliListing.id, propertyId: nyali.id,
+      roomTypeId: gardenRoom.id,
+      checkIn: days(14), checkOut: days(17), guests: 2, rooms: 1,
+      nightlyRate: 9500, nights: 3, subtotal: 28500,
+      serviceFee: 2280, taxes: 1539, total: 32319, currency: "KES",
+      status: "CONFIRMED", idempotencyKey: "seed-booking-0001",
+      confirmedAt: days(-1),
+      events: {
+        create: [
+          { status: "PENDING", note: "Booking requested, awaiting payment.", actor: "guest", actorId: demoGuest.id },
+          { status: "CONFIRMED", note: "Payment received.", actor: "system" },
+        ],
+      },
+    },
+  });
+
   await prisma.propertyListing.create({
     data: {
       orgId: tenant2.id, propertyId: coastal.id,

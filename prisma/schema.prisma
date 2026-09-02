@@ -43,10 +43,10 @@ enum UserStatus {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  country   String   @default("KE")
-  currency  String   @default("KES")
+  id         String  @id @default(cuid())
+  name       String
+  country    String  @default("KE")
+  currency   String  @default("KES")
   /// True for the single organisation that holds Paltas's own staff. It owns no
   /// properties and is excluded from every tenant-facing listing.
   isPlatform Boolean @default(false)
@@ -56,25 +56,25 @@ model Organization {
   /// payments for their properties route to them with PALTAS taking an
   /// application fee, rather than landing in one pooled balance that then has to
   /// be reconciled and paid out by hand.
-  stripeAccountId       String?  @unique
-  stripeOnboarded       Boolean  @default(false)
+  stripeAccountId        String?  @unique
+  stripeOnboarded        Boolean  @default(false)
   /// Basis points PALTAS retains on payments to this account (250 = 2.5%).
-  platformFeeBasisPoints Int     @default(0)
-  createdAt DateTime @default(now())
+  platformFeeBasisPoints Int      @default(0)
+  createdAt              DateTime @default(now())
 
-  users      User[]
-  roles      Role[]
-  properties Property[]
-  auditLogs  AuditLog[]
-  campaigns  Campaign[]
-  discounts  Discount[]
-  groups     GroupBooking[]
-  loyalty    LoyaltyMember[]
-  listings   PropertyListing[]
+  users         User[]
+  roles         Role[]
+  properties    Property[]
+  auditLogs     AuditLog[]
+  campaigns     Campaign[]
+  discounts     Discount[]
+  groups        GroupBooking[]
+  loyalty       LoyaltyMember[]
+  listings      PropertyListing[]
   feeCategories FeeCategory[]
-  charges    Charge[]
-  salaries   SalaryProfile[]
-  payRuns    PayRun[]
+  charges       Charge[]
+  salaries      SalaryProfile[]
+  payRuns       PayRun[]
 }
 
 /// Every human the system authenticates: the owner, staff, guards and the
@@ -87,14 +87,14 @@ model Organization {
 /// thing in the system that does, which is why it is a column too — nothing a
 /// tenant can edit should be able to produce it.
 model User {
-  id              String  @id @default(cuid())
+  id              String     @id @default(cuid())
   orgId           String
-  email           String  @unique
+  email           String     @unique
   name            String
   phone           String?
   passwordHash    String
-  isOwner         Boolean @default(false)
-  isPlatformAdmin Boolean @default(false)
+  isOwner         Boolean    @default(false)
+  isPlatformAdmin Boolean    @default(false)
   status          UserStatus @default(ACTIVE)
   title           String?
   createdAt       DateTime   @default(now())
@@ -161,12 +161,12 @@ model RolePermission {
 /// A Security Manager assigned at PROPERTY scope for Property A has no reach
 /// into Property B, and nothing in the API needs to remember that specially.
 model RoleAssignment {
-  id         String    @id @default(cuid())
-  userId     String
-  roleId     String
-  scopeType  ScopeType
-  scopeId    String
-  createdAt  DateTime  @default(now())
+  id          String    @id @default(cuid())
+  userId      String
+  roleId      String
+  scopeType   ScopeType
+  scopeId     String
+  createdAt   DateTime  @default(now())
   grantedById String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -218,32 +218,35 @@ model Property {
   kind      String   @default("residential")
   createdAt DateTime @default(now())
 
-  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  buildings  Building[]
-  units      Unit[]
-  residents  Resident[]
-  visitors   Visitor[]
-  invitations VisitorInvitation[]
-  visits     VisitorVisit[]
-  cards      AccessCard[]
-  vehicles   Vehicle[]
-  gates      Gate[]
-  guards     Guard[]
-  shifts     GuardShift[]
-  incidents  SecurityIncident[]
-  alerts     EmergencyAlert[]
-  accessEvents AccessEvent[]
-  maintenance MaintenanceRequest[]
-  payments   Payment[]
-  expenses   Expense[]
-  campaigns  Campaign[]
-  discounts  Discount[]
-  groups     GroupBooking[]
+  org           Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  buildings     Building[]
+  units         Unit[]
+  residents     Resident[]
+  visitors      Visitor[]
+  invitations   VisitorInvitation[]
+  visits        VisitorVisit[]
+  cards         AccessCard[]
+  vehicles      Vehicle[]
+  gates         Gate[]
+  guards        Guard[]
+  shifts        GuardShift[]
+  incidents     SecurityIncident[]
+  alerts        EmergencyAlert[]
+  accessEvents  AccessEvent[]
+  maintenance   MaintenanceRequest[]
+  payments      Payment[]
+  expenses      Expense[]
+  campaigns     Campaign[]
+  discounts     Discount[]
+  groups        GroupBooking[]
   feeCategories FeeCategory[]
-  charges    Charge[]
-  salaries   SalaryProfile[]
-  payRuns    PayRun[]
-  listings   PropertyListing[]
+  charges       Charge[]
+  salaries      SalaryProfile[]
+  payRuns       PayRun[]
+  listings      PropertyListing[]
+  bookings      Booking[]
+  roomTypes     HotelRoomType[]
+  blocks        AvailabilityBlock[]
 
   @@index([orgId])
 }
@@ -255,9 +258,9 @@ model Building {
   floors     Int      @default(1)
   createdAt  DateTime @default(now())
 
-  property  Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  units     Unit[]
-  incidents SecurityIncident[]
+  property    Property             @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  units       Unit[]
+  incidents   SecurityIncident[]
   maintenance MaintenanceRequest[]
 
   @@index([propertyId])
@@ -278,19 +281,20 @@ model Unit {
   status     UnitStatus @default(VACANT)
   createdAt  DateTime   @default(now())
 
-  building    Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  residents   Resident[]
-  invitations VisitorInvitation[]
-  visits      VisitorVisit[]
-  cards       AccessCard[]
-  vehicles    Vehicle[]
-  incidents   SecurityIncident[]
+  building     Building             @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  property     Property             @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  residents    Resident[]
+  invitations  VisitorInvitation[]
+  visits       VisitorVisit[]
+  cards        AccessCard[]
+  vehicles     Vehicle[]
+  incidents    SecurityIncident[]
   accessEvents AccessEvent[]
-  maintenance MaintenanceRequest[]
-  payments    Payment[]
-  charges     Charge[]
-  listings    PropertyListing[]
+  maintenance  MaintenanceRequest[]
+  payments     Payment[]
+  charges      Charge[]
+  listings     PropertyListing[]
+  bookings     Booking[]
 
   @@index([propertyId])
   @@index([buildingId])
@@ -317,9 +321,9 @@ model Resident {
   leaseEnd   DateTime?
   active     Boolean      @default(true)
 
-  unit        Unit                @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user        User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  unit        Unit                 @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  property    Property             @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user        User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   invitations VisitorInvitation[]
   cards       AccessCard[]
   vehicles    Vehicle[]
@@ -364,18 +368,18 @@ enum VisitStatus {
 /// weekly — has one identity and one searchable history rather than one row per
 /// arrival.
 model Visitor {
-  id         String      @id @default(cuid())
-  propertyId String
-  fullName   String
-  phone      String?
-  idType     String?
-  idNumber   String?
-  type       VisitorType @default(FAMILY_FRIEND)
-  company    String?
-  photoUrl   String?
-  blacklisted Boolean    @default(false)
+  id              String      @id @default(cuid())
+  propertyId      String
+  fullName        String
+  phone           String?
+  idType          String?
+  idNumber        String?
+  type            VisitorType @default(FAMILY_FRIEND)
+  company         String?
+  photoUrl        String?
+  blacklisted     Boolean     @default(false)
   blacklistReason String?
-  createdAt  DateTime    @default(now())
+  createdAt       DateTime    @default(now())
 
   property    Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   invitations VisitorInvitation[]
@@ -393,36 +397,36 @@ model Visitor {
 /// Recurring passes carry `maxUses` and count down, so a contractor's week-long
 /// pass expires on its own rather than living forever.
 model VisitorInvitation {
-  id            String           @id @default(cuid())
-  propertyId    String
-  unitId        String
-  residentId    String?
-  visitorId     String?
-  visitorName   String
-  visitorPhone  String?
-  visitorType   VisitorType      @default(FAMILY_FRIEND)
-  purpose       String?
-  validFrom     DateTime
-  validTo       DateTime
-  recurring     Boolean          @default(false)
+  id             String           @id @default(cuid())
+  propertyId     String
+  unitId         String
+  residentId     String?
+  visitorId      String?
+  visitorName    String
+  visitorPhone   String?
+  visitorType    VisitorType      @default(FAMILY_FRIEND)
+  purpose        String?
+  validFrom      DateTime
+  validTo        DateTime
+  recurring      Boolean          @default(false)
   recurrenceRule String?
-  maxUses       Int              @default(1)
-  useCount      Int              @default(0)
-  passCode      String           @unique
-  qrToken       String           @unique
-  vehiclePlate  String?
-  status        InvitationStatus @default(PENDING)
-  createdById   String?
-  approvedById  String?
-  approvedAt    DateTime?
+  maxUses        Int              @default(1)
+  useCount       Int              @default(0)
+  passCode       String           @unique
+  qrToken        String           @unique
+  vehiclePlate   String?
+  status         InvitationStatus @default(PENDING)
+  createdById    String?
+  approvedById   String?
+  approvedAt     DateTime?
   rejectedReason String?
-  createdAt     DateTime         @default(now())
+  createdAt      DateTime         @default(now())
 
-  property Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit     Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  resident Resident?      @relation(fields: [residentId], references: [id], onDelete: SetNull)
-  visitor  Visitor?       @relation(fields: [visitorId], references: [id], onDelete: SetNull)
-  visits   VisitorVisit[]
+  property     Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit         Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  resident     Resident?      @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  visitor      Visitor?       @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  visits       VisitorVisit[]
   accessEvents AccessEvent[]
 
   @@index([propertyId, status])
@@ -493,9 +497,9 @@ model AccessCard {
   suspendedById String?
   suspendReason String?
 
-  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  property     Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit         Unit?         @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident     Resident?     @relation(fields: [residentId], references: [id], onDelete: SetNull)
   accessEvents AccessEvent[]
 
   @@index([propertyId, status])
@@ -524,11 +528,11 @@ model Vehicle {
   active     Boolean     @default(true)
   createdAt  DateTime    @default(now())
 
-  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit     Unit?     @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  resident Resident? @relation(fields: [residentId], references: [id], onDelete: SetNull)
-  visitor  Visitor?  @relation(fields: [visitorId], references: [id], onDelete: SetNull)
-  incidents SecurityIncident[]
+  property     Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit         Unit?              @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  resident     Resident?          @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  visitor      Visitor?           @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  incidents    SecurityIncident[]
   accessEvents AccessEvent[]
 
   @@unique([propertyId, plate])
@@ -549,9 +553,9 @@ model Gate {
   kind       GateKind @default(MAIN)
   isActive   Boolean  @default(true)
 
-  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  shifts   GuardShift[]
-  visits   VisitorVisit[]
+  property     Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  shifts       GuardShift[]
+  visits       VisitorVisit[]
   accessEvents AccessEvent[]
 
   @@index([propertyId])
@@ -614,26 +618,26 @@ enum IncidentStatus {
 }
 
 model SecurityIncident {
-  id          String           @id @default(cuid())
-  propertyId  String
-  buildingId  String?
-  unitId      String?
-  reference   String           @unique
-  category    String
-  severity    IncidentSeverity @default(MEDIUM)
-  title       String
-  description String
-  location    String?
-  occurredAt  DateTime         @default(now())
-  reportedById String?
-  reportedByName String?
-  status      IncidentStatus   @default(OPEN)
-  visitorId   String?
-  vehicleId   String?
-  resolvedAt  DateTime?
-  resolvedById String?
+  id              String           @id @default(cuid())
+  propertyId      String
+  buildingId      String?
+  unitId          String?
+  reference       String           @unique
+  category        String
+  severity        IncidentSeverity @default(MEDIUM)
+  title           String
+  description     String
+  location        String?
+  occurredAt      DateTime         @default(now())
+  reportedById    String?
+  reportedByName  String?
+  status          IncidentStatus   @default(OPEN)
+  visitorId       String?
+  vehicleId       String?
+  resolvedAt      DateTime?
+  resolvedById    String?
   resolutionNotes String?
-  createdAt   DateTime         @default(now())
+  createdAt       DateTime         @default(now())
 
   property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   building Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
@@ -758,6 +762,8 @@ model MaintenanceRequest {
   raisedByName String?
   createdAt    DateTime            @default(now())
   resolvedAt   DateTime?
+  /// What was actually done. Without it the same fault gets raised three times.
+  resolutionNote String?
 
   property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   building Building? @relation(fields: [buildingId], references: [id], onDelete: SetNull)
@@ -944,9 +950,9 @@ model Discount {
   createdById     String?
   createdAt       DateTime @default(now())
 
-  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  property Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  campaign Campaign?    @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  org      Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  campaign Campaign?      @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   groups   GroupBooking[]
 
   @@index([orgId, active])
@@ -1059,13 +1065,13 @@ enum LoyaltyEntryKind {
 }
 
 model LoyaltyMember {
-  id        String   @id @default(cuid())
-  orgId     String
-  email     String
-  name      String
-  phone     String?
-  joinedAt  DateTime @default(now())
-  active    Boolean  @default(true)
+  id       String   @id @default(cuid())
+  orgId    String
+  email    String
+  name     String
+  phone    String?
+  joinedAt DateTime @default(now())
+  active   Boolean  @default(true)
 
   org     Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
   entries LoyaltyEntry[]
@@ -1075,17 +1081,17 @@ model LoyaltyMember {
 }
 
 model LoyaltyEntry {
-  id       String           @id @default(cuid())
-  memberId String
-  kind     LoyaltyEntryKind
+  id              String           @id @default(cuid())
+  memberId        String
+  kind            LoyaltyEntryKind
   /// Signed: positive earns and adjustments up, negative redemptions and expiry.
-  points   Int
+  points          Int
   /// Spend that produced an EARN, in minor units. Drives rolling tier status.
   qualifyingSpend Int?
-  reason      String
-  reference   String?
-  at          DateTime @default(now())
-  createdById String?
+  reason          String
+  reference       String?
+  at              DateTime         @default(now())
+  createdById     String?
 
   member LoyaltyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
@@ -1151,22 +1157,22 @@ enum ChargeStatus {
 
 /// One amount owed by one unit or resident, under one category.
 model Charge {
-  id          String       @id @default(cuid())
-  orgId       String
-  propertyId  String
-  unitId      String?
-  residentId  String?
-  categoryId  String
-  reference   String       @unique
-  description String?
-  amount      Int
-  currency    String       @default("KES")
-  dueDate     DateTime
-  periodLabel String?
-  status      ChargeStatus @default(ISSUED)
+  id           String       @id @default(cuid())
+  orgId        String
+  propertyId   String
+  unitId       String?
+  residentId   String?
+  categoryId   String
+  reference    String       @unique
+  description  String?
+  amount       Int
+  currency     String       @default("KES")
+  dueDate      DateTime
+  periodLabel  String?
+  status       ChargeStatus @default(ISSUED)
   waivedReason String?
-  createdById String?
-  createdAt   DateTime     @default(now())
+  createdById  String?
+  createdAt    DateTime     @default(now())
 
   org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -1211,22 +1217,22 @@ model SalaryProfile {
 }
 
 model PayRun {
-  id           String       @id @default(cuid())
-  orgId        String
-  propertyId   String?
-  periodLabel  String
-  periodStart  DateTime
-  periodEnd    DateTime
-  status       PayRunStatus @default(DRAFT)
-  currency     String       @default("KES")
-  totalGross   Int          @default(0)
-  totalDeductions Int       @default(0)
-  totalNet     Int          @default(0)
-  createdById  String?
-  approvedById String?
-  approvedAt   DateTime?
-  paidAt       DateTime?
-  createdAt    DateTime     @default(now())
+  id              String       @id @default(cuid())
+  orgId           String
+  propertyId      String?
+  periodLabel     String
+  periodStart     DateTime
+  periodEnd       DateTime
+  status          PayRunStatus @default(DRAFT)
+  currency        String       @default("KES")
+  totalGross      Int          @default(0)
+  totalDeductions Int          @default(0)
+  totalNet        Int          @default(0)
+  createdById     String?
+  approvedById    String?
+  approvedAt      DateTime?
+  paidAt          DateTime?
+  createdAt       DateTime     @default(now())
 
   org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   property Property?    @relation(fields: [propertyId], references: [id], onDelete: SetNull)
@@ -1298,32 +1304,36 @@ model PropertyListing {
   status      ListingStatus @default(DRAFT)
 
   /// Minor units. Nightly for STAY, monthly for RENT, total for SALE.
-  price       Int
-  currency    String   @default("KES")
-  maxGuests   Int      @default(2)
-  bedrooms    Int      @default(1)
-  bathrooms   Int      @default(1)
-  amenities   String[] @default([])
-  images      String[] @default([])
-  city        String?
-  location    String?
+  price     Int
+  currency  String   @default("KES")
+  maxGuests Int      @default(2)
+  bedrooms  Int      @default(1)
+  bathrooms Int      @default(1)
+  amenities String[] @default([])
+  images    String[] @default([])
+  city      String?
+  location  String?
 
   /// Who is publicly answerable for the listing — landlord, agent or developer.
-  hostName    String
-  hostKind    String   @default("Landlord")
+  hostName String
+  hostKind String @default("Landlord")
 
-  submittedAt    DateTime?
-  publishedAt    DateTime?
-  publishedById  String?
-  reviewedById   String?
+  submittedAt     DateTime?
+  publishedAt     DateTime?
+  publishedById   String?
+  reviewedById    String?
   rejectionReason String?
-  createdById    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdById     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  org      Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit     Unit?        @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  org       Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property  Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit      Unit?               @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  bookings  Booking[]
+  roomTypes HotelRoomType[]
+  blocks    AvailabilityBlock[]
+  reviews   Review[]
 
   @@index([status, kind])
   @@index([orgId])
@@ -1370,4 +1380,201 @@ model PaymentIntentRecord {
 
   @@index([status])
   @@index([reference])
+}
+
+// ============================================================
+// MARKETPLACE — guests, bookings, hotel inventory
+//
+// A guest is a customer, not staff, and is deliberately a separate identity
+// from `User`. The staff permission model scopes every grant to a node of
+// Organization -> Property -> Building -> Unit; none of that means anything for
+// someone booking a flat for the weekend. Conflating the two would either give
+// guests a place in the staff tree they do not belong in, or bend the scoping
+// rules until they stop protecting anything.
+//
+// The two identities meet at a Booking: it names a Guest and a PropertyListing,
+// and the listing belongs to a property the staff side already governs.
+// ============================================================
+
+model Guest {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  phone        String?
+  passwordHash String
+  /// Preferred market and language, remembered between visits.
+  country      String?
+  locale       String?
+  createdAt    DateTime @default(now())
+  active       Boolean  @default(true)
+
+  sessions GuestSession[]
+  bookings Booking[]
+  reviews  Review[]
+
+  @@index([email])
+}
+
+model GuestSession {
+  id        String   @id @default(cuid())
+  guestId   String
+  /// SHA-256 of the cookie value, never the value itself.
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  ip        String?
+  userAgent String?
+
+  guest Guest @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@index([guestId])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+/// One stay, sale enquiry or tenancy application against a published listing.
+///
+/// Money is stored as the settled breakdown rather than recomputed on read: a
+/// host changing their nightly rate next week must not retroactively change what
+/// a guest was charged. Same reasoning as the group-booking discount.
+model Booking {
+  id         String  @id @default(cuid())
+  reference  String  @unique
+  guestId    String
+  listingId  String
+  propertyId String
+  unitId     String?
+  roomTypeId String?
+
+  checkIn  DateTime
+  checkOut DateTime
+  guests   Int      @default(1)
+  rooms    Int      @default(1)
+
+  /// Settled at booking time, in minor units.
+  nightlyRate    Int
+  nights         Int
+  subtotal       Int
+  cleaningFee    Int    @default(0)
+  serviceFee     Int    @default(0)
+  taxes          Int    @default(0)
+  discountAmount Int    @default(0)
+  total          Int
+  currency       String @default("KES")
+
+  status         BookingStatus @default(PENDING)
+  /// Set by the client so a retried request cannot double-book.
+  idempotencyKey String        @unique
+  guestNote      String?
+  cancelReason   String?
+  stripeIntentId String?
+  createdAt      DateTime      @default(now())
+  confirmedAt    DateTime?
+  cancelledAt    DateTime?
+
+  guest    Guest           @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  listing  PropertyListing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  property Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit     Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  roomType HotelRoomType?  @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+  events   BookingEvent[]
+  review   Review?
+
+  @@index([guestId, createdAt])
+  @@index([propertyId, status])
+  @@index([listingId, checkIn, checkOut])
+}
+
+/// Every state transition, with who caused it. A booking that changed state for
+/// no recorded reason is the thing support cannot answer questions about.
+model BookingEvent {
+  id        String        @id @default(cuid())
+  bookingId String
+  status    BookingStatus
+  note      String
+  /// "guest", "host", "system" — the staff audit log covers staff actions.
+  actor     String        @default("system")
+  actorId   String?
+  at        DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId, at])
+}
+
+/// A hotel's sellable room types, with inventory. Distinct from `Unit`, which is
+/// a specific physical address a resident lives at; a hotel sells "a Deluxe
+/// King", not room 412.
+model HotelRoomType {
+  id          String   @id @default(cuid())
+  propertyId  String
+  listingId   String?
+  name        String
+  description String?
+  /// Minor units, per night.
+  rate        Int
+  currency    String   @default("KES")
+  totalRooms  Int
+  maxGuests   Int      @default(2)
+  beds        String?
+  amenities   String[] @default([])
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  property Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  listing  PropertyListing?    @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  bookings Booking[]
+  blocks   AvailabilityBlock[]
+
+  @@index([propertyId, active])
+}
+
+/// Dates a listing or room type cannot be sold — maintenance, an owner stay, a
+/// closed season. Availability is derived from bookings *plus* these, so a host
+/// can withhold dates without inventing a fake booking.
+model AvailabilityBlock {
+  id          String   @id @default(cuid())
+  propertyId  String
+  listingId   String?
+  roomTypeId  String?
+  from        DateTime
+  to          DateTime
+  reason      String
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  property Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  listing  PropertyListing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  roomType HotelRoomType?   @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, from, to])
+}
+
+/// Left by a guest after a completed stay, and only then — a review system that
+/// accepts anything is a review system nobody believes.
+model Review {
+  id         String    @id @default(cuid())
+  bookingId  String    @unique
+  guestId    String
+  listingId  String
+  propertyId String
+  stars      Int
+  title      String?
+  body       String
+  hostReply  String?
+  repliedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  booking Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  guest   Guest           @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  listing PropertyListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, createdAt])
 }
