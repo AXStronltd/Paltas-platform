@@ -94,9 +94,14 @@ test("a visitor from a market we serve gets its language by default", () => {
   const lt = L.resolvePreferences({ country: "LT" });
   assert.equal(lt.locale, "lt");
 
-  // A country we do not serve falls back rather than guessing.
+  // Any country we can price resolves to itself. Falling back to the default
+  // here is what used to quote a German visitor in Kenyan shillings.
   const de = L.resolvePreferences({ country: "DE" });
-  assert.equal(de.market, L.DEFAULT_MARKET);
+  assert.equal(de.market, "DE");
+  assert.equal(L.marketOf("DE").currency, "EUR");
+
+  // Only something genuinely unpriceable falls back.
+  assert.equal(L.resolvePreferences({ country: "ZZ" }).market, L.DEFAULT_MARKET);
 });
 
 test("plurals use each language's own rules", () => {
@@ -216,4 +221,64 @@ test("each market formats its own currency distinctly", () => {
     seen.add(formatted);
   }
   assert.equal(seen.size, L.MARKETS.length, "two markets format money identically");
+});
+
+const C = require("../.test-build/lib/i18n/countries.js");
+
+test("the platform prices any country, not a supported list", () => {
+  // The failure this replaces: an unknown country fell back to Kenya, so a
+  // visitor from Lagos was quoted in Kenyan shillings.
+  assert.ok(C.COUNTRY_COUNT > 190, `only ${C.COUNTRY_COUNT} countries mapped`);
+  for (const cc of ["NG", "BR", "JP", "IN", "DE", "AU", "PK", "EG", "US", "CN"]) {
+    assert.equal(L.marketForCountry(cc), cc, `${cc} should resolve to itself`);
+    const m = L.marketOf(cc);
+    assert.equal(m.code, cc);
+    assert.match(m.currency, /^[A-Z]{3}$/, `${cc} needs a real currency`);
+    assert.ok(m.name.length > 1 && m.name !== cc, `${cc} should be named, got "${m.name}"`);
+  }
+});
+
+test("a derived market is honest about knowing nothing local", () => {
+  const ng = L.marketOf("NG");
+  assert.equal(ng.curated, false);
+  assert.equal(ng.currency, "NGN");
+  // Empty rather than invented: a made-up letting rule is worse than none.
+  assert.deepEqual(ng.popularCities, []);
+  assert.deepEqual(ng.paymentMethods, []);
+  assert.equal(ng.tenancyNote, "");
+});
+
+test("curated markets keep their local knowledge", () => {
+  for (const code of ["KE", "SE", "SA", "AE", "GB", "LT", "TZ", "UG"]) {
+    const m = L.marketOf(code);
+    assert.equal(m.curated, true, `${code} should be curated`);
+    assert.ok(m.popularCities.length >= 3, `${code} lost its cities`);
+    assert.ok(m.paymentMethods.length >= 2, `${code} lost its payment methods`);
+    assert.ok(m.tenancyNote.length > 30, `${code} lost its tenancy note`);
+  }
+});
+
+test("country names follow the reader's language", () => {
+  assert.equal(L.marketOf("JP", "en").name, "Japan");
+  assert.notEqual(L.marketOf("JP", "lt").name, "Japan", "should be localised");
+  assert.ok(L.marketOf("JP", "lt").name.length > 1);
+});
+
+test("every mapped currency actually formats", () => {
+  // A typo in the table would otherwise surface as a runtime crash on a page.
+  const bad = [];
+  for (const [cc, cur] of Object.entries(C.COUNTRY_CURRENCY)) {
+    try { new Intl.NumberFormat("en", { style: "currency", currency: cur }).format(1); }
+    catch { bad.push(`${cc}→${cur}`); }
+  }
+  assert.deepEqual(bad, [], "invalid currency codes");
+});
+
+test("a country we cannot price falls back rather than breaking", () => {
+  for (const junk of ["ZZ", "QQ", "", "X", "12", null, undefined]) {
+    assert.equal(L.marketForCountry(junk), null, `"${junk}" should not resolve`);
+  }
+  // And the resolver still returns something usable.
+  const r = L.resolvePreferences({ country: "ZZ" });
+  assert.equal(r.market, L.DEFAULT_MARKET);
 });

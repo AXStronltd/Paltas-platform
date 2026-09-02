@@ -5,6 +5,7 @@ import {
   DEFAULT_LOCALE, DEFAULT_MARKET, LOCALES, MARKETS,
   isLocale, isMarket, marketOf, type LocaleCode, type MarketCode,
 } from "@/lib/i18n/locales";
+import { COUNTRY_CURRENCY } from "@/lib/i18n/countries";
 import { createTranslator, type Translator } from "@/lib/i18n/translate";
 
 /**
@@ -22,6 +23,8 @@ interface LocaleState extends Translator {
   marketConfig: ReturnType<typeof marketOf>;
   locales: typeof LOCALES;
   markets: typeof MARKETS;
+  /** Every country the platform can price in, named in the reader's language. */
+  allCountries: { code: string; name: string; currency: string }[];
 }
 
 const LocaleContext = createContext<LocaleState | null>(null);
@@ -59,9 +62,20 @@ export function LocaleProvider({
     ...createTranslator(locale, market),
     setLocale,
     setMarket,
-    marketConfig: marketOf(market),
+    marketConfig: marketOf(market, locale),
     locales: LOCALES,
     markets: MARKETS,
+    allCountries: Object.entries(COUNTRY_CURRENCY)
+      .map(([code, currency]) => ({
+        code,
+        // Named in whatever language the reader has chosen.
+        name: (() => {
+          try { return new Intl.DisplayNames([locale], { type: "region" }).of(code) ?? code; }
+          catch { return code; }
+        })(),
+        currency,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, locale)),
   }), [locale, market, setLocale, setMarket]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;

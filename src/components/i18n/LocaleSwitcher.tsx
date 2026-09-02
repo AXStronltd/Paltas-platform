@@ -15,7 +15,7 @@ import type { LocaleCode, MarketCode } from "@/lib/i18n/locales";
  * someone looking for Lithuanian is scanning for "Lietuvių", not "Lithuanian".
  */
 export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
-  const { locale, market, marketConfig, locales, markets, setLocale, setMarket, t } = useI18n();
+  const { locale, market, marketConfig, locales, markets, allCountries, setLocale, setMarket, t } = useI18n();
   const [open, setOpen] = useState(false);
   const current = locales.find((l) => l.code === locale);
 
@@ -54,6 +54,7 @@ export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
 
             <div className="locale-group">
               <h4>{t("locale.market")}</h4>
+              {/* The places we know well, first. */}
               {markets.map((m) => (
                 <button
                   key={m.code}
@@ -64,6 +65,21 @@ export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
                   <small>{m.currency}</small>
                 </button>
               ))}
+
+              {/* Then everywhere else. A visitor from any country can price in
+                  their own currency, even where we hold no local detail. */}
+              <label className="locale-any">
+                <span>Any other country</span>
+                <select
+                  value={markets.some((m) => m.code === market) ? "" : market}
+                  onChange={(e) => e.target.value && setMarket(e.target.value as MarketCode)}
+                >
+                  <option value="">Choose…</option>
+                  {allCountries.map((c) => (
+                    <option key={c.code} value={c.code}>{c.name} · {c.currency}</option>
+                  ))}
+                </select>
+              </label>
             </div>
           </div>
         </>
@@ -77,26 +93,57 @@ export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
  * Shown on the home page so the platform reads as present in the country rather
  * than translated into it.
  */
+/**
+ * What differs in this market.
+ *
+ * Only the sections we actually have content for. A country we hold no local
+ * knowledge about still works — it prices in its own currency and formats to its
+ * own conventions — and this panel simply says so rather than rendering three
+ * empty headings, which would read as broken rather than as honest.
+ */
 export function MarketPanel() {
   const { marketConfig, t } = useI18n();
+  const { popularCities, paymentMethods, tenancyNote, curated, name, currency } = marketConfig;
+
+  if (!curated) {
+    return (
+      <section className="market-panel market-panel-plain">
+        <div className="market-note">
+          <h4>{name}</h4>
+          <p>
+            Prices are shown in {currency} and formatted for your region. We do not
+            yet carry local letting guidance for {name} — everything else works as
+            it does anywhere.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="market-panel">
-      <div>
-        <h4>{t("market.popularCities", { market: marketConfig.name })}</h4>
-        <div className="market-chips">
-          {marketConfig.popularCities.map((c) => <span key={c} className="market-chip">{c}</span>)}
+      {popularCities.length > 0 && (
+        <div>
+          <h4>{t("market.popularCities", { market: name })}</h4>
+          <div className="market-chips">
+            {popularCities.map((c) => <span key={c} className="market-chip">{c}</span>)}
+          </div>
         </div>
-      </div>
-      <div>
-        <h4>{t("market.paymentMethods")}</h4>
-        <div className="market-chips">
-          {marketConfig.paymentMethods.map((p) => <span key={p} className="market-chip">{p}</span>)}
+      )}
+      {paymentMethods.length > 0 && (
+        <div>
+          <h4>{t("market.paymentMethods")}</h4>
+          <div className="market-chips">
+            {paymentMethods.map((p) => <span key={p} className="market-chip">{p}</span>)}
+          </div>
         </div>
-      </div>
-      <div className="market-note">
-        <h4>{t("market.tenancyNote")}</h4>
-        <p>{marketConfig.tenancyNote}</p>
-      </div>
+      )}
+      {tenancyNote && (
+        <div className="market-note">
+          <h4>{t("market.tenancyNote")}</h4>
+          <p>{tenancyNote}</p>
+        </div>
+      )}
     </section>
   );
 }

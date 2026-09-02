@@ -1,3 +1,5 @@
+import { COUNTRY_LANGUAGE, currencyForCountry } from "./countries";
+
 /**
  * Locales and markets for paltas.io.
  *
@@ -14,7 +16,15 @@
  */
 
 export type LocaleCode = "en" | "sv" | "lt";
-export type MarketCode = "KE" | "SE" | "SA" | "AE" | "TZ" | "UG" | "GB" | "LT";
+/**
+ * Any ISO 3166-1 alpha-2 country code.
+ *
+ * Deliberately not a closed union. The platform is global: a visitor from
+ * anywhere gets their own currency and conventions, and a country we have never
+ * heard of is a normal case rather than an error. The curated list below adds
+ * local depth on top for the places we actually know something about.
+ */
+export type MarketCode = string;
 
 export interface Locale {
   code: LocaleCode;
@@ -38,6 +48,8 @@ export const DEFAULT_LOCALE: LocaleCode = "en";
 export interface Market {
   code: MarketCode;
   name: string;
+  /** True when this market carries hand-written local knowledge, not just Intl. */
+  curated: boolean;
   /** ISO 4217. Prices are held in each market's own currency, not converted. */
   currency: string;
   /** The locale a visitor from here gets unless they have chosen otherwise. */
@@ -67,10 +79,11 @@ export interface Market {
  * treat them as drafts for local counsel, not as legal advice — a wrong letting
  * rule is a liability, not a rough edge.
  */
-export const MARKETS: Market[] = [
+export const CURATED_MARKETS: Market[] = [
   {
     code: "KE",
     name: "Kenya",
+    curated: true,
     currency: "KES",
     defaultLocale: "en",
     regionLabel: "County",
@@ -83,6 +96,7 @@ export const MARKETS: Market[] = [
   {
     code: "SE",
     name: "Sverige",
+    curated: true,
     currency: "SEK",
     defaultLocale: "sv",
     regionLabel: "Län",
@@ -95,6 +109,7 @@ export const MARKETS: Market[] = [
   {
     code: "SA",
     name: "المملكة العربية السعودية",
+    curated: true,
     currency: "SAR",
     // Arabic is right-to-left and the layout work for it has not been done, so
     // this market reads in English until that is a deliberate piece of work.
@@ -109,6 +124,7 @@ export const MARKETS: Market[] = [
   {
     code: "AE",
     name: "الإمارات العربية المتحدة",
+    curated: true,
     currency: "AED",
     defaultLocale: "en",
     regionLabel: "Emirate",
@@ -121,6 +137,7 @@ export const MARKETS: Market[] = [
   {
     code: "TZ",
     name: "Tanzania",
+    curated: true,
     currency: "TZS",
     defaultLocale: "en",
     regionLabel: "Region",
@@ -133,6 +150,7 @@ export const MARKETS: Market[] = [
   {
     code: "UG",
     name: "Uganda",
+    curated: true,
     currency: "UGX",
     defaultLocale: "en",
     regionLabel: "District",
@@ -145,6 +163,7 @@ export const MARKETS: Market[] = [
   {
     code: "GB",
     name: "United Kingdom",
+    curated: true,
     currency: "GBP",
     defaultLocale: "en",
     regionLabel: "County",
@@ -157,6 +176,7 @@ export const MARKETS: Market[] = [
   {
     code: "LT",
     name: "Lietuva",
+    curated: true,
     currency: "EUR",
     defaultLocale: "lt",
     regionLabel: "Apskritis",
@@ -174,16 +194,59 @@ export function isLocale(value: string | null | undefined): value is LocaleCode 
   return !!value && LOCALES.some((l) => l.code === value);
 }
 
+/**
+ * Any two-letter country code we can price in. That is the real test of whether
+ * a market is usable — we can name it via Intl and format its money.
+ */
 export function isMarket(value: string | null | undefined): value is MarketCode {
-  return !!value && MARKETS.some((m) => m.code === value);
+  if (!value || !/^[A-Za-z]{2}$/.test(value)) return false;
+  return currencyForCountry(value) !== null;
 }
+
+/** The markets carrying hand-written local knowledge. */
+export const MARKETS = CURATED_MARKETS;
 
 export function localeOf(code: LocaleCode): Locale {
   return LOCALES.find((l) => l.code === code) ?? LOCALES[0];
 }
 
-export function marketOf(code: MarketCode): Market {
-  return MARKETS.find((m) => m.code === code) ?? MARKETS[0];
+/**
+ * Resolve any country into a usable market.
+ *
+ * A curated entry is returned as written. Anything else is derived: the country
+ * name from `Intl.DisplayNames`, the currency from the ISO table, and generic
+ * copy that is honest about knowing nothing local. That is the difference
+ * between a platform that serves eight countries and one that serves everywhere
+ * but knows eight of them well.
+ */
+export function marketOf(code: MarketCode, displayLocale = "en"): Market {
+  const upper = (code ?? "").toUpperCase();
+  const curated = CURATED_MARKETS.find((m) => m.code === upper);
+  if (curated) return curated;
+
+  const currency = currencyForCountry(upper);
+  if (!currency) return CURATED_MARKETS[0];
+
+  let name = upper;
+  try {
+    name = new Intl.DisplayNames([displayLocale], { type: "region" }).of(upper) ?? upper;
+  } catch {
+    // An unusual locale should not stop a country resolving.
+  }
+
+  return {
+    code: upper,
+    name,
+    curated: false,
+    currency,
+    defaultLocale: (COUNTRY_LANGUAGE[upper] as LocaleCode) ?? DEFAULT_LOCALE,
+    regionLabel: "Region",
+    popularCities: [],
+    paymentMethods: [],
+    // Said plainly rather than inventing a rule for a country we do not know.
+    tenancyNote: "",
+    taxLabel: "Tax",
+  };
 }
 
 /**
@@ -221,6 +284,11 @@ export function negotiateLocale(acceptLanguage: string | null | undefined): Loca
  * Pick a market from a country code — typically the CDN's geo header.
  * An unrecognised country is not an error; it simply means we have no market
  * there yet, and the caller falls back rather than guessing.
+ */
+/**
+ * The market for a country code, for any country in the ISO table — not just
+ * the curated ones. Returning null here is what used to show a Nigerian visitor
+ * Kenyan shillings.
  */
 export function marketForCountry(country: string | null | undefined): MarketCode | null {
   if (!country) return null;

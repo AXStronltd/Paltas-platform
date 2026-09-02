@@ -170,23 +170,43 @@ headers, so the server's first render is already correct rather than flashing
 English and swapping after hydration. It imports only pure locale logic, because
 middleware runs on the Edge runtime where `src/server` does not exist.
 
-### Markets are data
+### Global by default, deep where we know it
 
-Adding a country is **one entry** in `MARKETS`. No component anywhere branches on
-a country code — a grep for `country === ` returns nothing outside the config —
-so nothing else changes. Each market carries its currency, default language,
-popular cities, local payment methods, the tax label, and the tenancy rule a
-renter there asks about first.
+The platform serves **any country**, not a supported list. `MarketCode` is
+deliberately not a closed union: a visitor from anywhere is a normal case.
 
-Eight markets ship: Kenya, Tanzania, Uganda, Saudi Arabia, the UAE, the United
-Kingdom, Sweden and Lithuania. That set follows the product — East Africa is the
-home market, Makkah and Madinah matter because Hajj and Umrah are a headline
-journey, and the UK is where much of the diaspora books from.
+```
+              212 countries · 152 currencies
+                        │
+        ┌───────────────┴───────────────┐
+   curated (8)                    derived (everywhere else)
+   Kenya, Tanzania, Uganda,       name  → Intl.DisplayNames
+   Saudi Arabia, UAE, UK,         money → Intl.NumberFormat
+   Sweden, Lithuania              currency → ISO table
+        │                                 │
+   local payment methods,          prices correctly, formats
+   cities, letting rules           correctly, says plainly that
+                                   it holds no local guidance
+```
 
-A market may default to a language we do not fully serve. Saudi Arabia and the
-UAE read in English because Arabic is right-to-left and that layout work has not
-been done; the `Locale` type already carries an `rtl` flag for when it is. A test
-asserts those markets are still complete and format their own currency.
+`Intl` answers almost everything — it names any country in any language and
+formats any currency for any reader. The one thing it cannot answer is *what
+currency does this country trade in*, so `countries.ts` holds that mapping and
+nothing else.
+
+**What this replaced:** an unknown country returned null and the caller fell back
+to the default, so a visitor from Lagos was quoted in Kenyan shillings. Now
+Nigeria resolves to Nigeria, in naira.
+
+A derived market renders differently rather than rendering empty: it states that
+prices are in the local currency and that no local letting guidance is carried
+yet. Three empty headings would read as broken; saying so reads as honest.
+
+Curated markets add what only a person can know — that Kenya pays by M-Pesa,
+that Dubai holiday lets need a DET permit, that UK deposits must be protected
+within 30 days. Promoting a country from derived to curated is one entry in
+`CURATED_MARKETS`; no component changes, because nothing branches on a country
+code.
 
 `tenancyNote` is drafted, not settled. It is the field most worth checking with
 someone who operates in that country, because a wrong letting rule is a
