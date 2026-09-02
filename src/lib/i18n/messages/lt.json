@@ -1,0 +1,60 @@
+{
+  "$meta": {
+    "locale": "lt",
+    "reviewedBy": "machine",
+    "note": "Machine-authored. Needs review by a native Lithuanian speaker before commercial use. Lithuanian has three plural forms (one / few / other) and heavy case inflection, so interpolated nouns in particular need checking."
+  },
+
+  "nav.stays": "Būstai",
+  "nav.buySell": "Pirkti / Parduoti",
+  "nav.developer": "Vystytojas",
+  "nav.landlord": "Nuomotojas",
+  "nav.agent": "Agentas",
+  "nav.hotel": "Viešbutis",
+  "nav.management": "Valdymas",
+  "nav.bookings": "Mano rezervacijos",
+  "nav.signIn": "Prisijungti",
+  "nav.signOut": "Atsijungti",
+
+  "locale.language": "Kalba",
+  "locale.market": "Šalis",
+  "locale.chooseLanguage": "Pasirinkite kalbą",
+  "locale.chooseMarket": "Pasirinkite šalį",
+  "locale.showingFor": "Rodomi būstai: {market}",
+  "locale.switchHint": "Kalba ir naršoma šalis yra du atskiri pasirinkimai — keiskite bet kurį.",
+
+  "promo.hajj.question": "Planuojate Hadžą?",
+  "promo.hajj.headline": "Apsistokite pėsčiomis pasiekiamu atstumu nuo Haramo.",
+  "promo.umrah.question": "Ar Umrą šį sezoną?",
+  "promo.marrakesh.question": "Svarstote Marakešą?",
+  "promo.miami.question": "O gal Majamį?",
+  "promo.cta": "Naršyti būstus",
+
+  "price.total": "Iš viso",
+  "price.forNights": "už {count, plural, one {# naktį} few {# naktis} other {# naktų}}",
+  "price.nothingFurther": "daugiau mokėti nereikės",
+  "price.allIncluded": "visi mokesčiai įskaičiuoti",
+  "price.perNight": "už naktį",
+  "price.perMonth": "per mėnesį",
+  "price.cleaningFee": "Valymo mokestis",
+  "price.serviceFee": "Aptarnavimo mokestis",
+  "price.serviceFeeNote": "Tai, ką pasilieka PALTAS — nurodyta iš anksto",
+  "price.taxes": "{taxLabel}",
+  "price.taxesNote": "Surenkama ir sumokama už jus",
+  "price.pledge": "Tai suma, kuri bus nuskaityta. Jokio rezervavimo mokesčio, jokio patalpų mokesčio, jokio valiutos antkainio ir jokios eilutės, pridedamos mokėjimo etape.",
+
+  "trust.idVerified": "Tapatybė patvirtinta",
+  "trust.ownershipVerified": "Nuosavybė patvirtinta",
+  "trust.propertyInspected": "Būstas patikrintas",
+  "trust.licensed": "Turi licenciją",
+  "trust.payoutsVerified": "Išmokos patvirtintos",
+  "trust.checked": "patikrinta {date}",
+
+  "search.guests": "{count, plural, one {# svečias} few {# svečiai} other {# svečių}}",
+  "search.bedrooms": "{count, plural, one {# miegamasis} few {# miegamieji} other {# miegamųjų}}",
+  "search.noResults": "Nieko nerasta. Pabandykite išplėsti paiešką.",
+
+  "market.tenancyNote": "Vietos nuomos taisyklės",
+  "market.paymentMethods": "Mokėjimo būdai čia",
+  "market.popularCities": "Populiaru: {market}"
+}

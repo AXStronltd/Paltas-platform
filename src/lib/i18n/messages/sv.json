@@ -1,0 +1,60 @@
+{
+  "$meta": {
+    "locale": "sv",
+    "reviewedBy": "machine",
+    "note": "Machine-authored. Needs review by a native Swedish speaker before commercial use — particularly the tenancy and fee wording, where a mistranslation is a legal exposure rather than a rough edge."
+  },
+
+  "nav.stays": "Boenden",
+  "nav.buySell": "Köp / Sälj",
+  "nav.developer": "Byggherre",
+  "nav.landlord": "Hyresvärd",
+  "nav.agent": "Mäklare",
+  "nav.hotel": "Hotell",
+  "nav.management": "Förvaltning",
+  "nav.bookings": "Mina bokningar",
+  "nav.signIn": "Logga in",
+  "nav.signOut": "Logga ut",
+
+  "locale.language": "Språk",
+  "locale.market": "Land",
+  "locale.chooseLanguage": "Välj språk",
+  "locale.chooseMarket": "Välj land",
+  "locale.showingFor": "Visar bostäder i {market}",
+  "locale.switchHint": "Ditt språk och landet du tittar på är två olika val — ändra endera.",
+
+  "promo.hajj.question": "Planerar du Hajj?",
+  "promo.hajj.headline": "Bo inom gångavstånd från Haram.",
+  "promo.umrah.question": "Eller Umrah, i år?",
+  "promo.marrakesh.question": "Funderar du på Marrakech?",
+  "promo.miami.question": "Eller Miami?",
+  "promo.cta": "Utforska boenden",
+
+  "price.total": "Totalt",
+  "price.forNights": "för {count, plural, one {# natt} other {# nätter}}",
+  "price.nothingFurther": "inget mer att betala",
+  "price.allIncluded": "alla avgifter ingår",
+  "price.perNight": "per natt",
+  "price.perMonth": "per månad",
+  "price.cleaningFee": "Städavgift",
+  "price.serviceFee": "Serviceavgift",
+  "price.serviceFeeNote": "Det PALTAS behåller — angivet i förväg",
+  "price.taxes": "{taxLabel}",
+  "price.taxesNote": "Redovisas och betalas in åt dig",
+  "price.pledge": "Detta är beloppet du debiteras. Ingen bokningsavgift, ingen anläggningsavgift, inget valutapåslag och ingen rad som läggs till i betalningssteget.",
+
+  "trust.idVerified": "ID verifierat",
+  "trust.ownershipVerified": "Ägande verifierat",
+  "trust.propertyInspected": "Bostaden besiktigad",
+  "trust.licensed": "Har tillstånd",
+  "trust.payoutsVerified": "Utbetalningar verifierade",
+  "trust.checked": "kontrollerat {date}",
+
+  "search.guests": "{count, plural, one {# gäst} other {# gäster}}",
+  "search.bedrooms": "{count, plural, one {# sovrum} other {# sovrum}}",
+  "search.noResults": "Inget hittades. Prova att bredda sökningen.",
+
+  "market.tenancyNote": "Lokala hyresregler",
+  "market.paymentMethods": "Betalsätt här",
+  "market.popularCities": "Populärt i {market}"
+}

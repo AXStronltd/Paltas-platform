@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import { MobileMenu } from "./MobileMenu";
 import { AuthModal } from "./AuthModal";
 import { getCurrentUser, refreshUser, signOut, type User } from "@/lib/services/authService";
+import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 export function Header() {
+  const { t } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,20 +35,20 @@ export function Header() {
         </Link>
 
         <nav className="header-nav">
-          <Link href="/" className="header-link active">Stays</Link>
-          <Link href="/" className="header-link">Buy / Sell</Link>
-          <Link href="/portal/developer" className="header-link">Developer</Link>
-          <Link href="/portal/landlord" className="header-link">Landlord</Link>
-          <Link href="/portal/agent" className="header-link">Agent</Link>
-          <Link href="/portal/hotel" className="header-link">Hotel</Link>
+          <Link href="/" className="header-link active">{t("nav.stays")}</Link>
+          <Link href="/" className="header-link">{t("nav.buySell")}</Link>
+          <Link href="/portal/developer" className="header-link">{t("nav.developer")}</Link>
+          <Link href="/portal/landlord" className="header-link">{t("nav.landlord")}</Link>
+          <Link href="/portal/agent" className="header-link">{t("nav.agent")}</Link>
+          <Link href="/portal/hotel" className="header-link">{t("nav.hotel")}</Link>
           {/* The staff side of PALTAS. Kept in the main nav on purpose: owners,
               managers and guards arrive at the same front door as everyone else,
               and /manage decides what they may see once they are signed in. */}
-          <Link href="/manage" className="header-link header-link-manage">Management</Link>
+          <Link href="/manage" className="header-link header-link-manage">{t("nav.management")}</Link>
         </nav>
 
         <div className="header-right">
-          <button className="header-currency">🌐 KES ▾</button>
+          <LocaleSwitcher />
           <Link href="/bookings" className="header-heart" aria-label="Saved">♡</Link>
           {user ? (
             <div className="header-account" onClick={() => setMenuOpen((v) => !v)} style={{ cursor: "pointer", position: "relative" }}>
@@ -54,16 +57,16 @@ export function Header() {
               {menuOpen && (
                 <div className="account-menu" onClick={(e) => e.stopPropagation()}>
                   <div className="account-menu-name">{user.name}<span>{user.email}</span></div>
-                  <Link href="/bookings" className="account-menu-item" onClick={() => setMenuOpen(false)}>My bookings</Link>
+                  <Link href="/bookings" className="account-menu-item" onClick={() => setMenuOpen(false)}>{t("nav.bookings")}</Link>
                   <Link href="/manage" className="account-menu-item" onClick={() => setMenuOpen(false)}>Property management</Link>
-                  <button className="account-menu-item" onClick={handleSignOut}>Sign out</button>
+                  <button className="account-menu-item" onClick={handleSignOut}>{t("nav.signOut")}</button>
                 </div>
               )}
             </div>
           ) : (
             <button className="header-account" onClick={() => setShowAuth(true)} style={{ cursor: "pointer" }}>
               <span className="header-avatar">?</span>
-              Sign in ▾
+              {t("nav.signIn")} ▾
             </button>
           )}
         </div>

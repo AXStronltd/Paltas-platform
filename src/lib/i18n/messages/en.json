@@ -1,0 +1,56 @@
+{
+  "$meta": { "locale": "en", "reviewedBy": "native", "note": "Source language." },
+
+  "nav.stays": "Stays",
+  "nav.buySell": "Buy / Sell",
+  "nav.developer": "Developer",
+  "nav.landlord": "Landlord",
+  "nav.agent": "Agent",
+  "nav.hotel": "Hotel",
+  "nav.management": "Management",
+  "nav.bookings": "My bookings",
+  "nav.signIn": "Sign in",
+  "nav.signOut": "Sign out",
+
+  "locale.language": "Language",
+  "locale.market": "Country",
+  "locale.chooseLanguage": "Choose your language",
+  "locale.chooseMarket": "Choose a country",
+  "locale.showingFor": "Showing properties in {market}",
+  "locale.switchHint": "Your language and the country you are browsing are separate — change either.",
+
+  "promo.hajj.question": "Planning Hajj?",
+  "promo.hajj.headline": "Stay within walking distance of the Haram.",
+  "promo.umrah.question": "Or Umrah, this season?",
+  "promo.marrakesh.question": "Thinking Marrakesh?",
+  "promo.miami.question": "Or Miami?",
+  "promo.cta": "Explore stays",
+
+  "price.total": "Total",
+  "price.forNights": "for {count, plural, one {# night} other {# nights}}",
+  "price.nothingFurther": "nothing further to pay",
+  "price.allIncluded": "all fees included",
+  "price.perNight": "per night",
+  "price.perMonth": "per month",
+  "price.cleaningFee": "Cleaning fee",
+  "price.serviceFee": "Service fee",
+  "price.serviceFeeNote": "What PALTAS keeps — stated up front",
+  "price.taxes": "{taxLabel}",
+  "price.taxesNote": "Collected and remitted for you",
+  "price.pledge": "This is the amount you will be charged. No booking fee, no facility fee, no currency mark-up, and no line added at the payment step.",
+
+  "trust.idVerified": "ID verified",
+  "trust.ownershipVerified": "Ownership verified",
+  "trust.propertyInspected": "Property inspected",
+  "trust.licensed": "Licensed",
+  "trust.payoutsVerified": "Payouts verified",
+  "trust.checked": "checked {date}",
+
+  "search.guests": "{count, plural, one {# guest} other {# guests}}",
+  "search.bedrooms": "{count, plural, one {# bedroom} other {# bedrooms}}",
+  "search.noResults": "Nothing found. Try widening your search.",
+
+  "market.tenancyNote": "Local tenancy note",
+  "market.paymentMethods": "Ways to pay here",
+  "market.popularCities": "Popular in {market}"
+}

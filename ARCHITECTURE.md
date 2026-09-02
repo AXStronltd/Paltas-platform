@@ -146,16 +146,60 @@ out *how much* and returns only a client secret. **The browser never names a
 price.** The webhook is the authority — the ledger moves when Stripe tells the
 server it moved, not on the strength of a confirmation screen.
 
+## Internationalisation
+
+`src/lib/i18n/` — pure, so locale negotiation is tested without a browser.
+
+**Language and market are separate choices.** Conflating them is the commonest
+failure in "global" platforms: switch to Swedish and your search of Vilnius flats
+vanishes. Here a Lithuanian in Stockholm reads Lithuanian text about Swedish
+properties, and either can be changed alone.
+
+| | Answers |
+| --- | --- |
+| **Locale** (`en`, `sv`, `lt`) | What language you read |
+| **Market** (`KE`, `SE`, `LT`) | Whose properties, currency, rules and conventions |
+
+Resolution order, in `resolvePreferences()`: an explicit choice, then the
+browser's `Accept-Language` and the CDN's country header, then defaults. **A
+choice always outranks a signal** — someone who clicked "English" means it,
+however their browser is configured.
+
+`src/middleware.ts` decides once at the edge and passes the answer down as
+headers, so the server's first render is already correct rather than flashing
+English and swapping after hydration. It imports only pure locale logic, because
+middleware runs on the Edge runtime where `src/server` does not exist.
+
+### Markets are data
+
+Adding Norway is an entry in `MARKETS` plus a catalogue — not a search through
+components for `if (country === …)`. Each market carries its currency, default
+language, popular cities, local payment methods, the tax label (VAT / Moms /
+PVM), and the tenancy rule a renter there asks about first.
+
+### Two things deliberately not done
+
+- **Currency is formatted, never converted.** Prices are held in each market's
+  own currency. Showing a Kenyan price with a Swedish symbol because someone
+  changed language would be worse than showing nothing.
+- **The Swedish and Lithuanian catalogues are machine-authored and say so** in
+  their `$meta.reviewedBy`. A test asserts they are marked unreviewed. They need
+  a native speaker before commercial use — particularly the tenancy and fee
+  wording, where a mistranslation is a legal exposure rather than a rough edge.
+
+Pluralisation uses `Intl.PluralRules`, so Lithuanian's one/few/other is selected
+by the rules the language actually uses rather than anything hand-rolled.
+
 ## Verification
 
 ```
 npm run verify        typecheck + engine tests + both structural audits
-npm run test:all      everything, 304 checks across five suites
+npm run test:all      everything, 318 checks across six suites
 ```
 
 | Suite | Checks | Needs a database |
 | --- | --- | --- |
-| `test:auth` | 66 | no — pure engine, pricing, loyalty, Stripe signatures |
+| `test:auth` | 80 | no — pure engine, pricing, loyalty, Stripe signatures |
 | `test:e2e` | 100 | yes — permissions over real HTTP |
 | `test:platform` | 17 | yes — cross-organisation isolation |
 | `test:commerce` | 38 | yes — pricing, groups, shopfront |

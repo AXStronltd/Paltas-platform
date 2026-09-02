@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "@/styles/globals.css";
 import { SiteChrome } from "@/components/ui/SiteChrome";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { PWARegister } from "@/components/ui/PWARegister";
 import { ToastProvider } from "@/components/ui/Toast";
 
@@ -20,8 +22,14 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Decided once in middleware; read here so the server's first render already
+  // matches, rather than flashing English and swapping after hydration.
+  const h = headers();
+  const locale = h.get("x-paltas-locale") ?? "en";
+  const market = h.get("x-paltas-market") ?? "KE";
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         {/* Manrope loads when online; a strong system-font stack (in globals.css)
             guarantees the app looks right offline and never blocks the build. */}
@@ -33,10 +41,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <ToastProvider>
-          <SiteChrome>{children}</SiteChrome>
-          <PWARegister />
-        </ToastProvider>
+        <LocaleProvider initialLocale={locale} initialMarket={market}>
+          <ToastProvider>
+            <SiteChrome>{children}</SiteChrome>
+            <PWARegister />
+          </ToastProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

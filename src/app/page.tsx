@@ -1,5 +1,6 @@
 import { Hero } from "@/components/marketplace/Hero";
 import { PromoCarousel } from "@/components/marketplace/PromoCarousel";
+import { MarketPanel } from "@/components/i18n/LocaleSwitcher";
 import { Marketplace } from "@/components/marketplace/Marketplace";
 import { DiscoveryRows } from "@/components/marketplace/DiscoveryRows";
 import { TrustBand, TravelInspiration, BookEarlyBanner, BusinessCTA } from "@/components/marketplace/PromoSections";
@@ -21,6 +22,9 @@ export default function HomePage() {
 
         {/* 13 smart discovery rows — endless horizontal carousels */}
         <DiscoveryRows />
+
+        {/* What a local knows and a visitor does not. */}
+        <MarketPanel />
 
         <TrustBand />
         <TravelInspiration />
