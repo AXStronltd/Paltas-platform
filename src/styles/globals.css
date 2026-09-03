@@ -771,6 +771,12 @@ img { display: block; max-width: 100%; }
 .d-card-skeleton { min-height: 240px; background: linear-gradient(100deg, var(--bg-2) 30%, #eef2f6 50%, var(--bg-2) 70%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border: none; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
+/* Nothing published yet. Said once, plainly, rather than as a screenful of
+   empty carousels — which is what the generated catalogue used to hide. */
+.d-empty { text-align: center; padding: 56px 20px; color: var(--muted); }
+.d-empty h2 { font-size: 20px; margin: 0 0 6px; color: var(--ink); }
+.d-empty p { margin: 0; max-width: 46ch; margin-inline: auto; }
+
 /* responsive card counts */
 @media (max-width: 1400px) { .d-track { grid-auto-columns: calc((100% - 5 * 16px) / 6); } }
 @media (max-width: 1200px) { .d-track { grid-auto-columns: calc((100% - 4 * 16px) / 5); } }

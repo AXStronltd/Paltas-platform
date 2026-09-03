@@ -68,7 +68,9 @@ check(pub.status === 200, "readable without signing in");
 // The invariant is that no draft escapes — not that there is exactly one row.
 check(!feed.listings.some((l) => /Diani Palms/.test(l.title)), "the unpublished draft is not exposed",
   feed.listings.map((l) => l.title).join(" | "));
-const kilimani = feed.listings.find((l) => l.title.includes("Kilimani"));
+// Kilimani has both a long let and a short stay, and this line asserts the
+// monthly price unit — so it has to name the kind, not just the area.
+const kilimani = feed.listings.find((l) => l.title.includes("Kilimani") && l.kind === "RENT");
 check(!!kilimani, "the published listing is", feed.listings.map((l) => l.title).join(" | "));
 check(kilimani.priceUnit === "per month", "price unit is stated, not guessed", kilimani?.priceUnit);
 check(feed.listings.find((l) => l.kind === "STAY")?.priceUnit === "per night", "and differs by kind");

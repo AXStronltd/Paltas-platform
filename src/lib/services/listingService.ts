@@ -1,4 +1,4 @@
-import { isMock } from "@/lib/config";
+import { isMock, showDemoCatalogue } from "@/lib/config";
 import type { Listing, Review, SearchFilters, Result, StayMode } from "@/lib/models";
 import { LISTINGS, reviewsForListing } from "@/lib/data/mock";
 import { apiGet, mockDelay } from "./apiClient";
@@ -15,12 +15,16 @@ import { fetchRealListing, fetchRealListings, looksReal } from "./publicListings
  *   published, which can actually be booked and paid for. They carry
  *   `bookable: true` and are always shown first.
  *
- *   The demo catalogue fills the rest of the shopfront so it does not look
- *   empty. It is not bookable, and the UI must not offer to take money for it.
+ *   The demo catalogue is fiction, kept for local development. It is not
+ *   bookable, and it is off unless NEXT_PUBLIC_DEMO_CATALOGUE=true.
  *
  * Real listings are merged in regardless of the mock/api switch, because they
  * are real either way: `NEXT_PUBLIC_DATA_SOURCE` decides where the *catalogue*
  * comes from, not whether genuine inventory exists.
+ *
+ * The demo catalogue used to be gated on `isMock()`, which conflated two
+ * unrelated decisions and put six invented properties on the live shopfront.
+ * A visitor cannot tell filler from inventory, so there must be none.
  */
 
 function classifyMode(l: Listing): StayMode {
@@ -41,7 +45,7 @@ export async function searchListings(filters: SearchFilters = {}): Promise<Resul
 
   const real = await fetchRealListings({ city: filters.city, guests: filters.guests, kind });
 
-  if (isMock()) {
+  if (showDemoCatalogue()) {
     let list = [...LISTINGS];
     // Matched loosely and across several fields: someone typing "mombasa",
     // "Diani" or "beach" is describing where they want to be, not naming a
@@ -60,6 +64,9 @@ export async function searchListings(filters: SearchFilters = {}): Promise<Resul
     if (kind) list = [];
     return mockDelay({ data: [...real, ...list], error: null });
   }
+  // Real inventory is the whole answer when the demo catalogue is off, which
+  // is everywhere a member of the public can reach.
+  if (isMock()) return { data: real, error: null };
   // API: return apiGet<Listing[]>(`/listings?${new URLSearchParams(filters as any)}`);
   return apiGet<Listing[]>(`/listings`);
 }
@@ -74,7 +81,7 @@ export async function getListing(id: string): Promise<Result<Listing | null>> {
     // below is what produces it.
   }
 
-  if (isMock()) {
+  if (showDemoCatalogue()) {
     // Generated catalog listings (discovery rows) have ids like "g123".
     if (id.startsWith("g")) {
       const n = parseInt(id.slice(1), 10);
@@ -86,6 +93,7 @@ export async function getListing(id: string): Promise<Result<Listing | null>> {
     const found = LISTINGS.find((l) => l.id === id) ?? null;
     return mockDelay({ data: found, error: null });
   }
+  if (isMock()) return { data: null, error: null };
   // API: return apiGet<Listing>(`/listings/${id}`);
   return apiGet<Listing | null>(`/listings/${id}`);
 }
@@ -96,9 +104,12 @@ export async function getReviews(listingId: string): Promise<Result<Review[]>> {
     if (found) return { data: found.reviews, error: null };
   }
 
-  if (isMock()) {
+  if (showDemoCatalogue()) {
     return mockDelay({ data: reviewsForListing(listingId), error: null });
   }
+  // Inventing reviews for a real property is the same lie as inventing the
+  // property, so an unknown listing simply has none.
+  if (isMock()) return { data: [], error: null };
   // API: return apiGet<Review[]>(`/listings/${listingId}/reviews`);
   return apiGet<Review[]>(`/listings/${listingId}/reviews`);
 }

@@ -31,7 +31,8 @@
     "test:trip": "npm run db:seed --silent && node tests/trip.e2e.mjs",
     "db:sync-roles": "node prisma/sync-roles.mjs",
     "audit:i18n": "node scripts/audit-i18n.mjs",
-    "test:approval": "npm run db:seed --silent && node tests/approval.e2e.mjs"
+    "test:approval": "npm run db:seed --silent && node tests/approval.e2e.mjs",
+    "db:sync-listings": "node prisma/sync-listings.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

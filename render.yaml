@@ -68,6 +68,8 @@ services:
 
       - key: NEXT_PUBLIC_DATA_SOURCE
         value: mock
+      # NEXT_PUBLIC_DEMO_CATALOGUE is deliberately absent. Setting it would put
+      # properties that do not exist on a live shopfront that takes money.
 
       # ---- Stripe -----------------------------------------------------------
       # Deliberately absent from this blueprint so applying it prompts for

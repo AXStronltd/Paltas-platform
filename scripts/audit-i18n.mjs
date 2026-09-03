@@ -36,8 +36,12 @@ for (const file of fs.readdirSync(MSG).sort()) {
   const missing = keys.filter((k) => !(k in cat));
   // A value identical to English is usually untranslated rather than a word
   // that happens to be the same, so it is counted separately rather than as
-  // coverage.
-  const same = keys.filter((k) => k in cat && cat[k] === en[k]);
+  // coverage. Some genuinely are the same word — "Hotel" in Spanish, "Menu" in
+  // French, and the bare `{taxLabel}` placeholder — and a catalogue declares
+  // those in `$meta.sameAsEnglish` so they count as translated rather than
+  // pushing someone to invent a worse word to satisfy this number.
+  const declared = new Set(cat.$meta?.sameAsEnglish ?? []);
+  const same = keys.filter((k) => k in cat && cat[k] === en[k] && !declared.has(k));
   const translated = keys.length - missing.length - same.length;
   const pct = Math.round((translated / keys.length) * 100);
   const reviewed = cat.$meta?.reviewedBy ?? "unknown";

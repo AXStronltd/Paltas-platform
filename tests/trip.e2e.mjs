@@ -44,7 +44,11 @@ const anon = client();
 
 console.log("THE SHOPFRONT OFFERS THE WHOLE TRIP");
 const feed = await anon.get("/public/listings?kind=STAY");
-const hotel = feed.json.listings.find((l) => l.title.includes("Nyali"));
+// The hotel by name, not by area: "Nyali" alone also matches a plain
+// apartment in Nyali, which has no room types and failed three lines later
+// with a null dereference rather than a readable message.
+const hotel = feed.json.listings.find((l) => l.title.includes("Nyali Court Hotel"));
+check(Boolean(hotel?.id), "the hotel is on the public feed");
 const detail = await anon.get(`/public/listings/${hotel.id}`);
 const services = detail.json.listing.services;
 check(services.length >= 4, "the listing advertises services alongside the room", `${services?.length}`);

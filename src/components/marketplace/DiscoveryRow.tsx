@@ -1,79 +1,58 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Listing } from "@/lib/models";
-import { getRowPage } from "@/lib/data/catalog";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
- * DiscoveryRow — one of the 13 homepage rows. A horizontal carousel that shows
- * ~7 cards on large screens (responsive down to 1–2 on mobile) and loads MORE
- * cards endlessly as the user slides right (dynamic pagination — never loads the
- * whole catalog at once). Each row pulls its own distinct slice via rowSeed.
+ * One homepage discovery row: a horizontal carousel of real listings.
  *
- * Data comes from getRowPage() today (deterministic mock); swapping to a real
- * API later means changing only that call — the carousel is unchanged.
+ * This used to call `getRowPage()`, a deterministic generator that invented
+ * properties — "Serene Palm Retreat, Nyali", a random price, a random star
+ * rating — and paged endlessly through them. Thirteen rows of them, on the
+ * front page of a marketplace that takes money. A row headed "Most Booked ·
+ * Booked again and again" was describing properties that had never been booked
+ * because they had never existed.
+ *
+ * It is now purely presentational: it renders the listings it is given and
+ * nothing else. `DiscoveryRows` does one fetch and decides which rows are worth
+ * showing, so a row can no longer exist without inventory behind it.
  */
 export function DiscoveryRow({
-  title, subtitle, icon, rowSeed,
+  title, subtitle, icon, items,
 }: {
-  title: string; subtitle?: string; icon?: string; rowSeed: number;
+  title: string; subtitle?: string; icon?: string; items: Listing[];
 }) {
   const router = useRouter();
+  const { t, money } = useI18n();
   const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const [items, setItems] = useState<Listing[]>([]);
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [revealed, setRevealed] = useState(false);
 
-  // reveal on scroll into view (world-class entrance)
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setRevealed(true); obs.disconnect(); } },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
-  // initial load
-  useEffect(() => {
-    setItems(getRowPage(rowSeed, 0));
-    setPage(0);
-  }, [rowSeed]);
-
-  const loadMore = useCallback(() => {
-    setLoading(true);
-    // simulate async paging (would be an API call)
-    const next = page + 1;
-    const more = getRowPage(rowSeed, next);
-    setItems((prev) => [...prev, ...more]);
-    setPage(next);
-    setLoading(false);
-  }, [page, rowSeed]);
-
-  // load more when the user slides near the end
-  function onScroll() {
-    const el = trackRef.current;
-    if (!el || loading) return;
-    if (el.scrollLeft + el.clientWidth > el.scrollWidth - 600) {
-      // cap the buffer so we never hold thousands in memory
-      if (items.length < 64) loadMore();
-    }
-  }
-
   function slide(dir: 1 | -1) {
     const el = trackRef.current;
     if (!el) return;
     const cardW = el.querySelector(".d-card")?.clientWidth ?? 300;
-    el.scrollBy({ left: dir * (cardW + 16) * 3, behavior: "smooth" });
-    // proactively load ahead when sliding right
-    if (dir === 1) setTimeout(onScroll, 350);
+    // Sliding follows the reading direction, so in Arabic the "next" arrow
+    // still moves towards the next card rather than back to the first.
+    const rtl = getComputedStyle(el).direction === "rtl";
+    el.scrollBy({ left: dir * (cardW + 16) * 3 * (rtl ? -1 : 1), behavior: "smooth" });
   }
+
+  if (items.length === 0) return null;
 
   return (
     <section className={`d-row ${revealed ? "revealed" : ""}`} ref={sectionRef}>
@@ -83,30 +62,45 @@ export function DiscoveryRow({
           {subtitle && <p>{subtitle}</p>}
         </div>
         <div className="d-row-nav">
-          <button aria-label="Previous" onClick={() => slide(-1)}>‹</button>
-          <button aria-label="Next" onClick={() => slide(1)}>›</button>
+          <button aria-label={t("row.previous")} onClick={() => slide(-1)}>‹</button>
+          <button aria-label={t("row.next")} onClick={() => slide(1)}>›</button>
         </div>
       </div>
 
-      <div className="d-track" ref={trackRef} onScroll={onScroll}>
+      <div className="d-track" ref={trackRef}>
         {items.map((l) => (
           <button key={l.id} className="d-card" onClick={() => router.push(`/listing/${l.id}`)}>
             <div className="d-card-img">
               <SafeImage src={l.imageUrl} alt={l.name} />
-              <span className="d-card-badge">⚡ Instant</span>
+              {/* Claimed only where it is true: a listing that cannot be booked
+                  must not wear an "Instant" badge. */}
+              {l.bookable && <span className="d-card-badge">{t("card.instant")}</span>}
             </div>
             <div className="d-card-body">
               <div className="d-card-top">
                 <b>{l.name}</b>
-                <span className="d-card-rating">★ {l.rating}</span>
+                {/* A property with no reviews has no rating. Showing "★ 0"
+                    reads as a terrible one, and showing an invented number is
+                    worse. */}
+                {l.reviewCount > 0 && (
+                  <span className="d-card-rating">★ {l.rating.toFixed(1)}</span>
+                )}
               </div>
               <span className="d-card-loc">{l.location}</span>
-              <div className="d-card-price">KSh {l.price.toLocaleString()} <span>/ night</span></div>
+              <div className="d-card-price">
+                {money(l.price, l.currency)} <span>{priceUnit(l, t)}</span>
+              </div>
             </div>
           </button>
         ))}
-        {loading && <div className="d-card d-card-skeleton" />}
       </div>
     </section>
   );
+}
+
+/** Per night, per month, or nothing at all — a house for sale has no cadence. */
+function priceUnit(l: Listing, t: (k: string) => string): string {
+  if (l.kind === "SALE") return "";
+  if (l.kind === "RENT") return t("card.perMonth");
+  return t("card.perNight");
 }
