@@ -15,7 +15,18 @@ import { COUNTRY_LANGUAGE, currencyForCountry } from "./countries";
  *   the flat in Vilnius you were booking. Here the two are chosen independently.
  */
 
-export type LocaleCode = "en" | "sv" | "lt";
+/**
+ * A language code. Open, not a closed union.
+ *
+ * It used to be `"en" | "sv" | "lt"`, which meant adding a language was a type
+ * change rippling through the application rather than a row in a list. The
+ * named codes are kept for autocomplete; `isLocale` is what actually decides
+ * whether one is offered, by checking LOCALES.
+ */
+export type LocaleCode =
+  | "en" | "sw" | "ar" | "fr" | "es" | "pt" | "de" | "it" | "tr"
+  | "hi" | "ur" | "zh" | "so" | "am" | "sv" | "lt"
+  | (string & {});
 /**
  * Any ISO 3166-1 alpha-2 country code.
  *
@@ -37,11 +48,42 @@ export interface Locale {
   rtl: boolean;
 }
 
+/**
+ * The languages a visitor may choose.
+ *
+ * Ordered by how many people on this platform's markets are likely to read
+ * them, not alphabetically — a list a Kenyan or Emirati visitor scans should
+ * put Swahili and Arabic near the top rather than after Lithuanian.
+ *
+ * Adding a language is two steps: a row here, and a catalogue in
+ * ./messages/<code>.json. Any key the catalogue lacks falls back to English, so
+ * a language may be added incomplete and finished later — a half-translated
+ * page is far better than an unusable one.
+ *
+ * `rtl` drives the `dir` attribute on <html>, which flips the whole layout.
+ */
 export const LOCALES: Locale[] = [
-  { code: "en", tag: "en-GB", nativeName: "English", englishName: "English", rtl: false },
-  { code: "sv", tag: "sv-SE", nativeName: "Svenska", englishName: "Swedish", rtl: false },
-  { code: "lt", tag: "lt-LT", nativeName: "Lietuvių", englishName: "Lithuanian", rtl: false },
+  { code: "en", tag: "en-GB", nativeName: "English",   englishName: "English",    rtl: false },
+  { code: "sw", tag: "sw-KE", nativeName: "Kiswahili", englishName: "Swahili",    rtl: false },
+  { code: "ar", tag: "ar",    nativeName: "العربية",    englishName: "Arabic",     rtl: true  },
+  { code: "fr", tag: "fr-FR", nativeName: "Français",  englishName: "French",     rtl: false },
+  { code: "es", tag: "es-ES", nativeName: "Español",   englishName: "Spanish",    rtl: false },
+  { code: "pt", tag: "pt-PT", nativeName: "Português", englishName: "Portuguese", rtl: false },
+  { code: "de", tag: "de-DE", nativeName: "Deutsch",   englishName: "German",     rtl: false },
+  { code: "it", tag: "it-IT", nativeName: "Italiano",  englishName: "Italian",    rtl: false },
+  { code: "tr", tag: "tr-TR", nativeName: "Türkçe",    englishName: "Turkish",    rtl: false },
+  { code: "hi", tag: "hi-IN", nativeName: "हिन्दी",       englishName: "Hindi",      rtl: false },
+  { code: "ur", tag: "ur-PK", nativeName: "اردو",       englishName: "Urdu",       rtl: true  },
+  { code: "zh", tag: "zh-CN", nativeName: "中文",        englishName: "Chinese",    rtl: false },
+  { code: "so", tag: "so-SO", nativeName: "Soomaali",  englishName: "Somali",     rtl: false },
+  { code: "am", tag: "am-ET", nativeName: "አማርኛ",       englishName: "Amharic",    rtl: false },
+  { code: "sv", tag: "sv-SE", nativeName: "Svenska",   englishName: "Swedish",    rtl: false },
+  { code: "lt", tag: "lt-LT", nativeName: "Lietuvių",  englishName: "Lithuanian", rtl: false },
 ];
+
+/** True when this language is written right to left. */
+export const isRtl = (code: string): boolean =>
+  LOCALES.find((l) => l.code === code)?.rtl ?? false;
 
 export const DEFAULT_LOCALE: LocaleCode = "en";
 

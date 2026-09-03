@@ -47,8 +47,13 @@ test("Accept-Language is honoured, including quality values", () => {
   assert.equal(L.negotiateLocale("sv-FI"), "sv");
   // Quality ordering wins over document order.
   assert.equal(L.negotiateLocale("de;q=0.9,lt;q=1.0"), "lt");
-  // Nothing we serve.
-  assert.equal(L.negotiateLocale("de-DE,fr;q=0.8"), null);
+  // The world languages are served now; this used to assert German was not.
+  assert.equal(L.negotiateLocale("de-DE,fr;q=0.8"), "de");
+  assert.equal(L.negotiateLocale("ar-SA"), "ar", "an Arabic speaker gets Arabic");
+  assert.equal(L.negotiateLocale("sw-KE,en;q=0.5"), "sw", "a Swahili speaker gets Swahili");
+  assert.equal(L.negotiateLocale("zh-Hans-CN"), "zh", "a script subtag does not defeat the match");
+  // Something genuinely outside the list still falls through rather than guessing.
+  assert.equal(L.negotiateLocale("xx-XX,yy;q=0.8"), null);
   assert.equal(L.negotiateLocale("*"), null);
   assert.equal(L.negotiateLocale(""), null);
   assert.equal(L.negotiateLocale(null), null);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { isRtl } from "@/lib/i18n/locales";
 import "@/styles/globals.css";
 import { SiteChrome } from "@/components/ui/SiteChrome";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const market = h.get("x-paltas-market") ?? "KE";
 
   return (
-    <html lang={locale}>
+    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"}>
       <head>
         {/* Manrope loads when online; a strong system-font stack (in globals.css)
             guarantees the app looks right offline and never blocks the build. */}

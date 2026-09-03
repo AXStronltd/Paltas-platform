@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   DEFAULT_LOCALE, DEFAULT_MARKET, LOCALES, MARKETS,
-  isLocale, isMarket, marketOf, type LocaleCode, type MarketCode,
+  isLocale, isMarket, isRtl, marketOf, type LocaleCode, type MarketCode,
 } from "@/lib/i18n/locales";
 import { COUNTRY_CURRENCY } from "@/lib/i18n/countries";
 import { createTranslator, type Translator } from "@/lib/i18n/translate";
@@ -68,6 +68,10 @@ export function LocaleProvider({
    */
   useEffect(() => {
     document.documentElement.lang = locale;
+    // Arabic and Urdu read right to left, and `dir` is what flips the entire
+    // layout — text alignment, list markers, scrollbars, and every CSS logical
+    // property below. Without it a translated page is still laid out backwards.
+    document.documentElement.dir = isRtl(locale) ? "rtl" : "ltr";
     setDisplayLocale(locale);
   }, [locale]);
 

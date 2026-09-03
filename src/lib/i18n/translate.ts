@@ -1,4 +1,17 @@
 import en from "./messages/en.json";
+import sw from "./messages/sw.json";
+import ar from "./messages/ar.json";
+import fr from "./messages/fr.json";
+import es from "./messages/es.json";
+import pt from "./messages/pt.json";
+import de from "./messages/de.json";
+import it from "./messages/it.json";
+import tr from "./messages/tr.json";
+import hi from "./messages/hi.json";
+import ur from "./messages/ur.json";
+import zh from "./messages/zh.json";
+import so from "./messages/so.json";
+import am from "./messages/am.json";
 import sv from "./messages/sv.json";
 import lt from "./messages/lt.json";
 import { DEFAULT_LOCALE, localeOf, marketOf, type LocaleCode, type MarketCode } from "./locales";
@@ -16,12 +29,38 @@ import { DEFAULT_LOCALE, localeOf, marketOf, type LocaleCode, type MarketCode } 
  * either being special-cased anywhere.
  */
 
-type Catalogue = Record<string, string>;
+/**
+ * A catalogue is message keys to strings, plus a `$meta` block recording who
+ * translated it. `$meta` is typed separately because it is an object, and
+ * because `t` must never return it — every lookup goes through a key that
+ * begins with a letter.
+ */
+interface CatalogueMeta { reviewedBy?: string; note?: string; locale?: string }
 
-const CATALOGUES: Record<LocaleCode, Catalogue> = {
-  en: en as unknown as Catalogue,
-  sv: sv as unknown as Catalogue,
-  lt: lt as unknown as Catalogue,
+/**
+ * Message keys to strings, plus a `$meta` block recording who translated the
+ * file. The values are genuinely of two kinds, so lookups check the type rather
+ * than assert one — a `$meta` object must never be rendered as a message.
+ */
+type Catalogue = { [key: string]: string | CatalogueMeta | undefined };
+
+/** A message, or nothing. Never the metadata block. */
+function message(catalogue: Catalogue | undefined, key: string): string | undefined {
+  const value = catalogue?.[key];
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * Every catalogue, keyed by language.
+ *
+ * Partial rather than a full Record, because LocaleCode is open — a language
+ * may exist in LOCALES before its catalogue is complete, and `t` falls back to
+ * English for any key it cannot find. That is deliberate: a half-translated
+ * page is far better than an untranslated one, and far better than a build
+ * error that stops the language being offered at all.
+ */
+const CATALOGUES: Partial<Record<LocaleCode, Catalogue>> = {
+  en, sw, ar, fr, es, pt, de, it, tr, hi, ur, zh, so, am, sv, lt,
 };
 
 /** Every key the product uses, taken from the source language. */
@@ -84,14 +123,14 @@ function interpolate(template: string, values: Record<string, string | number>, 
 export function createTranslator(locale: LocaleCode, market: MarketCode): Translator {
   const tag = localeOf(locale).tag;
   const marketConfig = marketOf(market);
-  const catalogue = CATALOGUES[locale] ?? CATALOGUES[DEFAULT_LOCALE];
+  const catalogue = CATALOGUES[locale] ?? CATALOGUES[DEFAULT_LOCALE]!;
 
   return {
     locale,
     market,
 
     t(key, values = {}) {
-      const template = catalogue[key] ?? CATALOGUES[DEFAULT_LOCALE][key] ?? key;
+      const template = message(catalogue, key) ?? message(CATALOGUES[DEFAULT_LOCALE], key) ?? key;
       // `taxLabel` differs by market — VAT, Moms, PVM — so it is always available.
       return interpolate(template, { taxLabel: marketConfig.taxLabel, ...values }, locale);
     },
