@@ -6,13 +6,25 @@ import { useRouter } from "next/navigation";
 import type { Host, Listing, Review } from "@/lib/models";
 import { PricePanel } from "./PricePanel";
 import { HostTrust, TrustBadges } from "./TrustBadges";
-import { priceBreakdown, paymentModeFor } from "@/lib/services/pricingService";
 import { CheckoutModal } from "@/components/booking/CheckoutModal";
 import { BookingPanel } from "@/components/booking/BookingPanel";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 const NIGHTS = 3; // in a full build this comes from a date picker
 
+/**
+ * One listing, in full.
+ *
+ * The trust strip above the booking card used to be three hardcoded promises —
+ * "✓ Verified host", "⚡ Instant confirmation", "✓ No hidden fees" — printed on
+ * every listing whether or not any of them were true. A guest cannot tell a
+ * claim the platform checked from a claim it typed, so each one now depends on
+ * the fact behind it: the host being verified, the listing being bookable.
+ *
+ * The rating is shown only where reviews exist. "★ 0 (0 reviews)" beside a new
+ * property reads as a verdict rather than an absence.
+ */
 export function ListingDetail({
   listing,
   host,
@@ -23,13 +35,13 @@ export function ListingDetail({
   reviews: Review[];
 }) {
   const router = useRouter();
+  const { t, money, date } = useI18n();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const breakdown = priceBreakdown(listing, NIGHTS);
-  const pm = paymentModeFor(listing);
+  const rated = listing.reviewCount > 0;
 
   return (
     <main className="container detail">
-      <Link href="/" className="detail-back">← Back to stays</Link>
+      <Link href="/" className="detail-back">← {t("listing.backToStays")}</Link>
 
       <div className="detail-gallery">
         {listing.gallery.slice(0, 3).map((src, i) => (
@@ -41,7 +53,9 @@ export function ListingDetail({
         <div>
           <h1>{listing.name}</h1>
           <div className="detail-sub">
-            {listing.location} · ★ {listing.rating} ({listing.reviewCount} reviews) · up to {listing.maxGuests} guests
+            {listing.location}
+            {rated && ` · ★ ${listing.rating.toFixed(1)} (${t("listing.reviews", { count: listing.reviewCount })})`}
+            {` · ${t("card.upToGuests", { count: listing.maxGuests })}`}
           </div>
 
           <div className="host-card">
@@ -49,28 +63,42 @@ export function ListingDetail({
             <div className="host-info">
               <b>
                 {host.name}
-                {host.verified && <span className="verified">✓ Verified</span>}
+                {host.verified && <span className="verified">✓ {t("trust.verified")}</span>}
               </b>
-              <span>{host.type} · ★ {host.rating} · Responds {host.responseTime}</span>
+              <span>
+                {host.type}
+                {host.reviews > 0 && ` · ★ ${host.rating}`}
+                {host.responseTime && ` · ${t("listing.respondsIn", { time: host.responseTime })}`}
+              </span>
             </div>
           </div>
           {/* What was actually checked, on this host and on this property. */}
           <HostTrust host={host} />
 
-          <h3>Verified for this property</h3>
-          <TrustBadges listing={listing} host={host} />
+          {/* The heading would otherwise stand over nothing on every listing
+              that has not been through verification yet. */}
+          {(listing.verifications?.length || host.verifications?.length) ? (
+            <>
+              <h3>{t("listing.verifiedForProperty")}</h3>
+              <TrustBadges listing={listing} host={host} />
+            </>
+          ) : null}
 
-          <h3>About this place</h3>
+          <h3>{t("listing.about")}</h3>
           <p>{listing.description}</p>
 
-          <h3>What this place offers</h3>
+          <h3>{t("listing.offers")}</h3>
           <div className="amenities">
             {listing.amenities.map((a) => (
               <div key={a} className="a">✓ {a}</div>
             ))}
           </div>
 
-          <h3>★ {listing.rating} · {listing.reviewCount} reviews</h3>
+          <h3>
+            {rated
+              ? `★ ${listing.rating.toFixed(1)} · ${t("listing.reviews", { count: listing.reviewCount })}`
+              : t("listing.noReviews")}
+          </h3>
           <div className="reviews">
             {reviews.map((r) => (
               <div key={r.id} className="review">
@@ -90,13 +118,14 @@ export function ListingDetail({
 
         <div>
           <div className="book-card">
+            {/* Only what is true of this listing. */}
             <div className="trust-strip">
-              <span>✓ Verified host</span>
-              <span>⚡ Instant confirmation</span>
-              <span>✓ No hidden fees</span>
+              {host.verified && <span>✓ {t("listing.verifiedHost")}</span>}
+              {listing.bookable && <span>{t("card.instantConfirmation")}</span>}
+              <span>✓ {t("listing.noHiddenFees")}</span>
             </div>
             {listing.priceFreeze && (
-              <span className="price-freeze">Price frozen — this will not change after you book</span>
+              <span className="price-freeze">{t("listing.priceFrozen")}</span>
             )}
 
             {/* A real published listing can actually be sold, so it gets the
@@ -108,21 +137,29 @@ export function ListingDetail({
             ) : (
               <>
                 <div className="book-price">
-                  <b>{listing.currency} {listing.price.toLocaleString()}</b> <span>/ night</span>
+                  <b>{money(listing.price, listing.currency)}</b> <span>{t("card.perNight")}</span>
                 </div>
                 <div className="book-fields">
                   <div className="bf-row">
-                    <div className="bf"><label>Check-in</label><div className="v">Sat, 30 Aug</div></div>
-                    <div className="bf"><label>Check-out</label><div className="v">Tue, 2 Sep</div></div>
+                    <div className="bf">
+                      <label>{t("book.checkIn")}</label>
+                      <div className="v">{date(exampleDay(30))}</div>
+                    </div>
+                    <div className="bf">
+                      <label>{t("book.checkOut")}</label>
+                      <div className="v">{date(exampleDay(33))}</div>
+                    </div>
                   </div>
-                  <div className="bf"><label>Guests</label><div className="v">2 guests</div></div>
+                  <div className="bf">
+                    <label>{t("book.guests")}</label>
+                    <div className="v">{t("search.guests", { count: 2 })}</div>
+                  </div>
                 </div>
                 <div className="book-note">
-                  This is an example listing, here to show how the marketplace looks. It cannot be
-                  booked. <Link href="/">Browse the listings that can.</Link>
+                  {t("listing.exampleOnly")} <Link href="/">{t("listing.browseReal")}</Link>
                 </div>
                 <button className="btn btn-primary" onClick={() => setCheckoutOpen(true)}>
-                  Preview the checkout
+                  {t("listing.previewCheckout")}
                 </button>
               </>
             )}
@@ -130,7 +167,7 @@ export function ListingDetail({
               <>
                 {/* Same component as the checkout, so the two cannot disagree. */}
                 <PricePanel listing={listing} nights={NIGHTS} />
-                <div className="reassure">You won&apos;t be charged yet · Full price shown above</div>
+                <div className="reassure">{t("listing.notCharged")}</div>
               </>
             )}
           </div>
@@ -151,3 +188,6 @@ export function ListingDetail({
     </main>
   );
 }
+
+/** Illustrative dates for the example listing, formatted in the reader's locale. */
+const exampleDay = (n: number) => new Date(Date.now() + n * 86_400_000);

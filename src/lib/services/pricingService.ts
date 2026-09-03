@@ -91,11 +91,11 @@ export function feeComparison(listing: Listing, nights: number): FeeComparison {
     difference,
     differencePercent: typicalTotal > 0 ? Math.round((difference / typicalTotal) * 100) : 0,
     typicalExtras: [
-      { label: "Guest service fee", amount: guestService, note: "15% on top of the nightly rate" },
-      { label: "Facility fee", amount: facility, note: "per night, usually disclosed at checkout" },
-      { label: "Tax added late", amount: lateTax, note: "applied after the headline total" },
+      { key: "price.typical.guestService", noteKey: "price.typical.guestServiceNote", amount: guestService },
+      { key: "price.typical.facility", noteKey: "price.typical.facilityNote", amount: facility },
+      { key: "price.typical.lateTax", noteKey: "price.typical.lateTaxNote", amount: lateTax },
     ],
-    assumption: `Compared against ${TYPICAL_MARKETPLACE.label}. An illustrative industry model, not a quote from any named site.`,
+    assumptionKey: "price.compareAssumption",
   };
 }
 
@@ -108,15 +108,14 @@ export function priceLines(listing: Listing, nights: number) {
   const b = priceBreakdown(listing, nights);
   return {
     breakdown: b,
+    // Keys, not sentences. The nightly line needs the rate formatted in the
+    // reader's locale, which only the component knows how to do, so it carries
+    // the raw number and the component composes the line.
     lines: [
-      {
-        label: `${listing.currency} ${listing.price.toLocaleString()} × ${nights} night${nights === 1 ? "" : "s"}`,
-        amount: b.subtotal,
-        note: null as string | null,
-      },
-      { label: "Cleaning fee", amount: b.cleaningFee, note: "Charged once, set by the host" },
-      { label: "Service fee", amount: b.serviceFee, note: "What PALTAS keeps — 8%, stated up front" },
-      { label: "Taxes", amount: b.taxes, note: "Collected and remitted for you" },
+      { key: "price.nightsAt", noteKey: null as string | null, amount: b.subtotal, rate: listing.price, nights },
+      { key: "price.cleaningFee", noteKey: "price.cleaningNote", amount: b.cleaningFee },
+      { key: "price.serviceFee", noteKey: "price.serviceFeeNote", amount: b.serviceFee },
+      { key: "price.taxes", noteKey: "price.taxesNote", amount: b.taxes },
     ],
     total: b.total,
   };

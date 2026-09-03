@@ -1,33 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
- * Marketing / promo rows for the home page. These make the page feel richer and
- * build trust: security messaging (escrow, no hidden fees), travel inspiration,
- * a book-early nudge, and a call-to-action for hosts/developers to manage on
- * PALTAS. Pure presentational — no data dependency.
+ * Marketing rows for the home page: why booking here is safe, where to go, a
+ * nudge to book early, and an invitation to the business portals.
+ *
+ * One claim was withdrawn rather than translated. "Every host is verified and
+ * every stay is reviewed" was not true — verification is a check PALTAS
+ * performs on some hosts, and most listings have no reviews at all. Repeating
+ * it in fifteen languages would only have made it false in fifteen languages.
+ * What replaces it is the thing that is actually true and actually useful: a
+ * badge appears only where a check was done, and it says what was checked.
  */
 
 /** Trust band — the three reasons to book with PALTAS. */
 export function TrustBand() {
+  const { t } = useI18n();
   const items = [
-    { icon: "🔒", title: "Secure payments", body: "Every payment is processed through trusted, encrypted payment providers — your card details are never stored by us." },
-    { icon: "✓", title: "No hidden fees, ever", body: "The price you see is the price you pay — cleaning, service and taxes all shown upfront." },
-    { icon: "⭐", title: "Verified hosts & stays", body: "Every host is verified and every stay is reviewed, so you always know who you're booking with." },
+    { icon: "🔒", key: "promo.trust.payments" },
+    { icon: "✓", key: "promo.trust.noFees" },
+    { icon: "⭐", key: "promo.trust.checks" },
   ];
   return (
     <section className="promo-trust">
       <div className="promo-trust-head">
-        <h2>Book with total peace of mind</h2>
-        <p>PALTAS keeps every booking safe from search to check-in.</p>
+        <h2>{t("promo.trust.title")}</h2>
+        <p>{t("promo.trust.subtitle")}</p>
       </div>
       <div className="trust-grid">
         {items.map((it) => (
-          <div key={it.title} className="trust-card">
+          <div key={it.key} className="trust-card">
             <div className="trust-ico">{it.icon}</div>
-            <b>{it.title}</b>
-            <span>{it.body}</span>
+            <b>{t(`${it.key}.title`)}</b>
+            <span>{t(`${it.key}.body`)}</span>
           </div>
         ))}
       </div>
@@ -37,25 +44,27 @@ export function TrustBand() {
 
 /** Travel inspiration — destinations to encourage exploration. */
 export function TravelInspiration() {
+  const { t } = useI18n();
+  // Place names are place names; what they are known for is translated.
   const places = [
-    { name: "Diani Beach", tag: "Beach escapes", grad: "linear-gradient(135deg,#00c4ac,#2ea6ff)" },
-    { name: "Nairobi", tag: "City stays", grad: "linear-gradient(135deg,#7b5cff,#2ea6ff)" },
-    { name: "Mombasa", tag: "Coastal villas", grad: "linear-gradient(135deg,#ff9d5c,#ff5c8a)" },
-    { name: "Nanyuki", tag: "Mountain getaways", grad: "linear-gradient(135deg,#12b886,#00c4ac)" },
+    { name: "Diani Beach", key: "promo.travel.beach", grad: "linear-gradient(135deg,#00c4ac,#2ea6ff)" },
+    { name: "Nairobi", key: "promo.travel.city", grad: "linear-gradient(135deg,#7b5cff,#2ea6ff)" },
+    { name: "Mombasa", key: "promo.travel.coastal", grad: "linear-gradient(135deg,#ff9d5c,#ff5c8a)" },
+    { name: "Nanyuki", key: "promo.travel.mountain", grad: "linear-gradient(135deg,#12b886,#00c4ac)" },
   ];
   return (
     <section className="promo-travel">
       <div className="promo-travel-head">
         <div>
-          <h2>Where to next?</h2>
-          <p>Discover stays travellers love across the region.</p>
+          <h2>{t("promo.travel.title")}</h2>
+          <p>{t("promo.travel.subtitle")}</p>
         </div>
-        <Link href="/" className="promo-link">Explore all →</Link>
+        <Link href="/" className="promo-link">{t("promo.travel.exploreAll")} →</Link>
       </div>
       <div className="travel-grid">
         {places.map((p) => (
-          <Link key={p.name} href="/" className="travel-card" style={{ background: p.grad }}>
-            <span className="travel-tag">{p.tag}</span>
+          <Link key={p.name} href={`/?q=${encodeURIComponent(p.name)}`} className="travel-card" style={{ background: p.grad }}>
+            <span className="travel-tag">{t(p.key)}</span>
             <b>{p.name}</b>
           </Link>
         ))}
@@ -66,13 +75,14 @@ export function TravelInspiration() {
 
 /** Book-early banner — a gentle urgency nudge. */
 export function BookEarlyBanner() {
+  const { t } = useI18n();
   return (
     <section className="promo-early">
       <div className="promo-early-text">
-        <span className="promo-early-badge">Plan ahead</span>
-        <h2>Book early, stay for less</h2>
-        <p>The best homes get booked fast. Reserve now with instant confirmation and secure payment — simple, fast, and no hidden fees.</p>
-        <Link href="/" className="btn btn-primary promo-early-btn">Find your stay</Link>
+        <span className="promo-early-badge">{t("promo.early.badge")}</span>
+        <h2>{t("promo.early.title")}</h2>
+        <p>{t("promo.early.body")}</p>
+        <Link href="/" className="btn btn-primary promo-early-btn">{t("promo.early.cta")}</Link>
       </div>
       <div className="promo-early-art" aria-hidden="true">
         <div className="pe-circle pe-1" />
@@ -85,25 +95,26 @@ export function BookEarlyBanner() {
 
 /** Business CTA — invite hosts, landlords, agents, developers to manage on PALTAS. */
 export function BusinessCTA() {
+  const { t } = useI18n();
   const roles = [
-    { icon: "🏨", label: "Hotels", href: "/portal/hotel" },
-    { icon: "🏠", label: "Landlords", href: "/portal/landlord" },
-    { icon: "🤝", label: "Agents", href: "/portal/agent" },
-    { icon: "🏗️", label: "Developers", href: "/portal/developer" },
+    { icon: "🏨", key: "promo.business.hotels", href: "/portal/hotel" },
+    { icon: "🏠", key: "promo.business.landlords", href: "/portal/landlord" },
+    { icon: "🤝", key: "promo.business.agents", href: "/portal/agent" },
+    { icon: "🏗️", key: "promo.business.developers", href: "/portal/developer" },
   ];
   return (
     <section className="promo-business">
       <div className="promo-business-inner">
         <div className="promo-business-text">
-          <span className="promo-business-badge">For partners</span>
-          <h2>Building or managing property? Do it all on PALTAS.</h2>
-          <p>List your rooms, manage tenants and rent, track leads, or sell units in your development — all from one dashboard, with secure payments built in.</p>
+          <span className="promo-business-badge">{t("promo.business.badge")}</span>
+          <h2>{t("promo.business.title")}</h2>
+          <p>{t("promo.business.body")}</p>
         </div>
         <div className="business-roles">
           {roles.map((r) => (
-            <Link key={r.label} href={r.href} className="business-role">
+            <Link key={r.key} href={r.href} className="business-role">
               <span>{r.icon}</span>
-              {r.label}
+              {t(r.key)}
             </Link>
           ))}
         </div>

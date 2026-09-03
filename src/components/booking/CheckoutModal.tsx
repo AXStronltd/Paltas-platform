@@ -8,6 +8,7 @@ import { createBooking, makeIdempotencyKey } from "@/lib/services/bookingService
 import { useGuest } from "@/components/booking/GuestProvider";
 import { useToast, personalSuccess, personalError } from "@/components/ui/Toast";
 import { paymentOptions, type PaymentOption } from "@/lib/providers/registry";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Checkout state machine, now with real payment-provider selection:
@@ -23,6 +24,7 @@ export function CheckoutModal({
   listing: Listing; nights: number; onClose: () => void; onComplete: (bookingId: string) => void;
 }) {
   const toast = useToast();
+  const { t, money } = useI18n();
   // This is the preview checkout for the demo catalogue — see ListingDetail.
   // It reads the real session so it cannot disagree with the header about who
   // is signed in, but it takes no money and books nothing.
@@ -37,7 +39,7 @@ export function CheckoutModal({
   const [simFail, setSimFail] = useState(false);
   const [option, setOption] = useState<PaymentOption | null>(null);
   const [phone, setPhone] = useState("");
-  const [processingHint, setProcessingHint] = useState("Processing your payment…");
+  const [processingHint, setProcessingHint] = useState<string>("preview.processing");
 
   const breakdown = priceBreakdown(listing, nights);
   const pm = paymentModeFor(listing);
@@ -51,8 +53,7 @@ export function CheckoutModal({
 
   async function handlePay() {
     if (!option) return;
-    if (option.method === "mobile_money") setProcessingHint("Check your phone and approve the prompt…");
-    else setProcessingHint("Processing your payment…");
+    setProcessingHint(option.method === "mobile_money" ? "preview.approveOnPhone" : "preview.processing");
     setStep("processing");
     const user = guest;
     const res = await createBooking({
@@ -66,11 +67,11 @@ export function CheckoutModal({
     const who = guest?.name;
     if (res.data && res.data.status !== "failed") {
       toast.success(
-        personalSuccess(who),
-        `You're confirmed at ${listing.name}. Have a great stay!`
+        personalSuccess(t, who),
+        t("preview.confirmedAt", { name: listing.name }),
       );
     } else if (res.data) {
-      toast.error(personalError(who), `${res.data.failureReason}. You have not been charged.`);
+      toast.error(personalError(t, who), t("preview.failedNotCharged", { reason: res.data.failureReason ?? "" }));
     }
   }
 
@@ -82,18 +83,18 @@ export function CheckoutModal({
       <div className="modal">
         {step === "account" && (
           <>
-            <h2>Almost there — create your free account</h2>
-            <p className="lede">Takes 10 seconds. Instant confirmation on all bookings.</p>
-            <div className="field"><label>Full name</label><input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" /></div>
-            <div className="field"><label>Email</label><input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
-            <button className="btn btn-primary" disabled={busy} onClick={handleAccount}>{busy ? "Creating…" : "Create account & continue"}</button>
+            <h2>{t("preview.almostThere")}</h2>
+            <p className="lede">{t("preview.takesSeconds")}</p>
+            <div className="field"><label>{t("auth.fullName")}</label><input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("buy.yourName")} /></div>
+            <div className="field"><label>{t("auth.email")}</label><input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
+            <button className="btn btn-primary" disabled={busy} onClick={handleAccount}>{busy ? t("auth.creating") : t("checkout.continue")}</button>
           </>
         )}
 
         {step === "method" && (
           <>
-            <h2>How would you like to pay?</h2>
-            <p className="lede">Total KSh {breakdown.total.toLocaleString()} · all fees included</p>
+            <h2>{t("preview.howToPay")}</h2>
+            <p className="lede">{t("price.total")} {money(breakdown.total, listing.currency)} · {t("price.allIncluded")}</p>
             <div className="pay-options">
               {options.map((o) => (
                 <button
@@ -102,49 +103,49 @@ export function CheckoutModal({
                   onClick={() => setOption(o)}
                 >
                   <span className="po-ico">{o.icon || "•"}</span>
-                  <span className="po-txt"><b>{o.label}</b><span>{o.sublabel} · via {o.providerName}</span></span>
+                  <span className="po-txt"><b>{o.label}</b><span>{o.sublabel} · {t("preview.via", { provider: o.providerName })}</span></span>
                   <span className="po-radio" />
                 </button>
               ))}
             </div>
             {needsPhone && (
               <div className="field" style={{ marginTop: 12 }}>
-                <label>Mobile money number</label>
+                <label>{t("preview.mobileMoneyNumber")}</label>
                 <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 0712 345 678" inputMode="tel" />
               </div>
             )}
-            <button className="btn btn-primary" disabled={!canPay} onClick={() => setStep("review")} style={{ marginTop: 14 }}>Continue</button>
+            <button className="btn btn-primary" disabled={!canPay} onClick={() => setStep("review")} style={{ marginTop: 14 }}>{t("preview.continue")}</button>
           </>
         )}
 
         {step === "review" && option && (
           <>
-            <h2>Review & confirm</h2>
+            <h2>{t("preview.reviewConfirm")}</h2>
             <p className="lede">{listing.name} · {listing.location}</p>
             <div className="escrow-band instant">
               <div className="eb-ico">⚡</div>
-              <div><b>Instant confirmation</b><span>You&apos;re confirmed as soon as payment succeeds.</span></div>
+              <div><b>{t("preview.instantConfirmation")}</b><span>{t("preview.confirmedOnSuccess")}</span></div>
             </div>
             {/* The same component the listing page used. A guest who compared
                 prices there is looking at the identical arithmetic here. */}
             <PricePanel listing={listing} nights={nights} compact />
             <div className="breakdown">
-              <div className="br"><span>Paying with</span><span>{option.icon} {option.label}</span></div>
+              <div className="br"><span>{t("preview.payingWith")}</span><span>{option.icon} {option.label}</span></div>
             </div>
             <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 12.5, color: "var(--muted)", margin: "12px 0" }}>
               <input type="checkbox" checked={simFail} onChange={(e) => setSimFail(e.target.checked)} />
-              Simulate a failed payment (to see the error state)
+              {t("preview.simulateFailure")}
             </label>
-            <button className="btn btn-primary" onClick={handlePay}>Confirm & pay KSh {breakdown.total.toLocaleString()}</button>
-            <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => setStep("method")}>Change payment method</button>
+            <button className="btn btn-primary" onClick={handlePay}>{t("preview.confirmAndPay", { total: money(breakdown.total, listing.currency) })}</button>
+            <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => setStep("method")}>{t("preview.changeMethod")}</button>
           </>
         )}
 
         {step === "processing" && (
           <div style={{ textAlign: "center", padding: "30px 10px" }}>
             <div className="spinner" />
-            <h2 style={{ marginTop: 18 }}>{option?.method === "mobile_money" ? "Awaiting your approval…" : "Processing your payment…"}</h2>
-            <p className="lede">{processingHint} Please don&apos;t close this window.</p>
+            <h2 style={{ marginTop: 18 }}>{t(option?.method === "mobile_money" ? "preview.awaitingApproval" : "preview.processing")}</h2>
+            <p className="lede">{t(processingHint)} {t("preview.dontClose")}</p>
           </div>
         )}
 
@@ -152,18 +153,18 @@ export function CheckoutModal({
           <>
             <div style={{ textAlign: "center" }}>
               <div className="result-check ok">✓</div>
-              <h2>Booking confirmed 🎉</h2>
-              <p className="lede">You&apos;re confirmed — your booking is all set. Have a great stay!</p>
+              <h2>{t("preview.bookingConfirmed")}</h2>
+              <p className="lede">{t("preview.allSet")}</p>
             </div>
             <div className="receipt">
-              <div className="br"><span>Property</span><b>{booking.property}</b></div>
-              <div className="br"><span>Paid with</span><b>{option?.label} · {option?.providerName}</b></div>
-              <div className="br"><span>Reference</span><b>{booking.reference}</b></div>
-              <div className="br"><span>Booking code</span><b>{booking.code}</b></div>
-              <div className="br"><span>Amount</span><b>KSh {booking.breakdown.total.toLocaleString()}</b></div>
-              <div className="br"><span>Status</span><b style={{ color: "var(--teal-ink)" }}>✓ Confirmed</b></div>
+              <div className="br"><span>{t("preview.property")}</span><b>{booking.property}</b></div>
+              <div className="br"><span>{t("preview.paidWith")}</span><b>{option?.label} · {option?.providerName}</b></div>
+              <div className="br"><span>{t("preview.reference")}</span><b>{booking.reference}</b></div>
+              <div className="br"><span>{t("preview.bookingCode")}</span><b>{booking.code}</b></div>
+              <div className="br"><span>{t("preview.amount")}</span><b>{money(booking.breakdown.total, listing.currency)}</b></div>
+              <div className="br"><span>{t("preview.status")}</span><b style={{ color: "var(--teal-ink)" }}>✓ {t("bookings.status.CONFIRMED")}</b></div>
             </div>
-            <button className="btn btn-primary" onClick={() => onComplete(booking.escrowId ?? booking.id)}>View my booking</button>
+            <button className="btn btn-primary" onClick={() => onComplete(booking.escrowId ?? booking.id)}>{t("preview.viewBooking")}</button>
           </>
         )}
 
@@ -171,15 +172,15 @@ export function CheckoutModal({
           <>
             <div style={{ textAlign: "center" }}>
               <div className="result-check fail">✕</div>
-              <h2>Payment failed</h2>
-              <p className="lede">{booking.failureReason}. You have not been charged. Please try again or use a different method.</p>
+              <h2>{t("preview.paymentFailed")}</h2>
+              <p className="lede">{t("preview.failedTryAgain", { reason: booking.failureReason ?? "" })}</p>
             </div>
             <div className="receipt">
-              <div className="br"><span>Reference</span><b>{booking.reference || "—"}</b></div>
-              <div className="br"><span>Status</span><b style={{ color: "#c0453a" }}>Failed · not charged</b></div>
+              <div className="br"><span>{t("preview.reference")}</span><b>{booking.reference || "—"}</b></div>
+              <div className="br"><span>{t("preview.status")}</span><b style={{ color: "#c0453a" }}>{t("preview.failedNotChargedShort")}</b></div>
             </div>
-            <button className="btn btn-primary" onClick={() => setStep("method")}>Try a different method</button>
-            <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={onClose}>Cancel</button>
+            <button className="btn btn-primary" onClick={() => setStep("method")}>{t("preview.tryDifferent")}</button>
+            <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={onClose}>{t("bookings.cancel")}</button>
           </>
         )}
       </div>

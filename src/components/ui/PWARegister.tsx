@@ -1,12 +1,15 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Registers the service worker (making PALTAS installable + offline-capable)
  * and surfaces a lightweight "Install app" banner when the browser allows it.
  */
 export function PWARegister() {
+  const { t } = useI18n();
   const [deferred, setDeferred] = useState<any>(null);
   const [show, setShow] = useState(false);
 
@@ -55,13 +58,13 @@ export function PWARegister() {
     <div className="pwa-banner">
       <div className="pwa-ico">P</div>
       <div className="pwa-txt">
-        <b>Install PALTAS</b>
+        <b>{t("pwa.install")}</b>
         {/* One short line. Three lines of explanation made this tall enough to
             cover whatever was underneath it. */}
-        <span>Works like an app, even offline.</span>
+        <span>{t("pwa.body")}</span>
       </div>
-      <button className="pwa-install" onClick={install}>Install</button>
-      <button className="pwa-close" onClick={dismiss} aria-label="Dismiss">✕</button>
+      <button className="pwa-install" onClick={install}>{t("pwa.installCta")}</button>
+      <button className="pwa-close" onClick={dismiss} aria-label={t("pwa.dismiss")}>✕</button>
     </div>
   );
 }

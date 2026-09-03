@@ -15,6 +15,17 @@ const {
   priceBreakdown, allInNightly, feeComparison, priceLines, TYPICAL_MARKETPLACE,
 } = require("../.test-build/lib/services/pricingService.js");
 
+// The service returns message keys, not sentences — the words belong to
+// whichever language the reader chose. Resolving them here means a key that
+// nothing defines fails the test rather than rendering as a raw "price.taxes"
+// on a live price panel.
+const EN = JSON.parse(require("node:fs").readFileSync(
+  require("node:path").join(__dirname, "../src/lib/i18n/messages/en.json"), "utf8"));
+const say = (key) => {
+  assert.ok(key in EN, `${key} is not defined in the English catalogue`);
+  return EN[key];
+};
+
 const listing = (over = {}) => ({
   id: "l1", name: "Test", type: "villa", location: "Diani", city: "Kwale", country: "KE",
   price: 12000, currency: "KES", rating: 4.8, reviewCount: 40, beds: 3, baths: 2,
@@ -42,9 +53,9 @@ test("every line the guest is shown adds up to the total they are charged", () =
 
 test("our own service fee is a named line, not hidden in the rate", () => {
   const { lines } = priceLines(listing(), 3);
-  const service = lines.find((l) => l.label === "Service fee");
+  const service = lines.find((l) => l.key === "price.serviceFee");
   assert.ok(service, "the service fee must appear as its own line");
-  assert.match(service.note, /PALTAS keeps/, "and must say it is ours");
+  assert.match(say(service.noteKey), /PALTAS keeps/, "and must say it is ours");
   // The nightly rate the guest reads is the host's rate, not a loaded one.
   const nightly = lines[0];
   assert.equal(nightly.amount, 12000 * 3);
@@ -73,11 +84,27 @@ test("the comparison is derived from the stated assumption, not invented", () =>
 
 test("the comparison always says where its number came from", () => {
   const c = feeComparison(listing(), 3);
-  assert.match(c.assumption, /illustrative industry model/i);
-  assert.match(c.assumption, /not a quote from any named site/i);
+  const assumption = say(c.assumptionKey);
+  assert.match(assumption, /illustrative industry model/i);
+  assert.match(assumption, /not a quote from any named site/i);
   // Every itemised extra explains itself rather than appearing as a bare figure.
   for (const e of c.typicalExtras) {
-    assert.ok(e.note && e.note.length > 0, `${e.label} must state what it is`);
+    assert.ok(say(e.noteKey).length > 0, `${e.key} must state what it is`);
+  }
+});
+
+test("every line the price panel renders has words behind it", () => {
+  // The failure this guards against: renaming a catalogue key leaves the panel
+  // printing "price.cleaningFee" at a guest, which the type checker cannot see
+  // because both sides are strings.
+  const { lines } = priceLines(listing(), 3);
+  for (const l of lines) {
+    say(l.key);
+    if (l.noteKey) say(l.noteKey);
+  }
+  for (const e of feeComparison(listing(), 3).typicalExtras) {
+    say(e.key);
+    say(e.noteKey);
   }
 });
 

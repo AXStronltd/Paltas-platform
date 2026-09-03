@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Host, Listing, Verification, VerificationKind } from "@/lib/models";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Trust badges that say what was actually checked.
@@ -14,12 +15,17 @@ import type { Host, Listing, Verification, VerificationKind } from "@/lib/models
  * on trust.
  */
 
-const BADGE_COPY: Record<VerificationKind, { label: string; icon: string; short: string }> = {
-  identity:   { label: "ID verified",        icon: "🪪", short: "Government ID matched to the account holder" },
-  ownership:  { label: "Ownership verified", icon: "📜", short: "Title deed or lease proving the right to let" },
-  inspection: { label: "Property inspected", icon: "🔍", short: "Visited in person by a PALTAS inspector" },
-  licence:    { label: "Licensed",           icon: "⚖️", short: "Short-let or tourism licence on file" },
-  payment:    { label: "Payouts verified",   icon: "🏦", short: "Payouts confirmed to a named bank account" },
+/**
+ * The icon and the message key for each kind of check. The words themselves
+ * live in the catalogues: a badge that says "Verified" only in English is not
+ * evidence to most of the people being asked to trust it.
+ */
+const BADGE: Record<VerificationKind, { key: string; icon: string }> = {
+  identity:   { key: "trust.idVerified",        icon: "🪪" },
+  ownership:  { key: "trust.ownershipVerified", icon: "📜" },
+  inspection: { key: "trust.propertyInspected", icon: "🔍" },
+  licence:    { key: "trust.licensed",          icon: "⚖️" },
+  payment:    { key: "trust.payoutsVerified",   icon: "🏦" },
 };
 
 export function TrustBadges({
@@ -29,6 +35,7 @@ export function TrustBadges({
   host?: Host;
   size?: "normal" | "small";
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState<string | null>(null);
 
   // Property-level and host-level evidence, de-duplicated by kind. Nothing is
@@ -51,7 +58,8 @@ export function TrustBadges({
   return (
     <div className={`trust-badges ${size}`}>
       {badges.map(({ verification, scope }) => {
-        const copy = BADGE_COPY[verification.kind];
+        const copy = BADGE[verification.kind];
+        const label = t(copy.key);
         const id = `${scope}-${verification.kind}`;
         const isOpen = open === id;
         return (
@@ -61,17 +69,19 @@ export function TrustBadges({
               className={`trust-badge ${isOpen ? "on" : ""}`}
               onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : id); }}
               aria-expanded={isOpen}
-              aria-label={`${copy.label} — what was checked`}
+              aria-label={t("trust.whatChecked", { label })}
             >
               <span aria-hidden="true">{copy.icon}</span>
-              {copy.label}
+              {label}
             </button>
             {isOpen && (
               <div className="trust-detail" role="note">
-                <b>{copy.label}</b>
+                <b>{label}</b>
                 <p>{verification.method}</p>
                 <span>
-                  {scope === "property" ? "This property" : "This host"} · checked {verification.verifiedAt}
+                  {t(scope === "property" ? "trust.thisProperty" : "trust.thisHost")}
+                  {" · "}
+                  {t("trust.checked", { date: verification.verifiedAt })}
                 </span>
               </div>
             )}
@@ -88,17 +98,18 @@ export function TrustBadges({
  * listing itself.
  */
 export function TrustStrip({ listing, host }: { listing?: Listing; host?: Host }) {
+  const { t } = useI18n();
   const kinds = new Set<VerificationKind>();
   for (const v of [...(listing?.verifications ?? []), ...(host?.verifications ?? [])]) kinds.add(v.kind);
   if (kinds.size === 0) return null;
 
   const shown = Array.from(kinds).slice(0, 3);
   return (
-    <span className="trust-strip" title={shown.map((k) => BADGE_COPY[k].label).join(" · ")}>
+    <span className="trust-strip" title={shown.map((k) => t(BADGE[k].key)).join(" · ")}>
       {shown.map((k) => (
         <span key={k} className="trust-chip">
-          <span aria-hidden="true">{BADGE_COPY[k].icon}</span>
-          {BADGE_COPY[k].label}
+          <span aria-hidden="true">{BADGE[k].icon}</span>
+          {t(BADGE[k].key)}
         </span>
       ))}
     </span>
@@ -111,13 +122,23 @@ export function TrustStrip({ listing, host }: { listing?: Listing; host?: Host }
  * reply.
  */
 export function HostTrust({ host }: { host: Host }) {
+  const { t, number } = useI18n();
   return (
     <div className="host-trust">
       <TrustBadges host={host} size="small" />
       <ul className="host-facts">
-        {host.hostingSince && <li><b>Hosting since {host.hostingSince}</b></li>}
-        <li><b>{host.reviews.toLocaleString()} reviews</b> · ★ {host.rating}</li>
-        <li>Responds {host.responseTime}{host.responseRate ? ` · ${host.responseRate}% of the time` : ""}</li>
+        {host.hostingSince && <li><b>{t("listing.hostingSince", { year: host.hostingSince })}</b></li>}
+        {/* A host with no reviews has no rating to average. Printing "0 reviews
+            · ★ 0" beside a new host reads as a bad one. */}
+        {host.reviews > 0 && (
+          <li><b>{t("listing.reviews", { count: host.reviews })}</b> · ★ {host.rating}</li>
+        )}
+        {host.responseTime && (
+          <li>
+            {t("listing.respondsIn", { time: host.responseTime })}
+            {host.responseRate ? ` · ${t("trust.responseRate", { rate: number(host.responseRate) })}` : ""}
+          </li>
+        )}
       </ul>
     </div>
   );

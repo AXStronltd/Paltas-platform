@@ -78,19 +78,34 @@ export function firstName(full?: string | null): string {
   return full.trim().split(/\s+/)[0];
 }
 
-const SUCCESS_OPENERS = ["Nice one", "All set", "Done", "Perfect", "You're all set"];
-export function personalSuccess(name?: string | null): string {
+/**
+ * The warm openers, as message keys.
+ *
+ * These take a translator rather than reading one, because they are plain
+ * functions and not components — a hook cannot be called here. The caller has
+ * `t` already, so passing it costs nothing and keeps "Nice one, Ahmed!" from
+ * being the one English sentence left in an otherwise Arabic checkout.
+ */
+type T = (key: string, values?: Record<string, string | number>) => string;
+
+const SUCCESS_OPENERS = [
+  "toast.opener.niceOne", "toast.opener.allSet", "toast.opener.done",
+  "toast.opener.perfect", "toast.opener.youreAllSet",
+];
+
+export function personalSuccess(t: T, name?: string | null): string {
   const n = firstName(name);
-  const opener = SUCCESS_OPENERS[Math.floor(Math.random() * SUCCESS_OPENERS.length)];
-  return n ? `${opener}, ${n}!` : `${opener}!`;
+  const opener = t(SUCCESS_OPENERS[Math.floor(Math.random() * SUCCESS_OPENERS.length)]);
+  return n ? t("toast.successNamed", { opener, name: n }) : t("toast.success", { opener });
 }
-export function personalError(name?: string | null): string {
+export function personalError(t: T, name?: string | null): string {
   const n = firstName(name);
-  return n ? `Sorry ${n}, that didn't go through` : "That didn't go through";
+  return n ? t("toast.errorNamed", { name: n }) : t("toast.error");
 }
-export function personalWelcome(name?: string | null): string {
+export function personalWelcome(t: T, name?: string | null): string {
   const n = firstName(name);
   const hour = new Date().getHours();
   const part = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
-  return n ? `Good ${part}, ${n} 👋` : `Good ${part} 👋`;
+  const greeting = t(`toast.good.${part}`);
+  return n ? t("toast.welcomeNamed", { greeting, name: n }) : t("toast.welcome", { greeting });
 }

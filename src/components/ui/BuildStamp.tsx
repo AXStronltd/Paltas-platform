@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * The build this page came from, and a way out of a stale one.
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
  * offers the one thing that fixes it.
  */
 export function BuildStamp() {
+  const { t } = useI18n();
   const [server, setServer] = useState<string | null>(null);
   const page = process.env.NEXT_PUBLIC_BUILD_COMMIT ?? "dev";
 
@@ -39,14 +41,14 @@ export function BuildStamp() {
   if (stale) {
     return (
       <div className="build-stale" role="status">
-        <span>A newer version of PALTAS is available.</span>
-        <button onClick={refresh}>Load it</button>
+        <span>{t("build.newer")}</span>
+        <button onClick={refresh}>{t("build.loadIt")}</button>
       </div>
     );
   }
 
   return (
-    <p className="build-stamp" title="The build this page came from">
+    <p className="build-stamp" title={t("build.which")}>
       PALTAS · {server ?? page}
     </p>
   );

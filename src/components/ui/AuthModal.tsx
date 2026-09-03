@@ -64,7 +64,7 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     if (message) return setErr(message);
 
     toast.success(
-      personalWelcome(name.trim() || email.trim()),
+      personalWelcome(t, name.trim() || email.trim()),
       tab === "up" ? "Your account is ready." : "Good to see you again.",
     );
     onDone?.();

@@ -3,9 +3,10 @@
 import { useState } from "react";
 import type { Listing } from "@/lib/models";
 import { feeComparison, priceLines } from "@/lib/services/pricingService";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
- * The price, told in full.
+ * The price, told in full — in the reader's language and their number format.
  *
  * One component behind the detail page and the checkout, so the two cannot drift
  * apart — a guest seeing one number on the listing and another at payment is the
@@ -19,6 +20,10 @@ import { feeComparison, priceLines } from "@/lib/services/pricingService";
  *  - The comparison is collapsed by default and states its assumption when
  *    opened. It is a model of typical fee loading, not a scrape of a named
  *    competitor, and saying so is the difference between a claim and a boast.
+ *
+ * The amounts are formatted in the listing's own currency, never converted —
+ * a price quoted in one currency and charged in another is the same broken
+ * promise as a fee that appears at checkout.
  */
 export function PricePanel({
   listing, nights, compact = false,
@@ -27,37 +32,44 @@ export function PricePanel({
   nights: number;
   compact?: boolean;
 }) {
+  const { t, money, marketConfig } = useI18n();
   const { lines, total } = priceLines(listing, nights);
   const comparison = feeComparison(listing, nights);
   const [showComparison, setShowComparison] = useState(false);
-  const money = (n: number) => `${listing.currency} ${n.toLocaleString()}`;
+  const amount = (n: number) => money(n, listing.currency);
 
   return (
     <div className={`price-panel ${compact ? "compact" : ""}`}>
       <ul className="price-lines">
         {lines.map((l) => (
-          <li key={l.label}>
+          <li key={l.key}>
             <div>
-              <span className="pl-label">{l.label}</span>
-              {l.note && <span className="pl-note">{l.note}</span>}
+              <span className="pl-label">
+                {t(l.key, {
+                  // The nightly line reads "KSh 6,800 × 3 nights"; the tax line
+                  // is named whatever this market calls it.
+                  ...(l.rate !== undefined ? { price: amount(l.rate), count: l.nights ?? nights } : {}),
+                  taxLabel: marketConfig.taxLabel,
+                })}
+              </span>
+              {l.noteKey && <span className="pl-note">{t(l.noteKey)}</span>}
             </div>
-            <span className="pl-amount">{money(l.amount)}</span>
+            <span className="pl-amount">{amount(l.amount)}</span>
           </li>
         ))}
       </ul>
 
       <div className="price-total">
         <div>
-          <b>Total</b>
-          <span>for {nights} night{nights === 1 ? "" : "s"} · nothing further to pay</span>
+          <b>{t("price.total")}</b>
+          <span>{t("price.forNights", { count: nights })} · {t("price.nothingFurther")}</span>
         </div>
-        <b className="price-total-amount">{money(total)}</b>
+        <b className="price-total-amount">{amount(total)}</b>
       </div>
 
       <p className="price-pledge">
         <span aria-hidden="true">🔒</span>
-        This is the amount you will be charged. No booking fee, no facility fee, no
-        currency mark-up, and no line added at the payment step.
+        {t("price.pledge")}
       </p>
 
       {comparison.difference > 0 && (
@@ -67,9 +79,7 @@ export function PricePanel({
             onClick={() => setShowComparison((v) => !v)}
             aria-expanded={showComparison}
           >
-            <span>
-              About <b>{money(comparison.difference)}</b> less than typical marketplace fee loading
-            </span>
+            <span>{t("price.lessThanTypical", { amount: amount(comparison.difference) })}</span>
             <span className="chev" aria-hidden="true">{showComparison ? "▴" : "▾"}</span>
           </button>
 
@@ -78,27 +88,27 @@ export function PricePanel({
               <div className="compare-cols">
                 <div className="compare-col ours">
                   <span className="compare-head">PALTAS</span>
-                  <b>{money(comparison.paltasTotal)}</b>
+                  <b>{amount(comparison.paltasTotal)}</b>
                   <ul>
-                    <li>All fees in the price above</li>
-                    <li>Nothing added at checkout</li>
+                    <li>{t("price.allFeesInPrice")}</li>
+                    <li>{t("price.nothingAtCheckout")}</li>
                   </ul>
                 </div>
                 <div className="compare-col theirs">
-                  <span className="compare-head">Typical marketplace</span>
-                  <b>{money(comparison.typicalTotal)}</b>
+                  <span className="compare-head">{t("price.typicalMarketplace")}</span>
+                  <b>{amount(comparison.typicalTotal)}</b>
                   <ul>
                     {comparison.typicalExtras.map((e) => (
-                      <li key={e.label}>
-                        + {money(e.amount)} {e.label.toLowerCase()}
-                        <em>{e.note}</em>
+                      <li key={e.key}>
+                        + {amount(e.amount)} {t(e.key).toLocaleLowerCase()}
+                        <em>{t(e.noteKey)}</em>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
               {/* Saying where the number comes from is the point of the exercise. */}
-              <p className="compare-assumption">{comparison.assumption}</p>
+              <p className="compare-assumption">{t(comparison.assumptionKey)}</p>
             </div>
           )}
         </div>

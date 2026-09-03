@@ -31,7 +31,13 @@ const uniq = () => `e2e${Math.floor(Math.random() * 1e9)}@example.com`;
 console.log("THE PAGE EXISTS AT ALL");
 const feed = await (await fetch(`${BASE}/public/listings?kind=SALE`)).json();
 check(feed.listings.length >= 1, "there is property for sale to browse", `${feed.listings?.length}`);
-const forSale = feed.listings[0];
+// A Nairobi listing specifically, because the manager who checks the pipeline
+// below holds the Nairobi property. Taking listings[0] passed only while there
+// was one property for sale; once the coast had one too, the lead routed
+// correctly to Mombasa and the test read that as the lead never arriving.
+const forSale = feed.listings.find((l) => l.city === "Nairobi");
+check(!!forSale, "there is Nairobi property for sale to browse",
+  feed.listings.map((l) => `${l.title} (${l.city})`).join(" | "));
 check(forSale.priceUnit === "total", "priced as a total, not per night", forSale?.priceUnit);
 
 console.log("\nA BUYER CAN ASK WITHOUT AN ACCOUNT");

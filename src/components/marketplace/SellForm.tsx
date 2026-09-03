@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { submitEnquiry } from "@/lib/services/enquiryService";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * "I want to sell."
@@ -16,9 +17,18 @@ import { submitEnquiry } from "@/lib/services/enquiryService";
  * The form asks for very little. Every extra field on a first contact costs
  * responses, and the valuation conversation gathers the rest anyway.
  */
-const TYPES = ["House", "Apartment", "Land", "Commercial", "Other"];
+// The value is stored and read by staff, so it stays English; the label is
+// what the seller reads, so it is translated.
+const TYPES = [
+  { value: "House", key: "sell.type.house" },
+  { value: "Apartment", key: "sell.type.apartment" },
+  { value: "Land", key: "sell.type.land" },
+  { value: "Commercial", key: "sell.type.commercial" },
+  { value: "Other", key: "sell.type.other" },
+];
 
 export function SellForm() {
+  const { t } = useI18n();
   const [f, setF] = useState({
     name: "", contact: "", propertyType: "House", city: "", price: "", message: "",
   });
@@ -28,8 +38,8 @@ export function SellForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!f.name.trim()) return setError("Please give us a name.");
-    if (!f.contact.trim()) return setError("Please leave an email address or a phone number.");
+    if (!f.name.trim()) return setError(t("sell.needName"));
+    if (!f.contact.trim()) return setError(t("sell.needContact"));
     setBusy(true);
     setError(null);
     const isEmail = f.contact.includes("@");
@@ -53,10 +63,10 @@ export function SellForm() {
     return (
       <main className="container detail">
         <div className="empty-state">
-          <h1 className="choose-title">Thank you</h1>
+          <h1 className="choose-title">{t("sell.thanks")}</h1>
           <p>{sent}</p>
           <p className="muted">
-            <Link href="/">Back to PALTAS</Link>
+            <Link href="/">{t("sell.backHome")}</Link>
           </p>
         </div>
       </main>
@@ -65,45 +75,45 @@ export function SellForm() {
 
   return (
     <main className="container detail">
-      <Link href="/buy-sell" className="detail-back">← Buying or selling?</Link>
-      <h1 className="choose-title">Sell your property</h1>
+      <Link href="/buy-sell" className="detail-back">← {t("buysell.title")}</Link>
+      <h1 className="choose-title">{t("sell.title")}</h1>
       <p className="choose-sub">
-        Tell us about it and we will call you. No account, no fee to list, and no obligation.
+        {t("sell.sub")}
       </p>
 
       <form className="enquiry" onSubmit={submit}>
         <div className="field">
-          <label htmlFor="s-name">Your name</label>
+          <label htmlFor="s-name">{t("buy.yourName")}</label>
           <input id="s-name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })}
             required autoComplete="name" />
         </div>
         <div className="field">
-          <label htmlFor="s-contact">Email or phone</label>
+          <label htmlFor="s-contact">{t("buy.contact")}</label>
           <input id="s-contact" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })}
             required placeholder="you@example.com or +254 7…" autoComplete="email" />
         </div>
 
         <div className="field-row">
           <div className="field">
-            <label htmlFor="s-type">What are you selling</label>
+            <label htmlFor="s-type">{t("sell.what")}</label>
             <select id="s-type" value={f.propertyType} onChange={(e) => setF({ ...f, propertyType: e.target.value })}>
-              {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              {TYPES.map((o) => <option key={o.value} value={o.value}>{t(o.key)}</option>)}
             </select>
           </div>
           <div className="field">
-            <label htmlFor="s-city">Where is it</label>
+            <label htmlFor="s-city">{t("sell.whereIsIt")}</label>
             <input id="s-city" value={f.city} onChange={(e) => setF({ ...f, city: e.target.value })} placeholder="Nairobi" />
           </div>
         </div>
 
         <div className="field">
-          <label htmlFor="s-price">What do you hope to get <span className="muted">(optional)</span></label>
+          <label htmlFor="s-price">{t("sell.hopeToGet")} <span className="muted">({t("sell.optional")})</span></label>
           <input id="s-price" inputMode="numeric" value={f.price}
             onChange={(e) => setF({ ...f, price: e.target.value })} placeholder="15,000,000" />
         </div>
 
         <div className="field">
-          <label htmlFor="s-msg">Anything we should know <span className="muted">(optional)</span></label>
+          <label htmlFor="s-msg">{t("sell.knowMore")} <span className="muted">({t("sell.optional")})</span></label>
           <textarea id="s-msg" rows={3} value={f.message}
             onChange={(e) => setF({ ...f, message: e.target.value })}
             placeholder="Three bedrooms, title deed ready, tenant in place until March…" />
@@ -112,10 +122,10 @@ export function SellForm() {
         {error && <div className="book-note bad">{error}</div>}
 
         <button className="btn btn-primary" type="submit" disabled={busy}>
-          {busy ? "Sending…" : "Ask for a valuation"}
+          {busy ? t("buy.sending") : t("sell.askValuation")}
         </button>
         <p className="reassure">
-          We only use these details to contact you about your property.
+          {t("sell.onlyContact")}
         </p>
       </form>
     </main>

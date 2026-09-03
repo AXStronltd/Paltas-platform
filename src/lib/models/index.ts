@@ -162,10 +162,16 @@ export interface FeeComparison {
   typicalTotal: number;
   difference: number;
   differencePercent: number;
-  /** The extras a guest commonly meets at checkout elsewhere, itemised. */
-  typicalExtras: { label: string; amount: number; note: string }[];
-  /** The assumptions behind `typicalTotal`, shown to the guest. */
-  assumption: string;
+  /**
+   * The extras a guest commonly meets at checkout elsewhere, itemised.
+   *
+   * Message keys rather than English: this is priced arithmetic, and the words
+   * belong to whoever is reading. A service that returns "Guest service fee"
+   * has decided the visitor speaks English.
+   */
+  typicalExtras: { key: string; noteKey: string; amount: number }[];
+  /** The key for the assumptions behind `typicalTotal`, shown to the guest. */
+  assumptionKey: string;
 }
 
 export interface PriceBreakdown {

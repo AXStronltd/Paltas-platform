@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * The destination carousel that greets a visitor on the home page.
@@ -25,68 +26,51 @@ const ROTATE_MS = 7000;
 
 interface Slide {
   key: string;
-  eyebrow: string;
-  question: string;
-  headline: string;
-  copy: string;
-  cta: { label: string; href: string };
-  stat: { value: string; label: string };
-  proof: string[];
+  href: string;
+  /** A promise the platform actually keeps, shown beside the headline. */
+  promise: string;
   motif: "khatam" | "zellige" | "deco" | "dune";
+  proof: string[];
 }
 
+/**
+ * Four destinations, as questions.
+ *
+ * Every slide used to carry a statistic: "1,240 verified stays in Makkah &
+ * Madinah", "4.89★ average across 380 riads", "from KSh 8,500 per night". None
+ * of them were measurements. PALTAS has eleven listings and none of them are in
+ * Saudi Arabia or Morocco, so those were counts of nothing, printed above a
+ * Book button on a site that takes card payments.
+ *
+ * What stands there now is a promise rather than a number — something the
+ * platform can be held to, and is: the total shown is the total charged, which
+ * PricePanel enforces line by line.
+ */
 const SLIDES: Slide[] = [
   {
-    key: "hajj",
-    eyebrow: "Pilgrimage · Makkah & Madinah",
-    question: "Planning Hajj?",
-    headline: "Stay within walking distance of the Haram.",
-    copy:
-      "Verified apartments and hotels for pilgrims and their families, with group rates, prayer-time quiet hours and hosts who understand the season.",
-    cta: { label: "Explore Hajj stays", href: "/?mode=hajj" },
-    stat: { value: "1,240", label: "verified stays in Makkah & Madinah" },
-    proof: ["Group bookings", "Payment held in escrow", "Arabic & English hosts"],
-    motif: "khatam",
+    key: "hajj", href: "/?mode=hajj", motif: "khatam",
+    promise: "promo.slide.hajj.promise",
+    proof: ["promo.proof.groupBookings", "promo.proof.escrow", "promo.proof.arabicHosts"],
   },
   {
-    key: "umrah",
-    eyebrow: "Umrah · All year round",
-    question: "Or Umrah, this season?",
-    headline: "Shorter trip. Same care taken over where you sleep.",
-    copy:
-      "Book a week or a weekend near the Haram without paying peak Hajj rates. Flexible cancellation, and your money stays in escrow until you have checked in.",
-    cta: { label: "Find Umrah stays", href: "/?mode=umrah" },
-    stat: { value: "from KSh 8,500", label: "per night, all fees included" },
-    proof: ["Free cancellation", "No hidden fees", "Family rooms"],
-    motif: "khatam",
+    key: "umrah", href: "/?mode=umrah", motif: "khatam",
+    promise: "promo.slide.umrah.promise",
+    proof: ["promo.proof.freeCancellation", "promo.proof.noHiddenFees", "promo.proof.familyRooms"],
   },
   {
-    key: "marrakesh",
-    eyebrow: "City break · Morocco",
-    question: "Thinking Marrakesh?",
-    headline: "A riad inside the medina, not a hotel outside it.",
-    copy:
-      "Courtyard houses with plunge pools and rooftop terraces, a few minutes from Jemaa el-Fnaa. Hosts arrange the airport transfer and the hammam.",
-    cta: { label: "See riads in Marrakesh", href: "/?city=Marrakesh" },
-    stat: { value: "4.89★", label: "average across 380 riads" },
-    proof: ["Airport transfer", "Rooftop terraces", "Verified hosts"],
-    motif: "zellige",
+    key: "marrakesh", href: "/?city=Marrakesh", motif: "zellige",
+    promise: "promo.slide.marrakesh.promise",
+    proof: ["promo.proof.airportTransfer", "promo.proof.rooftop", "promo.proof.checksShown"],
   },
   {
-    key: "miami",
-    eyebrow: "Beach · Florida",
-    question: "Or Miami?",
-    headline: "Ocean Drive on one side, the Atlantic on the other.",
-    copy:
-      "Art-deco apartments and beachfront condos in South Beach and Brickell, with the full price shown before you book — resort fees and all.",
-    cta: { label: "Browse Miami stays", href: "/?city=Miami" },
-    stat: { value: "0 hidden fees", label: "the total you see is the total you pay" },
-    proof: ["Beachfront", "Instant confirmation", "Transparent totals"],
-    motif: "deco",
+    key: "miami", href: "/?city=Miami", motif: "deco",
+    promise: "promo.slide.miami.promise",
+    proof: ["promo.proof.beachfront", "promo.proof.instant", "promo.proof.transparentTotals"],
   },
 ];
 
 export function PromoCarousel() {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -131,7 +115,7 @@ export function PromoCarousel() {
       ref={regionRef}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Featured destinations"
+      aria-label={t("promo.featured")}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -157,20 +141,20 @@ export function PromoCarousel() {
           >
             <Motif kind={slide.motif} />
             <div className="promo-body">
-              <span className="promo-eyebrow">{slide.eyebrow}</span>
-              <p className="promo-question">{slide.question}</p>
-              <h2 className="promo-headline">{slide.headline}</h2>
-              <p className="promo-copy">{slide.copy}</p>
+              <span className="promo-eyebrow">{t(`promo.slide.${slide.key}.eyebrow`)}</span>
+              <p className="promo-question">{t(`promo.${slide.key}.question`)}</p>
+              <h2 className="promo-headline">{t(`promo.slide.${slide.key}.headline`)}</h2>
+              <p className="promo-copy">{t(`promo.slide.${slide.key}.copy`)}</p>
               <div className="promo-actions">
-                <Link href={slide.cta.href} className="promo-cta">{slide.cta.label}</Link>
+                <Link href={slide.href} className="promo-cta">{t(`promo.slide.${slide.key}.cta`)}</Link>
                 <ul className="promo-proof">
-                  {slide.proof.map((p) => <li key={p}>{p}</li>)}
+                  {slide.proof.map((k) => <li key={k}>{t(k)}</li>)}
                 </ul>
               </div>
             </div>
             <aside className="promo-stat" aria-hidden="true">
-              <b>{slide.stat.value}</b>
-              <span>{slide.stat.label}</span>
+              <b>{t("promo.promiseLead")}</b>
+              <span>{t(slide.promise)}</span>
             </aside>
           </article>
         ))}
@@ -178,17 +162,19 @@ export function PromoCarousel() {
 
       {/* Announced separately so a screen reader hears the change once, cleanly. */}
       <p className="sr-only" aria-live="polite">
-        Slide {index + 1} of {SLIDES.length}: {active.question} {active.headline}
+        {t("promo.slideOf", { n: index + 1, total: SLIDES.length })}
+        {": "}
+        {t(`promo.${active.key}.question`)} {t(`promo.slide.${active.key}.headline`)}
       </p>
 
       <div className="promo-controls">
-        <div className="promo-dots" role="tablist" aria-label="Choose a destination">
+        <div className="promo-dots" role="tablist" aria-label={t("promo.chooseDestination")}>
           {SLIDES.map((slide, i) => (
             <button
               key={slide.key}
               role="tab"
               aria-selected={i === index}
-              aria-label={slide.question}
+              aria-label={t(`promo.${slide.key}.question`)}
               className={`promo-dot ${i === index ? "on" : ""}`}
               onClick={() => go(i)}
             >
@@ -201,17 +187,17 @@ export function PromoCarousel() {
         </div>
 
         <div className="promo-arrows">
-          <button className="promo-arrow" onClick={() => go(index - 1)} aria-label="Previous destination">‹</button>
+          <button className="promo-arrow" onClick={() => go(index - 1)} aria-label={t("promo.previousDestination")}>‹</button>
           {!reducedMotion && (
             <button
               className="promo-arrow"
               onClick={() => setPaused((p) => !p)}
-              aria-label={paused ? "Resume automatic rotation" : "Pause automatic rotation"}
+              aria-label={t(paused ? "promo.resumeRotation" : "promo.pauseRotation")}
             >
               {paused ? "▶" : "❚❚"}
             </button>
           )}
-          <button className="promo-arrow" onClick={() => go(index + 1)} aria-label="Next destination">›</button>
+          <button className="promo-arrow" onClick={() => go(index + 1)} aria-label={t("promo.nextDestination")}>›</button>
         </div>
       </div>
     </section>

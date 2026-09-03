@@ -6,6 +6,7 @@ import type { Listing } from "@/lib/models";
 import { searchListings } from "@/lib/services/listingService";
 import { submitEnquiry } from "@/lib/services/enquiryService";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Property for sale, and a way to ask about it.
@@ -19,6 +20,7 @@ import { SafeImage } from "@/components/ui/SafeImage";
  * anyway — an empty result is not a reason to lose the buyer.
  */
 export function BuyBrowser() {
+  const { t, money } = useI18n();
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [sent, setSent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +36,8 @@ export function BuyBrowser() {
   useEffect(() => { void load(); }, [load]);
 
   async function send(listingId?: string) {
-    if (!form.name.trim()) return setError("Please give us a name.");
-    if (!form.contact.trim()) return setError("Please leave an email address or a phone number.");
+    if (!form.name.trim()) return setError(t("sell.needName"));
+    if (!form.contact.trim()) return setError(t("sell.needContact"));
     setBusy(true);
     setError(null);
     const isEmail = form.contact.includes("@");
@@ -55,10 +57,10 @@ export function BuyBrowser() {
 
   return (
     <main className="container detail">
-      <Link href="/buy-sell" className="detail-back">← Buying or selling?</Link>
-      <h1 className="choose-title">Property for sale</h1>
+      <Link href="/buy-sell" className="detail-back">← {t("buysell.title")}</Link>
+      <h1 className="choose-title">{t("buy.title")}</h1>
 
-      {listings === null && <p className="muted">Loading…</p>}
+      {listings === null && <p className="muted">{t("common.loading")}</p>}
 
       {listings && listings.length > 0 && (
         <div className="cards">
@@ -68,10 +70,10 @@ export function BuyBrowser() {
               <div className="card-body">
                 <b>{l.name}</b>
                 <span>{[l.location, l.city].filter(Boolean).join(", ")}</span>
-                <span className="card-price">
-                  {new Intl.NumberFormat("en", { style: "currency", currency: l.currency, maximumFractionDigits: 0 }).format(l.price)}
-                </span>
-                <span>{l.beds} bed · {l.baths} bath</span>
+                {/* Formatted for the reader, not for English: this hardcoded
+                    "en" put a French buyer's price in American grouping. */}
+                <span className="card-price">{money(l.price, l.currency)}</span>
+                <span>{t("buy.bedsBaths", { beds: l.beds, baths: l.baths })}</span>
               </div>
             </Link>
           ))}
@@ -80,51 +82,48 @@ export function BuyBrowser() {
 
       {listings && listings.length === 0 && (
         <div className="empty-state">
-          <p>Nothing is listed for sale on PALTAS just yet.</p>
-          <p className="muted">
-            Tell us what you are looking for below and an agent will contact you when something
-            matches — often before it is advertised.
-          </p>
+          <p>{t("buy.nothingYet")}</p>
+          <p className="muted">{t("buy.tellUs")}</p>
         </div>
       )}
 
       <section className="enquiry">
-        <h2>Tell us what you are looking for</h2>
+        <h2>{t("buy.formTitle")}</h2>
         {sent ? (
           <div className="book-note">{sent}</div>
         ) : (
           <>
             <div className="field">
-              <label htmlFor="b-name">Your name</label>
+              <label htmlFor="b-name">{t("buy.yourName")}</label>
               <input id="b-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoComplete="name" />
             </div>
             <div className="field">
-              <label htmlFor="b-contact">Email or phone</label>
+              <label htmlFor="b-contact">{t("buy.contact")}</label>
               <input id="b-contact" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })}
                 placeholder="you@example.com or +254 7…" autoComplete="email" />
             </div>
             <div className="field-row">
               <div className="field">
-                <label htmlFor="b-city">Where</label>
+                <label htmlFor="b-city">{t("buy.where")}</label>
                 <input id="b-city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Nairobi" />
               </div>
               <div className="field">
-                <label htmlFor="b-budget">Budget</label>
+                <label htmlFor="b-budget">{t("buy.budget")}</label>
                 <input id="b-budget" inputMode="numeric" value={form.budget}
                   onChange={(e) => setForm({ ...form, budget: e.target.value })} placeholder="12,000,000" />
               </div>
             </div>
             <div className="field">
-              <label htmlFor="b-msg">Anything else</label>
+              <label htmlFor="b-msg">{t("buy.anythingElse")}</label>
               <textarea id="b-msg" rows={3} value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 placeholder="Three bedrooms, garden, near a school…" />
             </div>
             {error && <div className="book-note bad">{error}</div>}
             <button className="btn btn-primary" disabled={busy} onClick={() => send()}>
-              {busy ? "Sending…" : "Send my requirements"}
+              {busy ? t("buy.sending") : t("buy.send")}
             </button>
-            <p className="reassure">No account needed. We only use this to contact you about property.</p>
+            <p className="reassure">{t("buy.noAccount")}</p>
           </>
         )}
       </section>
