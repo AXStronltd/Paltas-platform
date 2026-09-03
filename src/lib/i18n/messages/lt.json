@@ -378,5 +378,7 @@
   "preview.failedTryAgain": "{reason}. Pinigai nenuskaityti. Bandykite dar kartą arba pasirinkite kitą būdą.",
   "preview.failedNotCharged": "{reason}. Pinigai nenuskaityti.",
   "preview.failedNotChargedShort": "Nepavyko · nenuskaityta",
-  "preview.tryDifferent": "Bandyti kitą būdą"
+  "preview.tryDifferent": "Bandyti kitą būdą",
+  "discover.all.title": "Viskas PALTAS platformoje",
+  "discover.all.subtitle": "Visi iki šiol paskelbti objektai"
 }

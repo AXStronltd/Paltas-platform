@@ -382,5 +382,7 @@
   "preview.failedTryAgain": "{reason}. Vous n'avez pas été débité. Réessayez ou utilisez un autre moyen.",
   "preview.failedNotCharged": "{reason}. Vous n'avez pas été débité.",
   "preview.failedNotChargedShort": "Échec · non débité",
-  "preview.tryDifferent": "Essayer un autre moyen"
+  "preview.tryDifferent": "Essayer un autre moyen",
+  "discover.all.title": "Tout sur PALTAS",
+  "discover.all.subtitle": "Tous les biens publiés à ce jour"
 }

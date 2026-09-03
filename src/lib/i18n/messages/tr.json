@@ -377,5 +377,7 @@
   "preview.failedTryAgain": "{reason}. Sizden ücret alınmadı. Lütfen tekrar deneyin ya da başka bir yöntem kullanın.",
   "preview.failedNotCharged": "{reason}. Sizden ücret alınmadı.",
   "preview.failedNotChargedShort": "Başarısız · ücret alınmadı",
-  "preview.tryDifferent": "Başka bir yöntem deneyin"
+  "preview.tryDifferent": "Başka bir yöntem deneyin",
+  "discover.all.title": "PALTAS'taki her şey",
+  "discover.all.subtitle": "Şimdiye kadar yayınlanan her mülk"
 }

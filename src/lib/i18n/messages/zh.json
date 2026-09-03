@@ -374,5 +374,7 @@
   "preview.failedTryAgain": "{reason}。未向您扣款。请重试或改用其他方式。",
   "preview.failedNotCharged": "{reason}。未向您扣款。",
   "preview.failedNotChargedShort": "失败 · 未扣款",
-  "preview.tryDifferent": "换一种方式"
+  "preview.tryDifferent": "换一种方式",
+  "discover.all.title": "PALTAS 上的全部房源",
+  "discover.all.subtitle": "迄今发布的所有房产"
 }

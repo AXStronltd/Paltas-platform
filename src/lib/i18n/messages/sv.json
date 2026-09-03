@@ -381,5 +381,7 @@
   "preview.failedTryAgain": "{reason}. Du har inte debiterats. Försök igen eller använd ett annat betalsätt.",
   "preview.failedNotCharged": "{reason}. Du har inte debiterats.",
   "preview.failedNotChargedShort": "Misslyckades · ej debiterad",
-  "preview.tryDifferent": "Prova ett annat betalsätt"
+  "preview.tryDifferent": "Prova ett annat betalsätt",
+  "discover.all.title": "Allt på PALTAS",
+  "discover.all.subtitle": "Alla objekt som publicerats hittills"
 }

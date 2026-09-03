@@ -375,5 +375,7 @@
   "preview.failedTryAgain": "{reason}. لم يُخصم منك أي مبلغ. حاول مرة أخرى أو استخدم طريقة أخرى.",
   "preview.failedNotCharged": "{reason}. لم يُخصم منك أي مبلغ.",
   "preview.failedNotChargedShort": "فشل · بلا خصم",
-  "preview.tryDifferent": "جرّب طريقة أخرى"
+  "preview.tryDifferent": "جرّب طريقة أخرى",
+  "discover.all.title": "كل ما على PALTAS",
+  "discover.all.subtitle": "كل عقار نُشر حتى الآن"
 }

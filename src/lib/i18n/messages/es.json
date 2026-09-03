@@ -377,5 +377,7 @@
   "preview.failedTryAgain": "{reason}. No se te ha cobrado. Inténtalo de nuevo o usa otro método.",
   "preview.failedNotCharged": "{reason}. No se te ha cobrado.",
   "preview.failedNotChargedShort": "Fallido · sin cargo",
-  "preview.tryDifferent": "Probar otro método"
+  "preview.tryDifferent": "Probar otro método",
+  "discover.all.title": "Todo en PALTAS",
+  "discover.all.subtitle": "Todas las propiedades publicadas hasta ahora"
 }

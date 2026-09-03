@@ -384,5 +384,7 @@
   "preview.failedTryAgain": "{reason}. Es wurde nichts abgebucht. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsart.",
   "preview.failedNotCharged": "{reason}. Es wurde nichts abgebucht.",
   "preview.failedNotChargedShort": "Fehlgeschlagen · nicht abgebucht",
-  "preview.tryDifferent": "Andere Zahlungsart versuchen"
+  "preview.tryDifferent": "Andere Zahlungsart versuchen",
+  "discover.all.title": "Alles auf PALTAS",
+  "discover.all.subtitle": "Jede bisher veröffentlichte Immobilie"
 }

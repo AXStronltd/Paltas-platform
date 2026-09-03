@@ -377,5 +377,7 @@
   "preview.failedTryAgain": "{reason}. Lacag lagaama jarin. Fadlan isku day mar kale ama isticmaal hab kale.",
   "preview.failedNotCharged": "{reason}. Lacag lagaama jarin.",
   "preview.failedNotChargedShort": "Fashilantay · lacag lagama jarin",
-  "preview.tryDifferent": "Isku day hab kale"
+  "preview.tryDifferent": "Isku day hab kale",
+  "discover.all.title": "Wax kasta oo PALTAS ku jira",
+  "discover.all.subtitle": "Hanti kasta oo la daabacay ilaa hadda"
 }

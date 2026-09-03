@@ -377,5 +377,7 @@
   "preview.failedTryAgain": "{reason}। आपसे कोई शुल्क नहीं लिया गया। कृपया फिर कोशिश करें या दूसरा तरीका चुनें।",
   "preview.failedNotCharged": "{reason}। आपसे कोई शुल्क नहीं लिया गया।",
   "preview.failedNotChargedShort": "विफल · शुल्क नहीं लिया गया",
-  "preview.tryDifferent": "दूसरा तरीका आज़माएं"
+  "preview.tryDifferent": "दूसरा तरीका आज़माएं",
+  "discover.all.title": "PALTAS पर सब कुछ",
+  "discover.all.subtitle": "अब तक प्रकाशित हर संपत्ति"
 }

@@ -384,5 +384,7 @@
   "preview.failedTryAgain": "{reason}. Você não foi cobrado. Tente novamente ou use outra forma de pagamento.",
   "preview.failedNotCharged": "{reason}. Você não foi cobrado.",
   "preview.failedNotChargedShort": "Falhou · sem cobrança",
-  "preview.tryDifferent": "Tentar outra forma"
+  "preview.tryDifferent": "Tentar outra forma",
+  "discover.all.title": "Tudo na PALTAS",
+  "discover.all.subtitle": "Todos os imóveis publicados até agora"
 }

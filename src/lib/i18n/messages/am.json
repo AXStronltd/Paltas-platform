@@ -375,5 +375,7 @@
   "preview.failedTryAgain": "{reason}። ምንም አልተቆረጠብዎትም። እባክዎ እንደገና ይሞክሩ ወይም ሌላ ዘዴ ይጠቀሙ።",
   "preview.failedNotCharged": "{reason}። ምንም አልተቆረጠብዎትም።",
   "preview.failedNotChargedShort": "አልተሳካም · አልተቆረጠም",
-  "preview.tryDifferent": "ሌላ ዘዴ ይሞክሩ"
+  "preview.tryDifferent": "ሌላ ዘዴ ይሞክሩ",
+  "discover.all.title": "በPALTAS ያለው ሁሉ",
+  "discover.all.subtitle": "እስካሁን የታተመ እያንዳንዱ ንብረት"
 }

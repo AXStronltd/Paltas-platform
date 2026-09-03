@@ -378,5 +378,7 @@
   "preview.failedTryAgain": "{reason}. Hujatozwa. Tafadhali jaribu tena au tumia njia nyingine.",
   "preview.failedNotCharged": "{reason}. Hujatozwa.",
   "preview.failedNotChargedShort": "Imeshindikana · hujatozwa",
-  "preview.tryDifferent": "Jaribu njia nyingine"
+  "preview.tryDifferent": "Jaribu njia nyingine",
+  "discover.all.title": "Kila kitu kwenye PALTAS",
+  "discover.all.subtitle": "Kila mali iliyochapishwa hadi sasa"
 }

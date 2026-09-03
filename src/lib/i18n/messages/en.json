@@ -371,5 +371,7 @@
   "preview.failedTryAgain": "{reason}. You have not been charged. Please try again or use a different method.",
   "preview.failedNotCharged": "{reason}. You have not been charged.",
   "preview.failedNotChargedShort": "Failed · not charged",
-  "preview.tryDifferent": "Try a different method"
+  "preview.tryDifferent": "Try a different method",
+  "discover.all.title": "Everything on PALTAS",
+  "discover.all.subtitle": "Every property published so far"
 }

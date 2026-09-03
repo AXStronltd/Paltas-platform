@@ -384,5 +384,7 @@
   "preview.failedTryAgain": "{reason}. Non ti è stato addebitato nulla. Riprova o usa un altro metodo.",
   "preview.failedNotCharged": "{reason}. Non ti è stato addebitato nulla.",
   "preview.failedNotChargedShort": "Fallito · nessun addebito",
-  "preview.tryDifferent": "Prova un altro metodo"
+  "preview.tryDifferent": "Prova un altro metodo",
+  "discover.all.title": "Tutto su PALTAS",
+  "discover.all.subtitle": "Ogni immobile pubblicato finora"
 }

@@ -375,5 +375,7 @@
   "preview.failedTryAgain": "{reason}۔ آپ سے کوئی رقم نہیں لی گئی۔ دوبارہ کوشش کریں یا کوئی اور طریقہ استعمال کریں۔",
   "preview.failedNotCharged": "{reason}۔ آپ سے کوئی رقم نہیں لی گئی۔",
   "preview.failedNotChargedShort": "ناکام · رقم نہیں لی گئی",
-  "preview.tryDifferent": "کوئی اور طریقہ آزمائیں"
+  "preview.tryDifferent": "کوئی اور طریقہ آزمائیں",
+  "discover.all.title": "PALTAS پر سب کچھ",
+  "discover.all.subtitle": "اب تک شائع ہونے والی ہر جائیداد"
 }
