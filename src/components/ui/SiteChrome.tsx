@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { TabBar } from "./TabBar";
 import { BuildStamp } from "./BuildStamp";
+import { Footer } from "./Footer";
 
 /**
  * The marketplace's header and bottom tab bar.
@@ -22,6 +23,8 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     <>
       <Header />
       {children}
+      {/* Below the content and above the phone tab bar, which floats. */}
+      <Footer />
       <BuildStamp />
       <TabBar />
     </>

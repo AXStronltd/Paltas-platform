@@ -1635,3 +1635,170 @@ body:has(.scrim) .tabbar { display: none; }
   padding: 7px 13px; border-radius: 9px; cursor: pointer;
 }
 @media (min-width: 701px) { .build-stale { bottom: 20px; } }
+
+/* ============================================================
+   FOOTER
+   Navy ground, teal accents. Deliberately quieter than the page
+   above it: a footer is a place to find things, not a second
+   attempt at selling. Everything here is a link that resolves.
+   ============================================================ */
+.site-footer {
+  background: var(--navy);
+  color: #c6d4e3;
+  margin-top: 64px;
+  font-size: 14px;
+  /* The page is white above; this stops the join looking like a seam. */
+  border-top: 3px solid var(--teal);
+}
+
+.foot-h2 {
+  font-size: 19px; font-weight: 800; color: #fff; letter-spacing: -.2px;
+  margin: 0 0 18px;
+}
+.foot-h3 {
+  font-size: 12px; font-weight: 800; color: var(--teal);
+  text-transform: uppercase; letter-spacing: .09em; margin: 0 0 14px;
+}
+
+/* ---- destinations ---- */
+.foot-destinations { padding: 48px 0 36px; }
+
+.foot-tabs {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 14px;
+  margin-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,.1);
+  scrollbar-width: none;
+}
+.foot-tabs::-webkit-scrollbar { display: none; }
+.foot-tab {
+  flex: 0 0 auto; border: 0; cursor: pointer; white-space: nowrap;
+  background: transparent; color: #9fb3c8; font-size: 13.5px; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; transition: color .15s, background .15s;
+}
+.foot-tab:hover { color: #fff; background: rgba(255,255,255,.07); }
+.foot-tab.on { color: var(--navy); background: var(--teal); font-weight: 700; }
+.foot-tab:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+.foot-places {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 10px 26px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+.foot-places a {
+  color: #c6d4e3; text-decoration: none; font-size: 13.5px;
+  display: inline-block; padding: 2px 0; transition: color .15s;
+  /* An underline that grows from the start, so it reads left-to-right in
+     English and right-to-left in Arabic without a second rule. */
+  background-image: linear-gradient(var(--teal), var(--teal));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1.5px;
+  transition: background-size .22s cubic-bezier(.22,1,.3,1), color .15s;
+}
+.foot-places a:hover { color: #fff; background-size: 100% 1.5px; }
+.foot-places a:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 3px; }
+
+.foot-more {
+  margin-top: 20px; background: transparent; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.18); color: #fff;
+  font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 999px;
+  transition: border-color .15s, background .15s;
+}
+.foot-more:hover { border-color: var(--teal); background: rgba(0,196,172,.12); }
+.foot-more:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* ---- columns ---- */
+.foot-columns {
+  display: grid; gap: 34px 26px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  padding: 38px 0 42px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.foot-col a {
+  color: #c6d4e3; text-decoration: none; font-size: 13.5px;
+  transition: color .15s, padding-inline-start .15s;
+}
+.foot-col a:hover { color: #fff; padding-inline-start: 4px; }
+.foot-col a:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 3px; }
+
+/* ---- bottom bar ---- */
+.foot-bottom { background: rgba(0,0,0,.22); border-top: 1px solid rgba(255,255,255,.08); }
+.foot-bottom-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap; padding: 18px 0;
+}
+.foot-legal {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 12.5px; color: #9fb3c8;
+}
+.foot-mark { display: inline-flex; align-items: center; gap: 8px; }
+.foot-mark img { border-radius: 5px; }
+.foot-legal a { color: #9fb3c8; text-decoration: none; transition: color .15s; }
+.foot-legal a:hover { color: #fff; text-decoration: underline; }
+.foot-dot { color: rgba(255,255,255,.28); }
+
+.foot-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+.foot-social { list-style: none; display: flex; gap: 8px; margin: 0; padding: 0; }
+.foot-social a {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; color: #c6d4e3;
+  background: rgba(255,255,255,.07); transition: .18s;
+}
+.foot-social a:hover { background: var(--teal); color: var(--navy); transform: translateY(-2px); }
+.foot-social a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* ---- responsive ---- */
+@media (max-width: 900px) {
+  .foot-columns { grid-template-columns: repeat(2, 1fr); gap: 30px 20px; }
+  .foot-destinations { padding: 36px 0 28px; }
+}
+@media (max-width: 560px) {
+  .site-footer { margin-top: 44px; }
+  .foot-places { grid-template-columns: 1fr; gap: 2px; }
+  .foot-places a { padding: 7px 0; }
+  .foot-columns { grid-template-columns: 1fr; }
+  .foot-col ul { gap: 13px; }
+  .foot-bottom-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .foot-controls { width: 100%; justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot-tab, .foot-more, .foot-col a, .foot-social a, .foot-places a {
+    transition: none !important; transform: none !important;
+  }
+}
+
+/* ============================================================
+   WRITTEN PAGES — help, about, and the legal three
+   Narrow measure, generous leading. These are pages to be read,
+   not scanned, and the line length is the whole difference.
+   ============================================================ */
+.info-page { max-width: 760px; padding-block: 44px 72px; }
+.info-head { margin-bottom: 34px; }
+.info-head h1 { font-size: 34px; font-weight: 800; letter-spacing: -.6px; margin: 0 0 10px; }
+.info-lead { font-size: 17px; color: var(--ink-2); line-height: 1.6; margin: 0; max-width: 60ch; }
+.info-updated { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
+
+.info-toc {
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px; margin-bottom: 34px;
+}
+.info-toc > span { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.info-toc ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.info-toc a { color: var(--teal-ink); text-decoration: none; font-size: 14px; font-weight: 600; }
+.info-toc a:hover { text-decoration: underline; }
+
+.info-section { scroll-margin-top: 90px; margin-bottom: 38px; }
+.info-section h2 {
+  font-size: 21px; font-weight: 800; letter-spacing: -.3px; margin: 0 0 14px;
+  padding-inline-start: 12px; border-inline-start: 3px solid var(--teal);
+}
+.info-section p { line-height: 1.72; color: var(--ink-2); margin: 0 0 14px; max-width: 68ch; }
+.info-cta { display: inline-block; margin-top: 6px; }
+
+@media (max-width: 560px) {
+  .info-page { padding-block: 30px 56px; }
+  .info-head h1 { font-size: 27px; }
+  .info-lead { font-size: 15.5px; }
+}

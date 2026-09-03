@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import type { Listing, SearchFilters } from "@/lib/models";
 import { useI18n } from "@/components/i18n/LocaleProvider";
@@ -43,11 +44,33 @@ const CATEGORIES: Category[] = [
 export function Marketplace() {
   const router = useRouter();
   const { t } = useI18n();
+  const params = useSearchParams();
   const [category, setCategory] = useState<Category>(CATEGORIES[0]);
   /** What the visitor typed in the hero, if anything. */
   const [query, setQuery] = useState<SearchFilters>({});
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+
+  /*
+   * A search in the address bar.
+   *
+   * `/?city=Nairobi` and `/?kind=RENT` are what the footer's destination links
+   * are made of, and what somebody sends a friend. Without this they would be
+   * decoration: the page would load, ignore the query, and show everything.
+   *
+   * Read once on mount rather than watched, so a visitor who then searches for
+   * something else is not dragged back to where they arrived from.
+   */
+  useEffect(() => {
+    const city = params.get("city")?.trim();
+    const kind = params.get("kind")?.trim().toUpperCase();
+    if (city) setQuery((q) => ({ ...q, city }));
+    if (kind === "STAY" || kind === "RENT" || kind === "SALE") {
+      const match = CATEGORIES.find((c) => c.filter.kind === kind);
+      if (match) setCategory(match);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // The hero is a sibling, not a parent, so it announces a search rather than
   // passing a prop down through the page.

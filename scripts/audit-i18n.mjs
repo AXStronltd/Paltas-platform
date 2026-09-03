@@ -33,7 +33,17 @@ for (const file of fs.readdirSync(MSG).sort()) {
   const code = file.replace(".json", "");
   const cat = JSON.parse(fs.readFileSync(`${MSG}/${file}`, "utf8"));
 
-  const missing = keys.filter((k) => !(k in cat));
+  /*
+   * Some messages are deliberately English everywhere: the privacy policy, the
+   * terms and the cookie notice. A machine translation of a legal document into
+   * fifteen languages nobody has reviewed is a liability rather than a feature,
+   * and naming one authoritative language is what platforms actually do. They
+   * are declared in `$meta.englishOnly` so this number reports a decision
+   * rather than a gap.
+   */
+  const englishOnly = new Set(cat.$meta?.englishOnly ?? []);
+  const translatable = keys.filter((k) => !englishOnly.has(k));
+  const missing = translatable.filter((k) => !(k in cat));
   // A value identical to English is usually untranslated rather than a word
   // that happens to be the same, so it is counted separately rather than as
   // coverage. Some genuinely are the same word — "Hotel" in Spanish, "Menu" in
@@ -41,9 +51,9 @@ for (const file of fs.readdirSync(MSG).sort()) {
   // those in `$meta.sameAsEnglish` so they count as translated rather than
   // pushing someone to invent a worse word to satisfy this number.
   const declared = new Set(cat.$meta?.sameAsEnglish ?? []);
-  const same = keys.filter((k) => k in cat && cat[k] === en[k] && !declared.has(k));
-  const translated = keys.length - missing.length - same.length;
-  const pct = Math.round((translated / keys.length) * 100);
+  const same = translatable.filter((k) => k in cat && cat[k] === en[k] && !declared.has(k));
+  const translated = translatable.length - missing.length - same.length;
+  const pct = Math.round((translated / translatable.length) * 100);
   const reviewed = cat.$meta?.reviewedBy ?? "unknown";
 
   rows.push({ code, pct, translated, missing: missing.length, same: same.length, reviewed });
@@ -51,6 +61,9 @@ for (const file of fs.readdirSync(MSG).sort()) {
   // Extra keys mean a catalogue has drifted from English and carries messages
   // nothing renders.
   const extra = Object.keys(cat).filter((k) => !k.startsWith("$") && !(k in en));
+  if (englishOnly.size && rows.length === 0) {
+    console.log(`  ${englishOnly.size} message(s) are deliberately English everywhere (legal copy).\n`);
+  }
   if (extra.length) {
     console.log(`  ${code}: ${extra.length} key(s) not in English — ${extra.slice(0, 4).join(", ")}`);
     problems++;
