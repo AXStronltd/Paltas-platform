@@ -8,6 +8,17 @@
   --bg-2: #f5f8fa;
   --teal: #00c4ac;
   --teal-ink: #008a79;
+
+  /*
+   * The dark half of the brand. These lived inside .promo, which meant every
+   * var(--navy) written outside it silently resolved to nothing — the footer
+   * shipped with no background at all. One definition, at the root.
+   */
+  --navy: #08213a;
+  --navy-2: #0d3355;
+  --navy-deep: #061c30;
+  --green: #0f6b4f;
+  --green-2: #16a37a;
   --grad: linear-gradient(135deg, #00c4ac, #2ea6ff);
   --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);
   --shadow-lg: 0 18px 40px rgba(8, 20, 34, 0.16);
@@ -837,10 +848,6 @@ img { display: block; max-width: 100%; }
 }
 
 .promo {
-  --navy: #08213a;
-  --navy-2: #0d3355;
-  --green: #0f6b4f;
-  --green-2: #16a37a;
   position: relative;
   margin: 26px 0 34px;
   border-radius: 26px;
@@ -1643,12 +1650,35 @@ body:has(.scrim) .tabbar { display: none; }
    attempt at selling. Everything here is a link that resolves.
    ============================================================ */
 .site-footer {
-  background: var(--navy);
+  position: relative;
+  /* The same navy-into-green the promotional band runs, laid across the width
+     instead of the diagonal, plus its corner glow. The footer is the other end
+     of the page from the promo; sharing a gradient makes them bookends. */
+  background:
+    radial-gradient(120% 150% at 100% 0%, rgba(22,163,122,.34) 0%, rgba(22,163,122,0) 60%),
+    linear-gradient(108deg, var(--navy-deep) 0%, var(--navy) 34%, #0c3f45 70%, var(--green) 100%);
   color: #c6d4e3;
   margin-top: 64px;
   font-size: 14px;
-  /* The page is white above; this stops the join looking like a seam. */
-  border-top: 3px solid var(--teal);
+}
+/* A gradient has no logical direction, so it has to be mirrored by hand:
+   navy belongs at the side the reader starts from, green at the side they
+   finish on, in Arabic as much as in English. */
+[dir="rtl"] .site-footer {
+  background:
+    radial-gradient(120% 150% at 0% 0%, rgba(22,163,122,.34) 0%, rgba(22,163,122,0) 60%),
+    linear-gradient(252deg, var(--navy-deep) 0%, var(--navy) 34%, #0c3f45 70%, var(--green) 100%);
+}
+[dir="rtl"] .site-footer::before {
+  background: linear-gradient(270deg, var(--teal) 0%, var(--green-2) 58%, var(--green) 100%);
+}
+
+/* The page is white above; this stops the join looking like a seam. It runs
+   teal into green so the hairline belongs to the gradient beneath it. */
+.site-footer::before {
+  content: "";
+  position: absolute; inset-inline: 0; top: 0; height: 3px;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--green-2) 58%, var(--green) 100%);
 }
 
 .foot-h2 {
@@ -1661,7 +1691,10 @@ body:has(.scrim) .tabbar { display: none; }
 }
 
 /* ---- destinations ---- */
-.foot-destinations { padding: 48px 0 36px; }
+/* padding-block, not the shorthand: these sit on .container-wide, and a
+   `padding: 48px 0` here silently wiped out its 40px gutters, so every line
+   of the footer ran flush into the edge of the window. */
+.foot-destinations { padding-block: 48px 36px; }
 
 .foot-tabs {
   display: flex; gap: 6px; overflow-x: auto; padding-bottom: 14px;
@@ -1682,6 +1715,11 @@ body:has(.scrim) .tabbar { display: none; }
   list-style: none; margin: 0; padding: 0;
   display: grid; gap: 10px 26px;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+/* auto-fill gives six sparse columns at desktop width for eight places. Four
+   columns reads as a block rather than a scattering. */
+@media (min-width: 1100px) {
+  .foot-places { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 .foot-places a {
   color: #c6d4e3; text-decoration: none; font-size: 13.5px;
@@ -1710,7 +1748,7 @@ body:has(.scrim) .tabbar { display: none; }
 .foot-columns {
   display: grid; gap: 34px 26px;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  padding: 38px 0 42px;
+  padding-block: 38px 42px;
   border-top: 1px solid rgba(255,255,255,.1);
 }
 .foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
@@ -1725,7 +1763,7 @@ body:has(.scrim) .tabbar { display: none; }
 .foot-bottom { background: rgba(0,0,0,.22); border-top: 1px solid rgba(255,255,255,.08); }
 .foot-bottom-inner {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 18px; flex-wrap: wrap; padding: 18px 0;
+  gap: 18px; flex-wrap: wrap; padding-block: 18px;
 }
 .foot-legal {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -1751,7 +1789,7 @@ body:has(.scrim) .tabbar { display: none; }
 /* ---- responsive ---- */
 @media (max-width: 900px) {
   .foot-columns { grid-template-columns: repeat(2, 1fr); gap: 30px 20px; }
-  .foot-destinations { padding: 36px 0 28px; }
+  .foot-destinations { padding-block: 36px 28px; }
 }
 @media (max-width: 560px) {
   .site-footer { margin-top: 44px; }
@@ -1761,6 +1799,24 @@ body:has(.scrim) .tabbar { display: none; }
   .foot-col ul { gap: 13px; }
   .foot-bottom-inner { flex-direction: column; align-items: flex-start; gap: 14px; }
   .foot-controls { width: 100%; justify-content: space-between; }
+  /* The legal row wrapped mid-sentence and left a separator dangling at the
+     end of the line. On a phone the copyright takes its own line and the three
+     links sit under it, spaced rather than punctuated. */
+  .foot-mark { flex-basis: 100%; }
+  .foot-dot { display: none; }
+  .foot-legal { gap: 10px 18px; }
+}
+
+/* The phone tab bar is fixed over the last 70px of the viewport, and it was
+   covering the copyright line and the language pill. `body` already reserves
+   that strip, but it reserves it in white, below the footer. So the footer
+   claims the strip back — its gradient runs to the very bottom edge — and
+   pads its own last row out of the tab bar's way instead. */
+@media (max-width: 700px) {
+  .site-footer { margin-bottom: calc(-70px - env(safe-area-inset-bottom)); }
+  .foot-bottom-inner {
+    padding-block: 18px calc(30px + 70px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
