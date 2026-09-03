@@ -26,6 +26,7 @@ const ROOT = "src/app/api";
 const UNGUARDED_BY_DESIGN = {
   "/auth/login/route.ts": "authenticates — verifies the password itself",
   "/auth/logout/route.ts": "destroys only the caller's own session",
+  "/auth/signup/route.ts": "business signs itself up — unauthenticated by definition, and creates only a PENDING account whose organisation is unapproved. It cannot grant itself anything: isOwner and isPlatformAdmin are set false here, the requested role is recorded as a request, and the authorization engine refuses every status that is not ACTIVE. The PENDING User is the record; there is no actor to attribute an audit entry to.",
   "/auth/forgot/route.ts": "requests a reset link — unauthenticated by definition, and answers identically whether or not the address exists so it cannot be used to test which emails are registered. Recorded as a PasswordReset row rather than an audit entry: there is no actor to attribute it to.",
   "/auth/reset/route.ts": "sets a new password from a single-use token — authorised by holding the token, which is the only credential someone locked out has. The token is the record.",
   "/me/route.ts": "reports the caller's own identity via currentActor()",

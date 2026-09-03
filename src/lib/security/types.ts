@@ -51,7 +51,7 @@ export interface Actor {
    * organisation and invisible outside it, whereas this reaches everywhere.
    */
   isPlatformAdmin: boolean;
-  status: "ACTIVE" | "SUSPENDED" | "INVITED";
+  status: "ACTIVE" | "SUSPENDED" | "INVITED" | "PENDING" | "REJECTED";
   roles: ActorRole[];
   grants: Grant[];
 }

@@ -30,14 +30,32 @@ export async function GET(req: Request): Promise<NextResponse> {
     const g = await guardList(PERMISSIONS.AUDIT_VIEW);
     if (!g.ok) return g.response;
 
+    /*
+     * Scoping the trail without losing the entries that have no property.
+     *
+     * Approving an account, changing a licence, registering an external source
+     * — none belong to a property, so filtering on `propertyId IN (...)`
+     * dropped every one of them. They were written faithfully and then never
+     * shown, which is the worst state an audit trail can be in: it looks
+     * complete and is not.
+     */
     const scopeWhere =
-      g.access.kind === "all"
+      g.access.kind === "all" || g.access.kind === "platform"
         ? {}
-        : { propertyId: { in: await accessiblePropertyIds(g.access) } };
+        : {
+            OR: [
+              { propertyId: { in: await accessiblePropertyIds(g.access) } },
+              // Organisation-level actions describe the organisation itself
+              // rather than a property inside it.
+              { propertyId: null },
+            ],
+          };
 
     const entries = await prisma.auditLog.findMany({
       where: {
-        orgId: g.actor.orgId,
+        // Platform staff operate across organisations; everyone else stays
+        // inside their own.
+        ...(g.access.kind === "platform" ? {} : { orgId: g.actor.orgId }),
         ...scopeWhere,
         ...(propertyId ? { propertyId } : {}),
         ...(actorId ? { actorId } : {}),

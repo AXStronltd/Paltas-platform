@@ -138,6 +138,7 @@ jobs:
           node tests/pipeline.e2e.mjs
           node tests/enquiry.e2e.mjs
           node tests/trip.e2e.mjs
+          node tests/approval.e2e.mjs
 
       - name: Container logs on failure
         if: failure()

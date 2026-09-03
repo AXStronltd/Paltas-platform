@@ -35,6 +35,28 @@ export async function POST(req: Request): Promise<NextResponse> {
       return fail(403, { code: "account_suspended", message: "This account has been suspended." });
     }
 
+    /*
+     * A pending or rejected account is told why, and given no session.
+     *
+     * The password was correct, so this leaks nothing — the person already
+     * knows the account exists. Letting them in with a session that can do
+     * nothing would be worse: every page would refuse them without saying why,
+     * and they would conclude the platform is broken rather than that they are
+     * waiting on us.
+     */
+    if (user.status === "PENDING") {
+      return fail(403, {
+        code: "account_pending",
+        message: "Your account is still with PALTAS for approval. We will email you when it is ready.",
+      });
+    }
+    if (user.status === "REJECTED") {
+      return fail(403, {
+        code: "account_rejected",
+        message: "This account was not approved. Please contact PALTAS if you think that is wrong.",
+      });
+    }
+
     const h = headers();
     await createSession(user.id, {
       ip: h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,

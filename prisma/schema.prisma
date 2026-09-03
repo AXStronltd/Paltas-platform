@@ -40,6 +40,13 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   INVITED
+  /// Signed up, awaiting a decision. Can sign in and do nothing: the
+  /// authorization engine refuses every non-ACTIVE status, so a pending
+  /// account is safe by construction rather than by remembering to check.
+  PENDING
+  /// Turned down. Kept rather than deleted so the same person cannot simply
+  /// sign up again and land in the queue as if nothing happened.
+  REJECTED
 }
 
 model Organization {
@@ -50,6 +57,10 @@ model Organization {
   /// True for the single organisation that holds Paltas's own staff. It owns no
   /// properties and is excluded from every tenant-facing listing.
   isPlatform Boolean @default(false)
+  /// False until a Paltas administrator approves the account that created it.
+  /// A pending organisation exists so its owner has somewhere to belong; it
+  /// holds no properties and its users can do nothing until approved.
+  approved   Boolean @default(true)
 
   /// Stripe Connect: the connected account money is settled into for this
   /// property owner. Null until they complete onboarding, at which point
@@ -101,6 +112,13 @@ model User {
   isPlatformAdmin Boolean    @default(false)
   status          UserStatus @default(ACTIVE)
   title           String?
+  /// What they said they are, at signup: landlord, agent, hotel, developer.
+  /// A request, not a grant — the role that decides anything is assigned on
+  /// approval, by somebody who checked.
+  requestedRole   String?
+  approvedById    String?
+  approvedAt      DateTime?
+  rejectedReason  String?
   createdAt       DateTime   @default(now())
   createdById     String?
 
