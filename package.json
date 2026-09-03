@@ -33,7 +33,8 @@
     "audit:i18n": "node scripts/audit-i18n.mjs",
     "test:approval": "npm run db:seed --silent && node tests/approval.e2e.mjs",
     "db:sync-listings": "node prisma/sync-listings.mjs",
-    "test:payouts": "npm run db:seed --silent && node tests/payouts.e2e.mjs"
+    "test:payouts": "npm run db:seed --silent && node tests/payouts.e2e.mjs",
+    "payouts:run": "node scripts/run-payouts.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

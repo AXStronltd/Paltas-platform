@@ -64,6 +64,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 # first-boot seed dies on a missing file and the site comes up with no accounts
 # anyone can sign in with — which looks like a successful deploy.
 COPY --from=builder --chown=nextjs:nodejs /app/src/lib/security/system-roles.json ./src/lib/security/system-roles.json
+# The payout cron runs from this same image and calls one endpoint over HTTP,
+# so it needs the script but none of the application's own modules.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma

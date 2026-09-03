@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { NoAccess, useSession } from "@/components/security/SessionProvider";
 import { PERMISSIONS } from "@/lib/security/permissions";
-import { getConnectStatus, getSettlements, startConnectOnboarding, type ConnectStatus } from "@/lib/services/managementService";
+import { getConnectStatus, getPayoutLedger, getSettlements, startConnectOnboarding, type ConnectStatus } from "@/lib/services/managementService";
 
 /**
  * Payouts — where this owner's takings are settled.
@@ -18,17 +18,22 @@ export function PayoutsBoard() {
   const { can } = useSession();
   const [status, setStatus] = useState<ConnectStatus | null>(null);
   const [settlements, setSettlements] = useState<Awaited<ReturnType<typeof getSettlements>>["data"] | null>(null);
+  const [ledger, setLedger] = useState<Awaited<ReturnType<typeof getPayoutLedger>>["data"] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [c, s] = await Promise.all([
+    const [c, s, l] = await Promise.all([
       getConnectStatus(),
       can(PERMISSIONS.PAYMENT_SETTLEMENT_VIEW) ? getSettlements() : Promise.resolve(null),
+      // What is owed is behind the finance permission, not the settlements one:
+      // money arriving and money leaving are different things to be trusted with.
+      can(PERMISSIONS.FINANCE_VIEW) ? getPayoutLedger() : Promise.resolve(null),
     ]);
     if (c.error) setError(c.error.message);
     if (c.data) setStatus(c.data);
     if (s?.data) setSettlements(s.data);
+    if (l?.data) setLedger(l.data);
   }, [can]);
 
   useEffect(() => { if (can(PERMISSIONS.PAYMENT_CONNECT_MANAGE)) load(); }, [load, can]);
@@ -124,6 +129,115 @@ export function PayoutsBoard() {
                   {busy ? "Opening Stripe…" : "Finish onboarding"}
                 </button>
               )}
+            </>
+          )}
+        </section>
+      )}
+
+      {ledger && (
+        <section>
+          {/* What a host actually asks: how much, in what currency, and when.
+              Held and payable are kept apart because they are different
+              promises — one is money waiting on a date, the other on us. */}
+          <h3 className="panel-title">What you are owed</h3>
+          {ledger.balances.length === 0 ? (
+            <p className="muted">
+              Nothing yet. Earnings appear here once a guest has paid, and are
+              held for {ledger.policy.holdDays === 1 ? "a day" : `${ledger.policy.holdDays} days`} after
+              check-out before they are sent.
+            </p>
+          ) : (
+            <>
+              <div className="stat-grid tight">
+                {ledger.balances.map((b) => (
+                  <div key={b.currency} className="stat small">
+                    <b>{money(b.held + b.payable, b.currency)}</b>
+                    <span>Owed in {b.currency}</span>
+                  </div>
+                ))}
+                {ledger.balances.map((b) => (
+                  <div key={`${b.currency}-paid`} className="stat small stat-green">
+                    <b>{money(b.paid, b.currency)}</b>
+                    <span>Paid out in {b.currency}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Stated rather than left for a host to wonder about: money held
+                  against an account that cannot receive it is the single most
+                  common reason a payout has not arrived. */}
+              {!ledger.account.payoutsEnabled && ledger.balances.some((b) => b.held + b.payable > 0) && (
+                <p className="book-note bad">
+                  {ledger.account.connected
+                    ? "Money is waiting, but Stripe has not finished verifying this account. Finish onboarding above and it will be sent on the next run."
+                    : "Money is waiting, but there is no payout account to send it to. Connect one above."}
+                </p>
+              )}
+            </>
+          )}
+
+          <h3 className="panel-title">Earnings <span className="count">{ledger.earnings.length}</span></h3>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Booking</th><th>Check-out</th><th className="num">Guest paid</th>
+                  <th className="num">Our fee</th><th className="num">Yours</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ledger.earnings.map((e, i) => (
+                  <tr key={`${e.bookingReference ?? "e"}-${i}`} className={e.status === "REVERSED" ? "row-flagged" : ""}>
+                    <td>{e.bookingReference ?? "—"}</td>
+                    <td>{new Date(e.checkOut).toLocaleDateString()}</td>
+                    <td className="num">{money(e.gross, e.currency)}</td>
+                    <td className="num">{money(e.platformFee, e.currency)}</td>
+                    <td className="num">{money(e.net, e.currency)}</td>
+                    <td>
+                      <span className={`pill pill-${
+                        e.status === "PAID" ? "green" : e.status === "REVERSED" ? "red"
+                          : e.status === "PAYABLE" ? "blue" : "amber"}`}>
+                        {e.status.toLowerCase()}
+                      </span>
+                      {/* "When" is the question; a date answers it, "soon" does not. */}
+                      {e.status === "HELD" && e.payableFrom && (
+                        <span className="sub">payable {new Date(e.payableFrom).toLocaleDateString()}</span>
+                      )}
+                      {e.status === "PAID" && e.paidAt && (
+                        <span className="sub">sent {new Date(e.paidAt).toLocaleDateString()}</span>
+                      )}
+                      {e.clawedBack && <span className="sub">recovered after a refund</span>}
+                    </td>
+                  </tr>
+                ))}
+                {ledger.earnings.length === 0 && (
+                  <tr><td colSpan={6} className="empty-cell">No earnings yet.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {ledger.payouts.length > 0 && (
+            <>
+              <h3 className="panel-title">Payouts <span className="count">{ledger.payouts.length}</span></h3>
+              <div className="table-wrap">
+                <table className="table">
+                  <thead><tr><th>When</th><th className="num">Amount</th><th>Status</th></tr></thead>
+                  <tbody>
+                    {ledger.payouts.map((p) => (
+                      <tr key={p.id} className={p.status === "FAILED" ? "row-flagged" : ""}>
+                        <td>{new Date(p.sentAt ?? p.createdAt).toLocaleString()}</td>
+                        <td className="num">{money(p.amount, p.currency)}</td>
+                        <td>
+                          <span className={`pill pill-${p.status === "SENT" ? "green" : p.status === "FAILED" ? "red" : "amber"}`}>
+                            {p.status.toLowerCase()}
+                          </span>
+                          {p.failureReason && <span className="sub">{p.failureReason}</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </>
           )}
         </section>

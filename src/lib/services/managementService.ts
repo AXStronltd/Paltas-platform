@@ -428,6 +428,31 @@ export const getSettlements = () =>
     totals: { succeeded: number; pending: number; failed: number };
   }>("/payments/settlements");
 
+/**
+ * What this organisation is owed, and what has actually been sent.
+ *
+ * Distinct from `getSettlements`, which reports what guests paid. Money arriving
+ * and money leaving are different questions, and a host asking "where is mine?"
+ * is asking this one.
+ */
+export const getPayoutLedger = () =>
+  api.get<{
+    account: { connected: boolean; payoutsEnabled: boolean };
+    policy: { holdDays: number; minimumPayout: number };
+    balances: { currency: string; held: number; payable: number; paid: number }[];
+    earnings: {
+      bookingReference: string | null; currency: string;
+      gross: number; platformFee: number; net: number;
+      status: "HELD" | "PAYABLE" | "PAID" | "REVERSED";
+      checkOut: string; payableFrom: string | null; paidAt: string | null;
+      clawedBack: boolean;
+    }[];
+    payouts: {
+      id: string; currency: string; amount: number; status: string;
+      sentAt: string | null; failureReason: string | null; createdAt: string;
+    }[];
+  }>("/payouts");
+
 /** Returns only the client secret — the key never leaves the server. */
 export const startCardPayment = (input: {
   purpose: "charge" | "group_share";
