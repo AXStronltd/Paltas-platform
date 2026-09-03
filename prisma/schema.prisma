@@ -83,6 +83,8 @@ model Organization {
   loyalty       LoyaltyMember[]
   listings      PropertyListing[]
   feeCategories FeeCategory[]
+  earnings      HostEarning[]
+  payouts       Payout[]
   charges       Charge[]
   salaries      SalaryProfile[]
   payRuns       PayRun[]
@@ -1511,6 +1513,9 @@ model Booking {
   status         BookingStatus @default(PENDING)
   /// Set by the client so a retried request cannot double-book.
   idempotencyKey String        @unique
+  /// Written once the guest has actually paid; a booking nobody paid for owes
+  /// nobody anything.
+  earning        HostEarning?
   guestNote      String?
   cancelReason   String?
   stripeIntentId String?
@@ -2091,4 +2096,89 @@ model PasswordReset {
   requestIp String?
 
   @@index([expiresAt])
+}
+
+/// Where an earning is in its life. HELD and PAYABLE are money owed; PAID and
+/// REVERSED are terminal, and reading them as owed is how a host gets paid
+/// twice.
+enum EarningStatus {
+  HELD
+  PAYABLE
+  PAID
+  REVERSED
+}
+
+enum PayoutStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+/// What one booking earns its host, and what PALTAS keeps.
+///
+/// Written when the guest's payment succeeds, not when the booking is made: a
+/// booking nobody has paid for owes nobody anything. Held until the stay has
+/// finished, so there is money to refund from if the property is not what was
+/// advertised — the guest's protection is the whole reason the platform, rather
+/// than the host, takes the charge.
+model HostEarning {
+  id        String @id @default(cuid())
+  orgId     String
+  /// One earning per booking, enforced here rather than hoped for in code.
+  bookingId String @unique
+
+  /// Never converted. A payout carries one currency because a transfer does.
+  currency    String
+  /// What the guest paid.
+  gross       Int
+  /// What PALTAS keeps. Stored, not recomputed, so a later change to the fee
+  /// rate cannot silently rewrite what a host was already owed.
+  platformFee Int
+
+  status EarningStatus @default(HELD)
+  /// The hold runs from here.
+  checkOut DateTime
+
+  payoutId   String?
+  paidAt     DateTime?
+  reversedAt DateTime?
+  /// Set when money had already reached the host and had to be recovered.
+  clawedBack Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  booking Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  payout  Payout?      @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, status])
+  @@index([status, checkOut])
+}
+
+/// One transfer to one host, in one currency.
+///
+/// The idempotency key is derived from the earnings being paid rather than from
+/// the moment the run happened, so a run interrupted after Stripe accepted the
+/// transfer but before these rows were written can be retried without paying
+/// the same earnings again.
+model Payout {
+  id       String @id @default(cuid())
+  orgId    String
+  currency String
+  amount   Int
+
+  status           PayoutStatus @default(PENDING)
+  stripeTransferId String?      @unique
+  idempotencyKey   String       @unique
+  failureReason    String?
+  sentAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org      Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  earnings HostEarning[]
+
+  @@index([orgId, createdAt])
 }

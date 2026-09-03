@@ -280,7 +280,29 @@ export async function createPaymentIntent(input: {
   }
 }
 
-export async function refundPaymentIntent(intentId: string, amount?: number): Promise<{ ok: boolean; error: string | null }> {
+/**
+ * Refund a guest — and take the money back from wherever it went.
+ *
+ * On a destination charge Stripe has already moved the host's share out of the
+ * platform's balance. Refunding without `reverse_transfer` therefore pays the
+ * guest out of PALTAS's own money while the host keeps theirs, which is a
+ * silent loss on every single refund. `refund_application_fee` gives back the
+ * platform's cut too, because keeping a commission on a stay that did not
+ * happen is not a fee, it is a charge for nothing.
+ *
+ * Both are no-ops on a charge that was never routed to a connected account, so
+ * this is safe for platform-only charges as well.
+ */
+export async function refundPaymentIntent(
+  intentId: string,
+  amount?: number,
+  opts: {
+    /** Pull the host's share back. Default true: it is what a refund means. */
+    reverseTransfer?: boolean;
+    /** Give back PALTAS's cut. Default true. */
+    refundApplicationFee?: boolean;
+  } = {},
+): Promise<{ ok: boolean; error: string | null }> {
   try {
     const res = await fetch(`${STRIPE_API}/refunds`, {
       method: "POST",
@@ -289,7 +311,12 @@ export async function refundPaymentIntent(intentId: string, amount?: number): Pr
         "Content-Type": "application/x-www-form-urlencoded",
         "Stripe-Version": "2024-06-20",
       },
-      body: encode({ payment_intent: intentId, amount: amount ? Math.round(amount) : undefined }),
+      body: encode({
+        payment_intent: intentId,
+        amount: amount ? Math.round(amount) : undefined,
+        reverse_transfer: (opts.reverseTransfer ?? true) ? "true" : undefined,
+        refund_application_fee: (opts.refundApplicationFee ?? true) ? "true" : undefined,
+      }),
     });
     const json = (await res.json()) as { error?: { message?: string } };
     if (!res.ok) return { ok: false, error: json.error?.message ?? `Refund refused (${res.status}).` };
@@ -353,5 +380,81 @@ export function mapStatus(stripeStatus: string): "REQUIRES_PAYMENT" | "PROCESSIN
     case "requires_action":
     case "requires_capture": return "REQUIRES_PAYMENT";
     default: return "FAILED";
+  }
+}
+
+/**
+ * Send a host their money.
+ *
+ * A transfer, not a destination charge: the guest paid PALTAS, the money was
+ * held until the stay finished, and this is the moment it moves. Separating the
+ * two is what makes a refund possible at all — there is no platform balance to
+ * refund from if the host was paid at the moment the card cleared.
+ *
+ * The idempotency key is derived from the earnings being paid, so a run retried
+ * after a crash is recognised by Stripe as the same transfer rather than a
+ * second one. That is the single most expensive mistake this file can make.
+ */
+export async function createTransfer(input: {
+  amount: number;
+  currency: string;
+  destination: string;
+  idempotencyKey: string;
+  metadata?: Record<string, string>;
+}): Promise<{ transferId: string | null; error: string | null }> {
+  try {
+    const params: Record<string, string | number | undefined> = {
+      amount: Math.round(input.amount),
+      currency: input.currency.toLowerCase(),
+      destination: input.destination,
+    };
+    for (const [k, v] of Object.entries(input.metadata ?? {})) params[`metadata[${k}]`] = v;
+
+    const res = await fetch(`${STRIPE_API}/transfers`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secret()}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": "2024-06-20",
+        "Idempotency-Key": input.idempotencyKey,
+      },
+      body: encode(params),
+    });
+    const json = (await res.json()) as { id?: string; error?: { message?: string } };
+    if (!res.ok || !json.id) {
+      return { transferId: null, error: json.error?.message ?? `Transfer refused (${res.status}).` };
+    }
+    return { transferId: json.id, error: null };
+  } catch {
+    return { transferId: null, error: "Could not reach the payment provider." };
+  }
+}
+
+/**
+ * Take a transfer back, when a stay is refunded after the host was paid.
+ *
+ * Partial by amount, because a partial refund should not claw back the whole
+ * payout. Stripe refuses to reverse more than was sent, which is the backstop
+ * for an arithmetic mistake here.
+ */
+export async function reverseTransfer(
+  transferId: string,
+  amount?: number,
+): Promise<{ ok: boolean; error: string | null }> {
+  try {
+    const res = await fetch(`${STRIPE_API}/transfers/${transferId}/reversals`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secret()}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": "2024-06-20",
+      },
+      body: encode({ amount: amount ? Math.round(amount) : undefined }),
+    });
+    const json = (await res.json()) as { error?: { message?: string } };
+    if (!res.ok) return { ok: false, error: json.error?.message ?? `Reversal refused (${res.status}).` };
+    return { ok: true, error: null };
+  } catch {
+    return { ok: false, error: "Could not reach the payment provider." };
   }
 }

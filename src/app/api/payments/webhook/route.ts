@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { recordEarning, reverseEarning } from "@/server/payouts";
 import { handle } from "@/server/http";
 import { mapStatus, verifyWebhookSignature } from "@/server/stripe";
 
@@ -153,6 +154,44 @@ export async function POST(req: Request): Promise<NextResponse> {
         if (confirmed.count > 0) {
           await prisma.bookingEvent.create({
             data: { bookingId, status: "CONFIRMED", note: "Payment received.", actor: "system" },
+          });
+        }
+        /*
+         * What the host has earned, recorded now the guest has actually paid.
+         * Outside the `confirmed.count` guard on purpose: a booking confirmed
+         * by one delivery and a duplicate delivery arriving later must still
+         * end with exactly one earning, and the unique constraint on bookingId
+         * — not this branch — is what guarantees that.
+         *
+         * The money is not sent yet. It is held until the stay has finished,
+         * so there is something to refund from if the property is not what was
+         * advertised.
+         */
+        await recordEarning(bookingId);
+      }
+    }
+
+    // Refunded: the host stops being owed, and if they have already been paid
+    // the transfer is reversed. Refunding the guest alone would just empty the
+    // platform's balance while the host kept their share.
+    if (status === "REFUNDED") {
+      const bookingId = record.bookingId ?? intent.metadata?.bookingId ?? null;
+      if (bookingId) {
+        const { reversed, clawedBack, error } = await reverseEarning(bookingId);
+        if (reversed) {
+          await prisma.bookingEvent.create({
+            data: {
+              bookingId, status: "CANCELLED", actor: "system",
+              note: clawedBack
+                ? "Refunded; the payout to the host was reversed."
+                : "Refunded before payout; nothing was sent to the host.",
+            },
+          });
+        } else if (error) {
+          // Left visible rather than swallowed: a refund that could not be
+          // recovered from the host is money the platform is now out of pocket.
+          await prisma.bookingEvent.create({
+            data: { bookingId, status: "CANCELLED", actor: "system", note: `Refund needs review: ${error}` },
           });
         }
       }

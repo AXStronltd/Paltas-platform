@@ -994,7 +994,7 @@ async function main() {
     },
   });
 
-  await prisma.booking.create({
+  const seedBooking = await prisma.booking.create({
     data: {
       reference: "PLT-SEED-0001",
       guestId: demoGuest.id, listingId: nyaliListing.id, propertyId: nyali.id,
@@ -1010,6 +1010,57 @@ async function main() {
           { status: "CONFIRMED", note: "Payment received.", actor: "system" },
         ],
       },
+    },
+  });
+
+  /*
+   * What that booking earned its host.
+   *
+   * In production this row is written by the Stripe webhook when the guest's
+   * payment succeeds; the seed writes it directly because there is no webhook
+   * to receive. Two of them, deliberately at different stages: one still held
+   * because the stay has not happened, and one long finished and already paid,
+   * so a payout statement has both halves to show and the tests have something
+   * to check the arithmetic against.
+   */
+  const seedFeeBps = 800;
+  const heldFee = Math.floor((seedBooking.total * seedFeeBps) / 10_000);
+  await prisma.hostEarning.create({
+    data: {
+      orgId: org.id, bookingId: seedBooking.id,
+      currency: seedBooking.currency, gross: seedBooking.total, platformFee: heldFee,
+      checkOut: seedBooking.checkOut, status: "HELD",
+    },
+  });
+
+  const pastBooking = await prisma.booking.create({
+    data: {
+      reference: "PLT-SEED-0002",
+      guestId: demoGuest.id, listingId: nyaliListing.id, propertyId: nyali.id,
+      roomTypeId: gardenRoom.id,
+      checkIn: days(-24), checkOut: days(-21), guests: 2, rooms: 1,
+      nightlyRate: 9500, nights: 3, subtotal: 28500,
+      serviceFee: 2280, taxes: 1539, total: 32319, currency: "KES",
+      status: "COMPLETED", idempotencyKey: "seed-booking-0002",
+      confirmedAt: days(-30),
+    },
+  });
+  const paidFee = Math.floor((pastBooking.total * seedFeeBps) / 10_000);
+  const seedPayout = await prisma.payout.create({
+    data: {
+      orgId: org.id, currency: pastBooking.currency,
+      amount: pastBooking.total - paidFee,
+      status: "SENT", sentAt: days(-20),
+      idempotencyKey: "payout_seed_0002",
+      stripeTransferId: "tr_seed_0002",
+    },
+  });
+  await prisma.hostEarning.create({
+    data: {
+      orgId: org.id, bookingId: pastBooking.id,
+      currency: pastBooking.currency, gross: pastBooking.total, platformFee: paidFee,
+      checkOut: pastBooking.checkOut, status: "PAID",
+      paidAt: days(-20), payoutId: seedPayout.id,
     },
   });
 
