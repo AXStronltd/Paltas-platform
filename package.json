@@ -35,7 +35,8 @@
     "db:sync-listings": "node prisma/sync-listings.mjs",
     "test:payouts": "npm run db:seed --silent && node tests/payouts.e2e.mjs",
     "payouts:run": "node scripts/run-payouts.mjs",
-    "stripe:roundtrip": "node scripts/stripe-roundtrip.mjs"
+    "stripe:roundtrip": "node scripts/stripe-roundtrip.mjs",
+    "db:fix-photos": "node prisma/fix-listing-photos.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
