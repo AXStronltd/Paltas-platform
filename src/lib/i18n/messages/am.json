@@ -76,5 +76,21 @@
   "book.serviceFee": "የአገልግሎት ክፍያ",
   "book.taxes": "ግብር",
   "book.noHidden": "የሚያዩት ዋጋ የሚከፍሉት ነው — በመጨረሻ ምንም አይጨመርም።",
-  "book.room": "ክፍል"
+  "book.room": "ክፍል",
+  "search.where": "ወዴት?",
+  "search.wherePlaceholder": "የትም — ከተማ፣ አካባቢ ወይም አገር",
+  "search.checkIn": "መግቢያ",
+  "search.checkOut": "መውጫ",
+  "search.guestsLabel": "እንግዶች",
+  "search.go": "ፈልግ",
+  "search.searching": "በመፈለግ ላይ…",
+  "search.resultsFor": "{count, plural, other {# ቦታዎች}} ተገኝተዋል",
+  "search.clear": "አጽዳ",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

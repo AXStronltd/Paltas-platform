@@ -26,6 +26,8 @@ const ROOT = "src/app/api";
 const UNGUARDED_BY_DESIGN = {
   "/auth/login/route.ts": "authenticates — verifies the password itself",
   "/auth/logout/route.ts": "destroys only the caller's own session",
+  "/auth/forgot/route.ts": "requests a reset link — unauthenticated by definition, and answers identically whether or not the address exists so it cannot be used to test which emails are registered. Recorded as a PasswordReset row rather than an audit entry: there is no actor to attribute it to.",
+  "/auth/reset/route.ts": "sets a new password from a single-use token — authorised by holding the token, which is the only credential someone locked out has. The token is the record.",
   "/me/route.ts": "reports the caller's own identity via currentActor()",
   "/guest/me/route.ts": "reports the caller's own guest identity via currentGuest(); null when signed out",
   "/roles/route.ts": "role catalogue — currentActor() + canAnywhere()",

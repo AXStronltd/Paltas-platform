@@ -1545,3 +1545,41 @@ body:has(.scrim) .tabbar { display: none; }
 [dir="rtl"] .auth-field input,
 [dir="rtl"] .stat b,
 [dir="rtl"] .kpi b { unicode-bidi: isolate; }
+
+/* The search bar's fields are inputs now, not labels. */
+.hero-search .hs-field { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 4px 2px; }
+.hero-search .hs-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.hero-search .hs-body label { font-size: 11.5px; font-weight: 800; color: var(--muted); }
+.hero-search .hs-body input {
+  border: none; background: transparent; font-family: inherit;
+  font-size: 14.5px; font-weight: 700; color: var(--ink); width: 100%; padding: 0;
+}
+.hero-search .hs-body input:focus { outline: none; }
+.hero-search .hs-body input::placeholder { color: #9aa4b2; font-weight: 600; }
+.hero-search .hs-field:focus-within { background: var(--bg-2); border-radius: 12px; }
+
+.results-summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 4px 0 14px; font-size: 14px; color: var(--muted);
+}
+.results-summary .link {
+  background: none; border: none; font-family: inherit; font-size: 13.5px;
+  font-weight: 700; color: var(--teal-ink); cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  /* Stacked, so each field is a full-width tap target rather than a sliver. */
+  .hero-search { flex-direction: column; align-items: stretch; gap: 4px; }
+  .hero-search .hs-divider { display: none; }
+  .hero-search .hs-field { border-bottom: 1px solid var(--line); padding: 10px 4px; }
+  .hero-search .hs-field:last-of-type { border-bottom: none; }
+  .hero-search .hs-search-btn { width: 100%; margin-top: 8px; }
+  /* iOS zooms inputs under 16px and throws the page sideways. */
+  .hero-search .hs-body input { font-size: 16px; }
+}
+
+.auth-notice {
+  background: rgba(0,196,172,.09); border: 1px solid rgba(0,196,172,.28);
+  color: var(--teal-ink); font-size: 13.5px; line-height: 1.5;
+  padding: 11px 13px; border-radius: 12px; margin: 0;
+}

@@ -76,5 +76,21 @@
   "book.serviceFee": "Servicegebühr",
   "book.taxes": "Steuern",
   "book.noHidden": "Der angezeigte Preis ist der, den Sie zahlen — am Ende kommt nichts hinzu.",
-  "book.room": "Zimmer"
+  "book.room": "Zimmer",
+  "search.where": "Wohin?",
+  "search.wherePlaceholder": "Überall — Stadt, Gegend oder Land",
+  "search.checkIn": "Anreise",
+  "search.checkOut": "Abreise",
+  "search.guestsLabel": "Gäste",
+  "search.go": "Suchen",
+  "search.searching": "Suche…",
+  "search.resultsFor": "{count, plural, one {# Unterkunft} other {# Unterkünfte}} gefunden",
+  "search.clear": "Zurücksetzen",
+  "cat.all": "Alle",
+  "cat.stays": "Kurzaufenthalte",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Langzeitmiete",
+  "cat.sale": "Zum Verkauf",
+  "cat.projects": "Neubauprojekte",
+  "cat.apartments": "Stadtwohnungen"
 }

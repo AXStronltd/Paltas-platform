@@ -76,5 +76,21 @@
   "book.serviceFee": "سروس فیس",
   "book.taxes": "ٹیکس",
   "book.noHidden": "جو قیمت نظر آ رہی ہے وہی آپ ادا کریں گے — آخر میں کچھ نہیں جڑتا۔",
-  "book.room": "کمرہ"
+  "book.room": "کمرہ",
+  "search.where": "کہاں جانا ہے؟",
+  "search.wherePlaceholder": "کہیں بھی — شہر، علاقہ یا ملک",
+  "search.checkIn": "چیک اِن",
+  "search.checkOut": "چیک آؤٹ",
+  "search.guestsLabel": "مہمان",
+  "search.go": "تلاش کریں",
+  "search.searching": "تلاش جاری ہے…",
+  "search.resultsFor": "{count, plural, other {# مقامات}} ملے",
+  "search.clear": "صاف کریں",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

@@ -76,5 +76,21 @@
   "book.serviceFee": "Khidmadda adeegga",
   "book.taxes": "Canshuuraha",
   "book.noHidden": "Qiimaha aad aragto ayaad bixinaysaa — waxba dhamaadka lagu darayo ma jiraan.",
-  "book.room": "Qolka"
+  "book.room": "Qolka",
+  "search.where": "Xagee?",
+  "search.wherePlaceholder": "Meel kasta — magaalo, degmo ama dal",
+  "search.checkIn": "Gelitaanka",
+  "search.checkOut": "Bixitaanka",
+  "search.guestsLabel": "Martida",
+  "search.go": "Raadi",
+  "search.searching": "Waa la raadinayaa…",
+  "search.resultsFor": "{count, plural, other {# meel}} ayaa la helay",
+  "search.clear": "Tirtir",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

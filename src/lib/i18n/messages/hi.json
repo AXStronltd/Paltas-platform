@@ -76,5 +76,21 @@
   "book.serviceFee": "सेवा शुल्क",
   "book.taxes": "कर",
   "book.noHidden": "जो कीमत दिख रही है वही आप देंगे — अंत में कुछ नहीं जुड़ता।",
-  "book.room": "कमरा"
+  "book.room": "कमरा",
+  "search.where": "कहाँ जाना है?",
+  "search.wherePlaceholder": "कहीं भी — शहर, इलाका या देश",
+  "search.checkIn": "चेक-इन",
+  "search.checkOut": "चेक-आउट",
+  "search.guestsLabel": "मेहमान",
+  "search.go": "खोजें",
+  "search.searching": "खोजा जा रहा है…",
+  "search.resultsFor": "{count, plural, other {# जगहें}} मिलीं",
+  "search.clear": "साफ़ करें",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

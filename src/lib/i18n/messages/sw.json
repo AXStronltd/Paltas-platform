@@ -76,5 +76,21 @@
   "book.serviceFee": "Ada ya huduma",
   "book.taxes": "Kodi",
   "book.noHidden": "Bei unayoiona ndiyo unayolipa — hakuna kinachoongezwa mwishoni.",
-  "book.room": "Chumba"
+  "book.room": "Chumba",
+  "search.where": "Unaenda wapi?",
+  "search.wherePlaceholder": "Popote — mji, eneo au nchi",
+  "search.checkIn": "Kuingia",
+  "search.checkOut": "Kutoka",
+  "search.guestsLabel": "Wageni",
+  "search.go": "Tafuta",
+  "search.searching": "Inatafuta…",
+  "search.resultsFor": "{count, plural, one {mahali #} other {maeneo #}} yamepatikana",
+  "search.clear": "Futa",
+  "cat.all": "Zote",
+  "cat.stays": "Malazi mafupi",
+  "cat.hotels": "Hoteli",
+  "cat.rent": "Kukodisha muda mrefu",
+  "cat.sale": "Zinazouzwa",
+  "cat.projects": "Miradi mipya",
+  "cat.apartments": "Vyumba vya jiji"
 }

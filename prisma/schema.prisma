@@ -2047,3 +2047,24 @@ model BookingAddon {
   @@index([bookingId])
   @@index([offeringId, status])
 }
+
+/// A single-use token for setting a new password.
+///
+/// The token itself is never stored — only its SHA-256 digest, exactly as
+/// sessions are handled. A database that leaks reset rows must not hand
+/// somebody a working link to every account in it.
+model PasswordReset {
+  id        String   @id @default(cuid())
+  /// Digest of the token, never the token.
+  tokenHash String   @unique
+  /// Exactly one of these is set; a guest and a staff member are separate
+  /// identities and a reset must not cross between them.
+  userId    String?
+  guestId   String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  requestIp String?
+
+  @@index([expiresAt])
+}

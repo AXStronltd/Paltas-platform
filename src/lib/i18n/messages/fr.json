@@ -76,5 +76,21 @@
   "book.serviceFee": "Frais de service",
   "book.taxes": "Taxes",
   "book.noHidden": "Le prix affiché est celui que vous payez — rien n'est ajouté à la fin.",
-  "book.room": "Chambre"
+  "book.room": "Chambre",
+  "search.where": "Où allez-vous ?",
+  "search.wherePlaceholder": "N'importe où — ville, quartier ou pays",
+  "search.checkIn": "Arrivée",
+  "search.checkOut": "Départ",
+  "search.guestsLabel": "Voyageurs",
+  "search.go": "Rechercher",
+  "search.searching": "Recherche…",
+  "search.resultsFor": "{count, plural, one {# logement trouvé} other {# logements trouvés}}",
+  "search.clear": "Effacer",
+  "cat.all": "Tout",
+  "cat.stays": "Courts séjours",
+  "cat.hotels": "Hôtels",
+  "cat.rent": "Location longue durée",
+  "cat.sale": "À vendre",
+  "cat.projects": "Nouveaux programmes",
+  "cat.apartments": "Appartements en ville"
 }

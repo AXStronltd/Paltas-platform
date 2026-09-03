@@ -76,5 +76,21 @@
   "book.serviceFee": "Hizmet bedeli",
   "book.taxes": "Vergiler",
   "book.noHidden": "Gördüğünüz fiyat ödeyeceğiniz fiyattır — sonunda hiçbir şey eklenmez.",
-  "book.room": "Oda"
+  "book.room": "Oda",
+  "search.where": "Nereye?",
+  "search.wherePlaceholder": "Her yer — şehir, bölge veya ülke",
+  "search.checkIn": "Giriş",
+  "search.checkOut": "Çıkış",
+  "search.guestsLabel": "Misafirler",
+  "search.go": "Ara",
+  "search.searching": "Aranıyor…",
+  "search.resultsFor": "{count, plural, other {# yer}} bulundu",
+  "search.clear": "Temizle",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

@@ -77,5 +77,21 @@
   "book.serviceFee": "Serviceavgift",
   "book.taxes": "Skatt",
   "book.noHidden": "Priset du ser är det du betalar — inget tillkommer i slutet.",
-  "book.room": "Rum"
+  "book.room": "Rum",
+  "search.where": "Vart vill du åka?",
+  "search.wherePlaceholder": "Var som helst — stad, område eller land",
+  "search.checkIn": "Incheckning",
+  "search.checkOut": "Utcheckning",
+  "search.guestsLabel": "Gäster",
+  "search.go": "Sök",
+  "search.searching": "Söker…",
+  "search.resultsFor": "{count, plural, one {# boende} other {# boenden}} hittades",
+  "search.clear": "Rensa",
+  "cat.all": "Alla",
+  "cat.stays": "Korta vistelser",
+  "cat.hotels": "Hotell",
+  "cat.rent": "Långtidsuthyrning",
+  "cat.sale": "Till salu",
+  "cat.projects": "Nyproduktion",
+  "cat.apartments": "Citylägenheter"
 }

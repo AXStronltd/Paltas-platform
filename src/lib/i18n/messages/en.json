@@ -77,5 +77,21 @@
   "book.serviceFee": "Service fee",
   "book.taxes": "Taxes",
   "book.noHidden": "This price is what you pay — there is nothing added at the end.",
-  "book.room": "Room"
+  "book.room": "Room",
+  "search.where": "Where to?",
+  "search.wherePlaceholder": "Anywhere — city, area or country",
+  "search.checkIn": "Check in",
+  "search.checkOut": "Check out",
+  "search.guestsLabel": "Guests",
+  "search.go": "Search",
+  "search.searching": "Searching…",
+  "search.resultsFor": "{count, plural, one {# place} other {# places}} found",
+  "search.clear": "Clear",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }

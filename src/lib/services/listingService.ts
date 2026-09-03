@@ -32,19 +32,32 @@ function classifyMode(l: Listing): StayMode {
 export async function searchListings(filters: SearchFilters = {}): Promise<Result<Listing[]>> {
   // Real inventory first, always. A visitor should meet a property that exists
   // before they meet one that does not.
-  const real = await fetchRealListings({
-    city: filters.city,
-    guests: filters.guests,
-    kind: filters.mode === "rent" ? "RENT" : filters.mode === "hotel" || filters.mode === "stays" ? "STAY" : undefined,
-  });
+  // An explicit kind wins over one inferred from the stay mode: someone who
+  // asked for property to buy did not ask for a kind of stay.
+  const kind = filters.kind
+    ?? (filters.mode === "rent" ? "RENT"
+      : filters.mode === "hotel" || filters.mode === "stays" ? "STAY"
+      : undefined);
+
+  const real = await fetchRealListings({ city: filters.city, guests: filters.guests, kind });
 
   if (isMock()) {
     let list = [...LISTINGS];
-    if (filters.city) list = list.filter((l) => l.city.toLowerCase() === filters.city!.toLowerCase());
+    // Matched loosely and across several fields: someone typing "mombasa",
+    // "Diani" or "beach" is describing where they want to be, not naming a
+    // database column. An exact city match found nothing for most of them.
+    if (filters.city) {
+      const q = filters.city.trim().toLowerCase();
+      list = list.filter((l) =>
+        [l.city, l.location, l.country, l.name].some((v) => (v ?? "").toLowerCase().includes(q)));
+    }
     if (filters.mode && filters.mode !== "all") list = list.filter((l) => classifyMode(l) === filters.mode);
     if (filters.guests) list = list.filter((l) => l.maxGuests >= filters.guests!);
     if (filters.maxPrice) list = list.filter((l) => l.price <= filters.maxPrice!);
     if (filters.amenities?.length) list = list.filter((l) => filters.amenities!.every((a) => l.amenities.includes(a)));
+    // The demo catalogue has no transaction kind, so a search for property to
+    // buy must not pad its results with invented stays.
+    if (kind) list = [];
     return mockDelay({ data: [...real, ...list], error: null });
   }
   // API: return apiGet<Listing[]>(`/listings?${new URLSearchParams(filters as any)}`);

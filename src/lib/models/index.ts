@@ -264,11 +264,22 @@ export interface Receipt {
 }
 
 export interface SearchFilters {
+  /** Free text: a city, a district, or part of a property's name. */
   city?: string;
   mode?: StayMode | "all";
   guests?: number;
   maxPrice?: number;
   amenities?: Amenity[];
+  /**
+   * What the visitor is looking for, as opposed to how it is classified.
+   * `mode` describes the kind of stay; this describes the transaction, and the
+   * two are not the same — "For sale" is not a kind of stay at all, which is
+   * why every sale-related chip used to collapse into "all".
+   */
+  kind?: "STAY" | "RENT" | "SALE";
+  /** Dates, when the visitor has chosen them. Only meaningful for stays. */
+  checkIn?: string;
+  checkOut?: string;
 }
 
 /** Uniform result wrapper — mirrors what a real API layer returns. */

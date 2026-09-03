@@ -76,5 +76,21 @@
   "book.serviceFee": "Taxa de serviço",
   "book.taxes": "Impostos",
   "book.noHidden": "O preço que vê é o que paga — nada é acrescentado no fim.",
-  "book.room": "Quarto"
+  "book.room": "Quarto",
+  "search.where": "Para onde?",
+  "search.wherePlaceholder": "Qualquer lugar — cidade, zona ou país",
+  "search.checkIn": "Entrada",
+  "search.checkOut": "Saída",
+  "search.guestsLabel": "Hóspedes",
+  "search.go": "Pesquisar",
+  "search.searching": "A pesquisar…",
+  "search.resultsFor": "{count, plural, one {# alojamento} other {# alojamentos}} encontrados",
+  "search.clear": "Limpar",
+  "cat.all": "Tudo",
+  "cat.stays": "Estadias curtas",
+  "cat.hotels": "Hotéis",
+  "cat.rent": "Arrendamento longo",
+  "cat.sale": "À venda",
+  "cat.projects": "Novos empreendimentos",
+  "cat.apartments": "Apartamentos na cidade"
 }

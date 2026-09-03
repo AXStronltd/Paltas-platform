@@ -77,5 +77,21 @@
   "book.serviceFee": "Aptarnavimo mokestis",
   "book.taxes": "Mokesčiai",
   "book.noHidden": "Matoma kaina yra galutinė — pabaigoje nieko nepridedama.",
-  "book.room": "Kambarys"
+  "book.room": "Kambarys",
+  "search.where": "Kur vykstate?",
+  "search.wherePlaceholder": "Bet kur — miestas, rajonas ar šalis",
+  "search.checkIn": "Atvykimas",
+  "search.checkOut": "Išvykimas",
+  "search.guestsLabel": "Svečiai",
+  "search.go": "Ieškoti",
+  "search.searching": "Ieškoma…",
+  "search.resultsFor": "rasta {count, plural, one {# vieta} few {# vietos} other {# vietų}}",
+  "search.clear": "Išvalyti",
+  "cat.all": "Visi",
+  "cat.stays": "Trumpalaikiai",
+  "cat.hotels": "Viešbučiai",
+  "cat.rent": "Ilgalaikė nuoma",
+  "cat.sale": "Parduodama",
+  "cat.projects": "Nauji projektai",
+  "cat.apartments": "Miesto butai"
 }

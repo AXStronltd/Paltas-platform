@@ -76,5 +76,21 @@
   "book.serviceFee": "服务费",
   "book.taxes": "税费",
   "book.noHidden": "您看到的价格就是最终支付的金额——结账时不会再加任何费用。",
-  "book.room": "房间"
+  "book.room": "房间",
+  "search.where": "去哪里？",
+  "search.wherePlaceholder": "任何地方——城市、区域或国家",
+  "search.checkIn": "入住",
+  "search.checkOut": "退房",
+  "search.guestsLabel": "房客",
+  "search.go": "搜索",
+  "search.searching": "搜索中…",
+  "search.resultsFor": "找到 {count, plural, other {# 处}}",
+  "search.clear": "清除",
+  "cat.all": "全部",
+  "cat.stays": "短住",
+  "cat.hotels": "酒店",
+  "cat.rent": "长租",
+  "cat.sale": "出售",
+  "cat.projects": "新楼盘",
+  "cat.apartments": "城市公寓"
 }

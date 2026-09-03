@@ -76,5 +76,21 @@
   "book.serviceFee": "رسوم الخدمة",
   "book.taxes": "الضرائب",
   "book.noHidden": "السعر الذي تراه هو ما تدفعه — لا شيء يُضاف في النهاية.",
-  "book.room": "الغرفة"
+  "book.room": "الغرفة",
+  "search.where": "إلى أين؟",
+  "search.wherePlaceholder": "أي مكان — مدينة أو منطقة أو دولة",
+  "search.checkIn": "تسجيل الوصول",
+  "search.checkOut": "تسجيل المغادرة",
+  "search.guestsLabel": "الضيوف",
+  "search.go": "بحث",
+  "search.searching": "جارٍ البحث…",
+  "search.resultsFor": "{count, plural, one {مكان واحد} two {مكانان} few {# أماكن} many {# مكانًا} other {# مكان}} موجودة",
+  "search.clear": "مسح",
+  "cat.all": "الكل",
+  "cat.stays": "إقامات قصيرة",
+  "cat.hotels": "فنادق",
+  "cat.rent": "إيجار طويل",
+  "cat.sale": "للبيع",
+  "cat.projects": "مشاريع جديدة",
+  "cat.apartments": "شقق المدينة"
 }

@@ -76,5 +76,21 @@
   "book.serviceFee": "Commissione di servizio",
   "book.taxes": "Tasse",
   "book.noHidden": "Il prezzo che vedi è quello che paghi — non si aggiunge nulla alla fine.",
-  "book.room": "Camera"
+  "book.room": "Camera",
+  "search.where": "Dove vai?",
+  "search.wherePlaceholder": "Ovunque — città, zona o paese",
+  "search.checkIn": "Check-in",
+  "search.checkOut": "Check-out",
+  "search.guestsLabel": "Ospiti",
+  "search.go": "Cerca",
+  "search.searching": "Ricerca…",
+  "search.resultsFor": "{count, plural, one {# alloggio trovato} other {# alloggi trovati}}",
+  "search.clear": "Cancella",
+  "cat.all": "All",
+  "cat.stays": "Short stays",
+  "cat.hotels": "Hotels",
+  "cat.rent": "Long-term rent",
+  "cat.sale": "For sale",
+  "cat.projects": "New projects",
+  "cat.apartments": "City apartments"
 }
