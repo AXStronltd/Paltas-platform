@@ -28,6 +28,8 @@
     "src/lib/booking/**/*.ts",
     "src/lib/external/**/*.ts",
     "src/lib/marketplace/**/*.ts",
-    "src/lib/payouts/**/*.ts"
+    "src/lib/payouts/**/*.ts",
+    "src/lib/media/**/*.ts",
+    "src/server/storage.ts"
   ]
 }

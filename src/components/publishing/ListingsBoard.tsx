@@ -5,6 +5,7 @@ import { NoAccess, useSession } from "@/components/security/SessionProvider";
 import { PERMISSIONS } from "@/lib/security/permissions";
 import { createListing, getListings, setListingLive, type ListingRow } from "@/lib/services/managementService";
 import { Dialog } from "@/components/security/VisitorsPanel";
+import { ListingPhotos } from "./ListingPhotos";
 
 const KINDS = [
   { key: "STAY", label: "Short stay", unit: "per night" },
@@ -35,6 +36,15 @@ export function ListingsBoard() {
   }, []);
 
   useEffect(() => { if (can(PERMISSIONS.LISTING_VIEW)) load(); }, [load, can]);
+
+  /**
+   * Update one row in place after a photograph is added or removed.
+   *
+   * Rather than reloading the whole board: a host adding six photographs should
+   * see each one appear as it lands, not watch the page blink six times.
+   */
+  const patchRow = (id: string, patch: Partial<ListingRow>) =>
+    setListings((rows) => rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
 
   if (!can(PERMISSIONS.LISTING_VIEW)) {
     return <NoAccess what="marketplace listings" permission={PERMISSIONS.LISTING_VIEW} />;
@@ -85,7 +95,17 @@ export function ListingsBoard() {
               <b>{money(l)}</b>
               <span>{l.bedrooms} bed · {l.bathrooms} bath · sleeps {l.maxGuests}</span>
             </div>
-            {l.images.length === 0 && (
+            {/* A host's own photographs, not ours. The listing rows carry
+                storage keys; `urls` is the same list resolved to somewhere
+                fetchable, and both are needed — one to delete by, one to show. */}
+            {canAt(PERMISSIONS.LISTING_UPDATE, l.propertyId) ? (
+              <ListingPhotos
+                listingId={l.id}
+                images={l.images}
+                urls={l.imageUrls}
+                onChange={(images, urls) => patchRow(l.id, { images, imageUrls: urls })}
+              />
+            ) : l.images.length === 0 && (
               <p className="withheld small">No photograph yet — required before this can go live.</p>
             )}
             {l.rejectionReason && <p className="withheld small">Rejected: {l.rejectionReason}</p>}

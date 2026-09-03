@@ -2,6 +2,7 @@ import type { GroupPurpose, GroupStatus, InvitationStatus, ListingKind, ListingS
 import {
   balanceFrom, nextExpiry, qualifyingSpendFrom, tierProgress, type LedgerEntry,
 } from "@/lib/loyalty/loyalty";
+import { photoUrl } from "@/server/storage";
 
 /**
  * Shared response shapes.
@@ -261,7 +262,15 @@ export function presentListing(l: ListingRecord) {
     bedrooms: l.bedrooms,
     bathrooms: l.bathrooms,
     amenities: l.amenities,
+    /*
+     * Two lists, deliberately. `images` is what is stored — a storage key for a
+     * host's upload, a path for a sample photograph — and is what a delete has
+     * to name. `imageUrls` is the same list resolved to somewhere the browser
+     * can actually fetch from. Returning only one of them means either the
+     * pictures do not appear or they cannot be removed.
+     */
     images: l.images,
+    imageUrls: l.images.map(photoUrl),
     city: l.city,
     location: l.location,
     hostName: l.hostName,

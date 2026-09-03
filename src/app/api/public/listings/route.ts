@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { handle, ok } from "@/server/http";
 import { HOLDS_INVENTORY } from "@/server/booking";
 import { peakOccupancy } from "@/lib/booking/availability";
+import { photoUrl } from "@/server/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,10 @@ export async function GET(req: Request): Promise<NextResponse> {
         .filter((l) => !available || available.has(l.id))
         .map(({ roomTypes, ...l }) => ({
           ...l,
+          // A host's upload is a key in a bucket; a sample photograph is a path
+          // this application serves. The shopfront only wants somewhere to
+          // fetch from, so both are resolved here rather than in every card.
+          images: l.images.map(photoUrl),
           /** Stated per listing so a shopfront never has to guess the unit. */
           priceUnit: l.kind === "STAY" ? "per night" : l.kind === "RENT" ? "per month" : "total",
         })),

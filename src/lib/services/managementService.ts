@@ -395,6 +395,8 @@ export interface ListingRow {
   price: number; currency: string;
   maxGuests: number; bedrooms: number; bathrooms: number;
   amenities: string[]; images: string[];
+  /** The same photographs, resolved to somewhere fetchable. */
+  imageUrls: string[];
   city: string | null; location: string | null;
   hostName: string; hostKind: string;
   propertyId: string; propertyName: string | null;
@@ -411,6 +413,28 @@ export const createListing = (input: {
   maxGuests?: number; bedrooms?: number; bathrooms?: number;
   amenities?: string[]; images?: string[]; hostName?: string; hostKind?: string;
 }) => api.post<{ listing: ListingRow }>("/listings", input);
+
+/**
+ * Ask for somewhere to put a photograph.
+ *
+ * The file itself never goes through the platform: this returns a URL signed
+ * for one key and a few minutes, the browser sends the bytes straight to
+ * storage, and `confirmListingPhoto` is what decides whether they may be kept.
+ */
+export const requestPhotoUpload = (listingId: string, file: File) =>
+  api.post<{ uploadUrl: string; key: string; contentType: string; expiresInSeconds: number }>(
+    `/listings/${listingId}/photos`,
+    { contentType: file.type, size: file.size },
+  );
+
+/** Attach an upload, once the server has read the bytes and agreed they are an image. */
+export const confirmListingPhoto = (listingId: string, key: string) =>
+  api.patch<{ images: string[]; urls: string[]; type: string }>(`/listings/${listingId}/photos`, { key });
+
+export const removeListingPhoto = (listingId: string, key: string) =>
+  api.del<{ images: string[]; urls: string[] }>(
+    `/listings/${listingId}/photos?key=${encodeURIComponent(key)}`,
+  );
 
 export const setListingLive = (id: string, action: "publish" | "unpublish" | "reject", reason?: string) =>
   api.post<{ listing: ListingRow }>(`/listings/${id}/publish`, { action, reason });
