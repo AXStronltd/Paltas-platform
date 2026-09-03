@@ -68,12 +68,50 @@ export const COUNTRY_CURRENCY: Record<string, string> = {
  * listed falls through to English, which is a better guess than nothing and
  * never overrides what the visitor actually asked for.
  */
+/**
+ * The language a country most likely reads, used when a visitor picks a country
+ * before picking a language.
+ *
+ * A suggestion, never an override: someone who has chosen a language keeps it
+ * when they change country. A Lithuanian browsing Swedish property wants
+ * Lithuanian text and Swedish listings, and the two are separate choices.
+ *
+ * Only countries whose language has a catalogue appear. Everywhere else falls
+ * to English, which is the honest outcome rather than switching someone into a
+ * language the platform cannot actually speak.
+ */
 export const COUNTRY_LANGUAGE: Record<string, string> = {
+  // Swahili
+  KE: "sw", TZ: "sw", UG: "sw",
+  // Arabic
+  SA: "ar", AE: "ar", EG: "ar", QA: "ar", KW: "ar", BH: "ar", OM: "ar",
+  JO: "ar", LB: "ar", MA: "ar", DZ: "ar", TN: "ar", IQ: "ar", LY: "ar", SD: "ar", YE: "ar",
+  // French
+  FR: "fr", BE: "fr", CI: "fr", SN: "fr", CM: "fr", CD: "fr", ML: "fr", BF: "fr", NE: "fr", MG: "fr",
+  // Spanish
+  ES: "es", MX: "es", AR: "es", CO: "es", CL: "es", PE: "es", VE: "es",
+  EC: "es", GT: "es", CU: "es", BO: "es", DO: "es", HN: "es", PY: "es", UY: "es", CR: "es", PA: "es",
+  // Portuguese
+  PT: "pt", BR: "pt", AO: "pt", MZ: "pt", CV: "pt",
+  // German
+  DE: "de", AT: "de", CH: "de",
+  // Italian
+  IT: "it",
+  // Turkish
+  TR: "tr",
+  // Hindi and Urdu
+  IN: "hi", PK: "ur",
+  // Chinese
+  CN: "zh", TW: "zh", HK: "zh", SG: "zh",
+  // Horn of Africa
+  SO: "so", ET: "am", DJ: "so",
+  // Nordic and Baltic
   SE: "sv", LT: "lt",
-  // Everywhere else currently reads in English, because those are the only two
-  // non-English catalogues that exist. Adding a language is a catalogue plus a
-  // line here — the market list does not change.
 };
+
+/** The language to suggest for a country, or null when we cannot speak it. */
+export const languageForCountry = (country: string | null | undefined): string | null =>
+  (country && COUNTRY_LANGUAGE[country.toUpperCase()]) || null;
 
 /** Whether we hold a currency for this country. */
 export function currencyForCountry(code: string): string | null {

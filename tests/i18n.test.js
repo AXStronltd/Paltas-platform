@@ -320,3 +320,22 @@ test("a country we cannot price falls back rather than breaking", () => {
   const r = L.resolvePreferences({ country: "ZZ" });
   assert.equal(r.market, L.DEFAULT_MARKET);
 });
+
+test("a country suggests its language, for the countries we can speak", () => {
+  const { languageForCountry } = C;
+  assert.equal(languageForCountry("KE"), "sw", "Kenya reads Swahili");
+  assert.equal(languageForCountry("SA"), "ar", "Saudi Arabia reads Arabic");
+  assert.equal(languageForCountry("ae"), "ar", "and the code is case-insensitive");
+  assert.equal(languageForCountry("BR"), "pt");
+  assert.equal(languageForCountry("PK"), "ur");
+  assert.equal(languageForCountry("ET"), "am");
+  // A country whose language we have no catalogue for suggests nothing rather
+  // than switching someone into a language the platform cannot speak.
+  assert.equal(languageForCountry("JP"), null);
+  assert.equal(languageForCountry("NL"), null);
+  assert.equal(languageForCountry(null), null);
+  // Every suggestion must be a language actually on offer.
+  for (const [country, lang] of Object.entries(C.COUNTRY_LANGUAGE)) {
+    assert.ok(L.isLocale(lang), `${country} suggests ${lang}, which is not offered`);
+  }
+});

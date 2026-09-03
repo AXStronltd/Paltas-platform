@@ -837,6 +837,82 @@ async function main() {
     },
   });
 
+  // Enough real inventory that the marketplace does not look abandoned.
+  //
+  // A platform with three listings reads as broken rather than new, and the
+  // discovery rows below the fold have nothing of their own to show. These are
+  // spread across cities and price points so filtering by city, kind or budget
+  // actually narrows something.
+  const moreListings = [
+    { title: "Studio in Westlands, walk to Sarit", city: "Nairobi", location: "Westlands",
+      kind: "RENT", price: 42_000, bedrooms: 1, bathrooms: 1, maxGuests: 2,
+      summary: "Furnished studio, backup power, secure parking.",
+      description: "A furnished studio on the third floor of a quiet block off Church Road, five minutes' walk "
+        + "from Sarit Centre. Borehole water, backup generator, lift serviced monthly, and 24-hour manned gate.",
+      amenities: ["wifi", "parking", "backup power", "24h security"] },
+    { title: "Two-bed apartment, Kileleshwa", city: "Nairobi", location: "Kileleshwa",
+      kind: "RENT", price: 78_000, bedrooms: 2, bathrooms: 2, maxGuests: 4,
+      summary: "Corner unit with a balcony over the gardens.",
+      description: "A bright two-bedroom corner apartment with a wrap-around balcony overlooking mature gardens. "
+        + "Fitted kitchen, master en-suite, borehole water and a generator covering the whole block.",
+      amenities: ["wifi", "parking", "balcony", "backup power", "24h security"] },
+    { title: "Beach cottage, Diani", city: "Kwale", location: "Diani Beach",
+      kind: "STAY", price: 11_500, bedrooms: 2, bathrooms: 2, maxGuests: 4,
+      summary: "Two minutes from the sand, under the palms.",
+      description: "A thatched two-bedroom cottage set back from Diani beach road, with an outdoor shower, "
+        + "a shaded veranda and a short path through the palms to the sand. Breakfast can be arranged.",
+      amenities: ["wifi", "beach access", "kitchen", "air conditioning"] },
+    { title: "Sea-view apartment, Nyali", city: "Mombasa", location: "Nyali",
+      kind: "STAY", price: 8_200, bedrooms: 1, bathrooms: 1, maxGuests: 3,
+      summary: "Fourth floor, facing the water.",
+      description: "A one-bedroom apartment on the fourth floor with an unbroken view over the channel. "
+        + "Pool and secure parking in the block; the beach is a ten-minute walk.",
+      amenities: ["wifi", "pool", "parking", "air conditioning", "sea view"] },
+    { title: "Family house with garden, Karen", city: "Nairobi", location: "Karen",
+      kind: "SALE", price: 62_000_000, bedrooms: 5, bathrooms: 4, maxGuests: 10,
+      summary: "Half an acre, mature trees, staff quarters.",
+      description: "A five-bedroom family house on half an acre in Karen, with mature indigenous trees, "
+        + "a borehole, solar water heating, staff quarters and a double garage. Title deed ready.",
+      amenities: ["garden", "borehole", "parking", "staff quarters", "solar"] },
+    { title: "Serviced apartment, Upper Hill", city: "Nairobi", location: "Upper Hill",
+      kind: "STAY", price: 13_400, bedrooms: 2, bathrooms: 2, maxGuests: 4,
+      summary: "Weekly housekeeping, walk to the hospitals.",
+      description: "A serviced two-bedroom apartment among the Upper Hill offices, with weekly housekeeping, "
+        + "a gym in the building and fibre throughout. Convenient for the hospitals and the CBD.",
+      amenities: ["wifi", "gym", "parking", "housekeeping", "workspace"] },
+    { title: "Townhouse in Nyali, three bed", city: "Mombasa", location: "Nyali",
+      kind: "SALE", price: 24_500_000, bedrooms: 3, bathrooms: 3, maxGuests: 6,
+      summary: "Gated court of eight, shared pool.",
+      description: "A three-bedroom townhouse in a gated court of eight units off Links Road, sharing a pool "
+        + "and a generator. All bedrooms en-suite, with a small private garden behind.",
+      amenities: ["pool", "parking", "garden", "backup power", "24h security"] },
+    { title: "One-bed in Kilimani, furnished", city: "Nairobi", location: "Kilimani",
+      kind: "STAY", price: 6_800, bedrooms: 1, bathrooms: 1, maxGuests: 2,
+      summary: "Short stays, walk to Yaya.",
+      description: "A furnished one-bedroom for short stays, five minutes from Yaya Centre. "
+        + "Fast fibre, a proper desk, and a lift that works.",
+      amenities: ["wifi", "workspace", "parking", "backup power"] },
+  ];
+
+  for (const l of moreListings) {
+    await prisma.propertyListing.create({
+      data: {
+        orgId: org.id,
+        propertyId: l.city === "Mombasa" || l.city === "Kwale" ? nyali.id : kilimani.id,
+        title: l.title, summary: l.summary, description: l.description,
+        kind: l.kind, status: "PUBLISHED",
+        price: l.price, currency: "KES",
+        maxGuests: l.maxGuests, bedrooms: l.bedrooms, bathrooms: l.bathrooms,
+        amenities: l.amenities, images: ["/paltas-logo.png"],
+        city: l.city, location: l.location,
+        hostName: l.city === "Mombasa" || l.city === "Kwale" ? "Hassan Omar" : "Amina Yusuf",
+        hostKind: l.kind === "SALE" ? "Agent" : "Landlord",
+        publishedAt: days(-Math.floor(Math.random() * 40) - 1),
+        publishedById: owner.id, createdById: manager.id,
+      },
+    });
+  }
+
   // A property for sale, so /buy has genuine stock rather than an empty page.
   await prisma.propertyListing.create({
     data: {

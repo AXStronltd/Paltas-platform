@@ -5,7 +5,7 @@ import {
   DEFAULT_LOCALE, DEFAULT_MARKET, LOCALES, MARKETS,
   isLocale, isMarket, isRtl, marketOf, type LocaleCode, type MarketCode,
 } from "@/lib/i18n/locales";
-import { COUNTRY_CURRENCY } from "@/lib/i18n/countries";
+import { COUNTRY_CURRENCY, languageForCountry } from "@/lib/i18n/countries";
 import { createTranslator, type Translator } from "@/lib/i18n/translate";
 import { setDisplayLocale } from "@/lib/i18n/displayLocale";
 
@@ -49,8 +49,20 @@ export function LocaleProvider({
     document.cookie = `${name}=${value};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
   };
 
+  /**
+   * Whether the reader has chosen a language themselves.
+   *
+   * Picking a country suggests its language — that is what "global with local
+   * customisation" means for someone arriving in Riyadh. But a suggestion must
+   * never overwrite a decision: a Lithuanian browsing Swedish property wants
+   * Lithuanian text and Swedish listings, and changing market should not throw
+   * them into Swedish.
+   */
+  const [localeChosen, setLocaleChosen] = useState(Boolean(initialLocale));
+
   const setLocale = useCallback((code: LocaleCode) => {
     setLocaleState(code);
+    setLocaleChosen(true);
     persist("paltas_locale", code);
   }, []);
 
@@ -78,7 +90,17 @@ export function LocaleProvider({
   const setMarket = useCallback((code: MarketCode) => {
     setMarketState(code);
     persist("paltas_market", code);
-  }, []);
+
+    // Country carries currency and formats already; language follows too, but
+    // only for someone who has not said what they read.
+    if (!localeChosen) {
+      const suggested = languageForCountry(code);
+      if (suggested && isLocale(suggested)) {
+        setLocaleState(suggested);
+        persist("paltas_locale", suggested);
+      }
+    }
+  }, [localeChosen]);
 
   const value = useMemo<LocaleState>(() => ({
     ...createTranslator(locale, market),

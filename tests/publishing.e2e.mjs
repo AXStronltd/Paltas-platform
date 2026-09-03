@@ -27,10 +27,10 @@ const adminLs = await admin.get("/listings");
 // Asserted as a relationship rather than a fixed count, so adding a listing to
 // the seed does not silently turn an isolation test into a counting test.
 check(ls.status === 200 && ls.json.listings.length > 0, "owner sees their own org's listings", `${ls.json.listings?.length}`);
-check(ls.json.listings.every((l) => !/Diani/.test(l.title)), "and none of the other tenant's");
+check(ls.json.listings.every((l) => !/Diani Palms/.test(l.title)), "and none of the other tenant's");
 check(adminLs.json.listings.length > ls.json.listings.length, "platform admin sees more — both tenants'",
   `${adminLs.json.listings?.length} vs ${ls.json.listings?.length}`);
-check(adminLs.json.listings.some((l) => /Diani/.test(l.title)), "including the other tenant's draft");
+check(adminLs.json.listings.some((l) => /Diani Palms/.test(l.title)), "including the other tenant's draft");
 check((await guard.get("/listings")).status === 403, "a guard cannot see listings");
 check((await mgr.get("/listings")).status === 200, "a property manager can");
 
@@ -66,7 +66,7 @@ const pub = await fetch(`${BASE}/public/listings`);
 const feed = await pub.json();
 check(pub.status === 200, "readable without signing in");
 // The invariant is that no draft escapes — not that there is exactly one row.
-check(!feed.listings.some((l) => /Diani/.test(l.title)), "the unpublished draft is not exposed",
+check(!feed.listings.some((l) => /Diani Palms/.test(l.title)), "the unpublished draft is not exposed",
   feed.listings.map((l) => l.title).join(" | "));
 const kilimani = feed.listings.find((l) => l.title.includes("Kilimani"));
 check(!!kilimani, "the published listing is", feed.listings.map((l) => l.title).join(" | "));
@@ -74,7 +74,9 @@ check(kilimani.priceUnit === "per month", "price unit is stated, not guessed", k
 check(feed.listings.find((l) => l.kind === "STAY")?.priceUnit === "per night", "and differs by kind");
 const blob = JSON.stringify(feed);
 check(!blob.includes("orgId") && !blob.includes("unitId"), "no tenant or internal ids leak");
-check(!blob.includes("createdById") && !blob.includes("Diani"), "no drafts and no internal authorship leak");
+// "Diani" alone is a place several published listings are in; the draft is
+// identified by its full title so a legitimate listing cannot fail this.
+check(!blob.includes("createdById") && !blob.includes("Diani Palms"), "no drafts and no internal authorship leak");
 
 console.log("\nPAYMENTS");
 const settle = await owner.get("/payments/settlements");
