@@ -1,108 +1,31 @@
-name: Publish image
+name: Verify the container
 
-# The application is built here rather than on the host.
+# The Dockerfile is built and put through its paces on every push.
 #
-# `next build` peaks around 620-650 MB on this codebase, and a Render free
-# instance has 512 MB. Rather than pay for a larger machine to run a build that
-# happens once per commit, it runs on a GitHub runner — which has gigabytes —
-# and the host receives a finished image.
+# It used to push the image to GHCR first and verify it afterwards. That was
+# ceremony: render.yaml uses `runtime: docker` and builds from source, so
+# nothing ever pulled the published image. The push then started failing with
+# `denied: permission_denied: read_package`, and because the verification job
+# declared `needs: publish`, a pointless push failure silently stopped the
+# container being tested at all.
+#
+# So the registry is gone. The image is built into the runner's local daemon and
+# exercised there. No login, no package permissions, no visibility toggle — a
+# whole class of failure removed rather than repaired. If Render is ever pointed
+# at a prebuilt image, publishing can come back, and it should come back as its
+# own job that verification does not depend on.
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  # github.repository preserves the owner's capitalisation (AXStronltd/…), and
-  # Docker rejects an uppercase repository name outright:
-  #   invalid reference format: repository name must be lowercase
-  #
-  # GHCR lowercases the namespace when the image is pushed, so every reference
-  # that pulls or runs it has to be lowercase too or it will not match. Each job
-  # derives it once, rather than a literal that would drift if the repo moves.
-
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Lowercase the image reference
-        id: img
-        run: |
-          echo "ref=${REGISTRY}/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-        env:
-          REGISTRY: ${{ env.REGISTRY }}
-
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Sign in to the registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          # Provided by Actions; no secret to configure.
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Tag with both the commit and latest
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ steps.img.outputs.ref }}
-          # `latest` is what Render follows; the sha tag makes a rollback
-          # possible by pointing Render at a specific build.
-          tags: |
-            type=raw,value=latest
-            type=sha,format=long
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          # Plain output so a failure shows the failing RUN and its stderr in
-          # the job log, instead of a collapsed progress display.
-          no-cache-filters: builder
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Layer cache in the registry, so unchanged dependencies are not
-          # rebuilt on every commit.
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Where it went
-        run: |
-          echo "Published:"
-          echo "  ${{ steps.img.outputs.ref }}:latest"
-          echo ""
-          echo "This image is a byproduct: render.yaml uses runtime: docker and"
-          echo "builds from source, so Render never pulls it. It exists to prove"
-          echo "the Dockerfile produces something that boots, migrates and serves."
-          echo ""
-          echo "If you ever switch Render to pull the image instead, the package"
-          echo "is private by default. AXStronltd is a user account, not an"
-          echo "organisation, so the visibility toggle is under"
-          echo "  https://github.com/users/AXStronltd/packages"
-          echo "not /orgs/ — that URL 404s."
-
-  # Prove the published image actually runs before Render is asked to run it.
-  #
-  # Local tests exercise the source; this exercises the artifact — the image
-  # entrypoint, the migration on boot, the standalone server binding a port, and
-  # whether the runtime image is missing a file the build had. Those are exactly
-  # the failures that only appear once it is deployed.
   verify-image:
-    name: Run the image and test against it
+    name: Build the image and test against it
     runs-on: ubuntu-latest
-    needs: publish
-    permissions:
-      contents: read
-      packages: read
 
     services:
       postgres:
@@ -118,98 +41,93 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
+    env:
+      DATABASE_URL: postgresql://paltas:paltas@localhost:5432/paltas
+      PALTAS_URL: http://localhost:10000
+      SEED_PASSWORD: ci-only-not-a-real-password
+      IMAGE: paltas-platform:ci
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
           cache: npm
 
-      - uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build the image
+        uses: docker/build-push-action@v7
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          # Into the local daemon, not a registry.
+          load: true
+          push: false
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Lowercase the image reference
-        id: img
-        run: |
-          echo "ref=${REGISTRY}/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-        env:
-          REGISTRY: ${{ env.REGISTRY }}
-
-      # Before running anything, show what is actually inside the image. A
-      # missing COPY is invisible from the outside and produces a bare fs error
-      # at boot, which is not enough to act on.
+      # A missing COPY is invisible from outside and produces a bare fs error at
+      # boot, which is not enough to act on.
       - name: What is in the image
         run: |
-          IMG=${{ steps.img.outputs.ref }}:latest
-          echo "── /app"
-          docker run --rm --entrypoint sh "$IMG" -c 'ls -la /app' || true
           echo "── files the entrypoint needs"
-          docker run --rm --entrypoint sh "$IMG" -c '
+          docker run --rm --entrypoint sh "$IMAGE" -c '
             for f in server.js package.json prisma/schema.prisma \
+                     prisma/first-boot.mjs prisma/seed.mjs \
+                     src/lib/security/system-roles.json \
                      node_modules/prisma/build/index.js \
                      node_modules/.prisma/client/index.js \
                      .next/static public; do
               if [ -e "/app/$f" ]; then echo "  present  $f"; else echo "  MISSING  $f"; fi
-            done' || true
+            done'
           echo "── migrations"
-          docker run --rm --entrypoint sh "$IMG" -c 'ls /app/prisma/migrations' || true
+          docker run --rm --entrypoint sh "$IMAGE" -c 'ls /app/prisma/migrations | tail -5'
 
-      - name: Start the image exactly as Render will
+      - name: Start it exactly as Render does
         run: |
           docker run -d --name paltas \
             --network host \
             -e DATABASE_URL="postgresql://paltas:paltas@localhost:5432/paltas" \
             -e PORT=10000 \
-            -e SEED_PASSWORD=ci-only-not-a-real-password \
-            ${{ steps.img.outputs.ref }}:latest
+            -e SEED_PASSWORD="$SEED_PASSWORD" \
+            "$IMAGE"
 
-          # The container migrates on boot, so allow for that before polling.
-          for i in $(seq 1 90); do
+          # It migrates and seeds on boot, so allow for that before polling.
+          for i in $(seq 1 120); do
             if curl -sf http://localhost:10000/api/public/listings > /dev/null 2>&1; then
-              echo "container serving after ${i}s"
-              exit 0
+              echo "serving after ${i}s"; exit 0
             fi
-            # Stop early if it has already died; waiting 90s for a dead
-            # container tells us nothing we do not already know.
+            # Waiting 120s on a dead container tells us nothing we do not know.
             if [ "$(docker inspect -f '{{.State.Running}}' paltas 2>/dev/null)" != "true" ]; then
               echo "::error::The container exited after ${i}s."
-              echo "── exit code: $(docker inspect -f '{{.State.ExitCode}}' paltas 2>/dev/null)"
-              echo "── full container output ──"
-              docker logs paltas 2>&1
-              exit 1
+              docker logs paltas 2>&1; exit 1
             fi
             sleep 1
           done
-          echo "::error::The container is running but never served a request."
-          echo "── full container output ──"
-          docker logs paltas 2>&1
-          exit 1
+          echo "::error::Running, but never served a request."
+          docker logs paltas 2>&1; exit 1
 
-      - name: Did the migration actually run inside the container?
+      - name: Did it migrate and seed itself?
         run: |
-          docker logs paltas 2>&1 | tail -40
-          # 39 tables should exist if `prisma migrate deploy` did its job.
-          tables=$(docker exec -e PGPASSWORD=paltas paltas sh -c "true" 2>/dev/null; \
-            psql "postgresql://paltas:paltas@localhost:5432/paltas" -tAc \
+          docker logs paltas 2>&1 | tail -30
+          tables=$(psql "$DATABASE_URL" -tAc \
             "select count(*) from information_schema.tables where table_schema='public'" 2>/dev/null || echo 0)
-          echo "tables in the database: $tables"
-          if [ "$tables" -lt 30 ]; then
-            echo "::error::Migrations did not apply inside the container."
-            exit 1
+          echo "tables: $tables"
+          if [ "$tables" -lt 40 ]; then
+            echo "::error::Migrations did not apply inside the container."; exit 1
+          fi
+          # first-boot.mjs should have populated an empty database.
+          users=$(psql "$DATABASE_URL" -tAc 'select count(*) from "User"' 2>/dev/null || echo 0)
+          echo "users after first boot: $users"
+          if [ "$users" -lt 1 ]; then
+            echo "::error::The container did not seed an empty database."; exit 1
           fi
 
-      - name: Seed and run the full suite against the container
-        env:
-          DATABASE_URL: postgresql://paltas:paltas@localhost:5432/paltas
-          PALTAS_URL: http://localhost:10000
-          SEED_PASSWORD: ci-only-not-a-real-password
+      - name: Every end-to-end suite, against the running container
         run: |
           npm ci
           npx prisma generate
-          node prisma/seed.mjs
           node tests/permissions.e2e.mjs
           node tests/platform.e2e.mjs
           node tests/commerce.e2e.mjs
@@ -223,4 +141,4 @@ jobs:
 
       - name: Container logs on failure
         if: failure()
-        run: docker logs paltas 2>&1 | tail -80
+        run: docker logs paltas 2>&1 | tail -100
