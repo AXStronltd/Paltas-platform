@@ -263,6 +263,23 @@ test("each market formats its own currency distinctly", () => {
 
 const C = require("../.test-build/lib/i18n/countries.js");
 
+test("a country is named in the language the reader is reading", () => {
+  // The failure this catches: curated markets returned a hardcoded English
+  // name, so an Arabic reader was told, in Arabic, that they were browsing
+  // "Kenya" — and the same for every heading that names the market.
+  assert.equal(L.marketOf("KE", "en").name, "Kenya");
+  const ar = L.marketOf("KE", "ar").name;
+  assert.notEqual(ar, "Kenya", "a curated market still refused to translate its name");
+  assert.match(ar, /[\u0600-\u06FF]/, `Kenya in Arabic came back as ${ar}`);
+  assert.equal(L.marketOf("KE", "de").name, "Kenia", "and German has its own spelling");
+
+  // The curated knowledge itself must survive being renamed.
+  const ke = L.marketOf("KE", "ar");
+  assert.equal(ke.currency, "KES");
+  assert.ok(ke.curated && ke.tenancyNote.length > 0, "local knowledge was lost with the name");
+  assert.deepEqual(ke.popularCities, L.marketOf("KE", "en").popularCities);
+});
+
 test("the platform prices any country, not a supported list", () => {
   // The failure this replaces: an unknown country fell back to Kenya, so a
   // visitor from Lagos was quoted in Kenyan shillings.

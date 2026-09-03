@@ -19,7 +19,7 @@ import { useI18n } from "@/components/i18n/LocaleProvider";
  * component fetches, translates and renders.
  */
 export function DiscoveryRows() {
-  const { t } = useI18n();
+  const { t, marketConfig } = useI18n();
   const [listings, setListings] = useState<Listing[] | null>(null);
 
   useEffect(() => {
@@ -28,7 +28,17 @@ export function DiscoveryRows() {
     return () => { live = false; };
   }, []);
 
-  const rows = useMemo(() => (listings ? buildDiscoveryRows(listings) : []), [listings]);
+  const rows = useMemo(
+    () => (listings
+      ? buildDiscoveryRows(listings, {
+          // "Near you" means the market the visitor is browsing, which they
+          // chose and can change — not a guess from an IP address.
+          marketCities: marketConfig.popularCities,
+          marketName: marketConfig.name,
+        })
+      : []),
+    [listings, marketConfig],
+  );
 
   if (listings === null) {
     return (

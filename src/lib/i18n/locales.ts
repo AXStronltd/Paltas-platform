@@ -261,20 +261,36 @@ export function localeOf(code: LocaleCode): Locale {
  * between a platform that serves eight countries and one that serves everywhere
  * but knows eight of them well.
  */
+/**
+ * The country's name as this reader would write it, falling back to whatever we
+ * already have. `Intl.DisplayNames` knows "Kenya" is كينيا in Arabic and
+ * Kenia in German; the curated list only ever knew the English.
+ */
+function regionName(code: string, displayLocale: string, fallback: string): string {
+  try {
+    return new Intl.DisplayNames([displayLocale], { type: "region" }).of(code) ?? fallback;
+  } catch {
+    // An unusual locale must not stop a country resolving.
+    return fallback;
+  }
+}
+
 export function marketOf(code: MarketCode, displayLocale = "en"): Market {
   const upper = (code ?? "").toUpperCase();
   const curated = CURATED_MARKETS.find((m) => m.code === upper);
-  if (curated) return curated;
+  /*
+   * A curated market carries hand-written local knowledge — its tenancy note,
+   * its payment methods — but its `name` was a hardcoded English string, and
+   * returning the entry untouched meant an Arabic reader was told they were
+   * browsing "Kenya" in the middle of an Arabic sentence. The knowledge is
+   * curated; the country's name is not.
+   */
+  if (curated) return { ...curated, name: regionName(upper, displayLocale, curated.name) };
 
   const currency = currencyForCountry(upper);
   if (!currency) return CURATED_MARKETS[0];
 
-  let name = upper;
-  try {
-    name = new Intl.DisplayNames([displayLocale], { type: "region" }).of(upper) ?? upper;
-  } catch {
-    // An unusual locale should not stop a country resolving.
-  }
+  const name = regionName(upper, displayLocale, upper);
 
   return {
     code: upper,

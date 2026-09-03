@@ -76,6 +76,7 @@ export function adaptListing(l: ApiListing): Listing {
     description: l.description,
     bookable: true,
     kind: l.kind,
+    publishedAt: l.publishedAt,
     roomTypes: l.roomTypes,
   };
 }

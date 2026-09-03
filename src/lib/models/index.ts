@@ -135,6 +135,12 @@ export interface Listing {
    * cannot express.
    */
   kind?: "SALE" | "RENT" | "STAY";
+  /**
+   * When the host published it, ISO. Only real rows have one — the demo
+   * catalogue was never published by anybody — so "new on PALTAS" is a fact
+   * about the database rather than a position in an array.
+   */
+  publishedAt?: string | null;
   /** Hotel room types, when the listing sells rooms rather than the whole place. */
   roomTypes?: {
     id: string; name: string; description: string | null; rate: number;
