@@ -112,7 +112,7 @@ export function DiscoveryRow({
             <div className="d-card-img">
               {/* Only the first screenful is worth fetching eagerly; the rest
                   arrive as the visitor scrolls to them. */}
-              <SafeImage src={l.imageUrl} alt={l.name} loading={i < 7 ? "eager" : "lazy"} />
+              <SafeImage src={l.imageUrl} alt={l.name} loading={i < 7 ? "eager" : "lazy"} emptyLabel={t("listing.noPhoto")} />
               {/* Claimed only where it is true: a listing that cannot be booked
                   must not wear an "Instant" badge. */}
               {l.bookable && <span className="d-card-badge">{t("card.instant")}</span>}

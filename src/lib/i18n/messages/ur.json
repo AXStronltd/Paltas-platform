@@ -411,5 +411,6 @@
   "row.placesToStay.title": "{place} میں قیام کی جگہیں",
   "row.placesToStay.subtitle": "{place} میں کہاں سوئیں",
   "row.exploreCity.title": "{place} دریافت کریں",
-  "row.exploreCity.subtitle": "{place} میں ہماری تمام فہرستیں"
+  "row.exploreCity.subtitle": "{place} میں ہماری تمام فہرستیں",
+  "listing.noPhoto": "تصویر جلد آئے گی"
 }

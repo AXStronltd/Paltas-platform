@@ -417,5 +417,6 @@
   "row.placesToStay.title": "Boenden i {place}",
   "row.placesToStay.subtitle": "Var du kan sova i {place}",
   "row.exploreCity.title": "Utforska {place}",
-  "row.exploreCity.subtitle": "Allt vi har i {place}"
+  "row.exploreCity.subtitle": "Allt vi har i {place}",
+  "listing.noPhoto": "Foto kommer"
 }

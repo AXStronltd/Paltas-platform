@@ -411,5 +411,6 @@
   "row.placesToStay.title": "በ{place} የመቆያ ቦታዎች",
   "row.placesToStay.subtitle": "በ{place} የት እንደሚያድሩ",
   "row.exploreCity.title": "{place}ን ያስሱ",
-  "row.exploreCity.subtitle": "በ{place} የምናቀርበው ሁሉ"
+  "row.exploreCity.subtitle": "በ{place} የምናቀርበው ሁሉ",
+  "listing.noPhoto": "ፎቶ በቅርቡ ይመጣል"
 }

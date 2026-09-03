@@ -413,5 +413,6 @@
   "row.placesToStay.title": "{place} şehrinde konaklama yerleri",
   "row.placesToStay.subtitle": "{place} şehrinde nerede kalınır",
   "row.exploreCity.title": "{place} şehrini keşfedin",
-  "row.exploreCity.subtitle": "{place} şehrinde sunduğumuz her şey"
+  "row.exploreCity.subtitle": "{place} şehrinde sunduğumuz her şey",
+  "listing.noPhoto": "Fotoğraf yakında"
 }

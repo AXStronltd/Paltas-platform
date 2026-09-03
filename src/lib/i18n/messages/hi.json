@@ -413,5 +413,6 @@
   "row.placesToStay.title": "{place} में ठहरने की जगहें",
   "row.placesToStay.subtitle": "{place} में कहाँ सोएँ",
   "row.exploreCity.title": "{place} को देखें",
-  "row.exploreCity.subtitle": "{place} में हमारी सभी लिस्टिंग"
+  "row.exploreCity.subtitle": "{place} में हमारी सभी लिस्टिंग",
+  "listing.noPhoto": "फ़ोटो जल्द आएगी"
 }

@@ -414,5 +414,6 @@
   "row.placesToStay.title": "Kur apsistoti: {place}",
   "row.placesToStay.subtitle": "Kur nakvoti: {place}",
   "row.exploreCity.title": "Atraskite: {place}",
-  "row.exploreCity.subtitle": "Viskas, ką siūlome: {place}"
+  "row.exploreCity.subtitle": "Viskas, ką siūlome: {place}",
+  "listing.noPhoto": "Nuotrauka bus netrukus"
 }

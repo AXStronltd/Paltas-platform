@@ -410,5 +410,6 @@
   "row.placesToStay.title": "{place}的住宿",
   "row.placesToStay.subtitle": "在{place}住哪里",
   "row.exploreCity.title": "探索{place}",
-  "row.exploreCity.subtitle": "我们在{place}的全部房源"
+  "row.exploreCity.subtitle": "我们在{place}的全部房源",
+  "listing.noPhoto": "照片即将上传"
 }

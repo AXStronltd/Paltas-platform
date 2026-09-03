@@ -414,5 +414,6 @@
   "row.placesToStay.title": "Sehemu za kukaa {place}",
   "row.placesToStay.subtitle": "Mahali pa kulala {place}",
   "row.exploreCity.title": "Gundua {place}",
-  "row.exploreCity.subtitle": "Kila tunachoorodhesha {place}"
+  "row.exploreCity.subtitle": "Kila tunachoorodhesha {place}",
+  "listing.noPhoto": "Picha inakuja"
 }

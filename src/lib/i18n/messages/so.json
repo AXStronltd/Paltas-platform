@@ -413,5 +413,6 @@
   "row.placesToStay.title": "Meelo lagu dego {place}",
   "row.placesToStay.subtitle": "Halka aad ku seexan karto {place}",
   "row.exploreCity.title": "Baadh {place}",
-  "row.exploreCity.subtitle": "Wax kasta oo aan ku leenahay {place}"
+  "row.exploreCity.subtitle": "Wax kasta oo aan ku leenahay {place}",
+  "listing.noPhoto": "Sawir dhawaan"
 }

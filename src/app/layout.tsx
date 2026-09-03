@@ -13,7 +13,24 @@ export const metadata: Metadata = {
   description: "Homes, apartments and unique stays across Africa and beyond.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "PALTAS" },
-  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  /*
+   * Small ones first. A browser takes the first icon it finds that fits, and
+   * given only a 192 it will scale that down for a 16px tab — which turns a
+   * detailed mark into mud. The 16 and 32 are drawn for that size instead.
+   *
+   * favicon.ico is listed last and exists mostly for the long tail that asks
+   * for /favicon.ico regardless of what the document says.
+   */
+  icons: {
+    icon: [
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport = {

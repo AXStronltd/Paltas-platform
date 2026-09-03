@@ -411,5 +411,6 @@
   "row.placesToStay.title": "أماكن للإقامة في {place}",
   "row.placesToStay.subtitle": "مكان تبيت فيه في {place}",
   "row.exploreCity.title": "اكتشف {place}",
-  "row.exploreCity.subtitle": "كل ما نعرضه في {place}"
+  "row.exploreCity.subtitle": "كل ما نعرضه في {place}",
+  "listing.noPhoto": "الصورة قادمة"
 }

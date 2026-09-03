@@ -418,5 +418,6 @@
   "row.placesToStay.title": "Où loger à {place}",
   "row.placesToStay.subtitle": "Où dormir à {place}",
   "row.exploreCity.title": "Explorer {place}",
-  "row.exploreCity.subtitle": "Tout ce que nous proposons à {place}"
+  "row.exploreCity.subtitle": "Tout ce que nous proposons à {place}",
+  "listing.noPhoto": "Photo à venir"
 }

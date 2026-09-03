@@ -407,5 +407,6 @@
   "row.placesToStay.title": "Places to stay in {place}",
   "row.placesToStay.subtitle": "Somewhere to sleep in {place}",
   "row.exploreCity.title": "Explore {place}",
-  "row.exploreCity.subtitle": "Everything we list in {place}"
+  "row.exploreCity.subtitle": "Everything we list in {place}",
+  "listing.noPhoto": "Photo coming"
 }

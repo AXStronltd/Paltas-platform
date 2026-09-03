@@ -25,13 +25,19 @@ export const SAMPLE_PROPERTIES = CATALOGUE.properties;
 export const SAMPLE_LISTINGS = CATALOGUE.listings;
 
 /**
- * A stable image for a listing with no photographs of its own.
+ * The photograph a sample listing shows.
  *
- * The catalogue ships no photography — inventing a picture of a house is a
- * stronger claim than inventing its description — so every sample listing wears
- * the same placeholder, and `SafeImage` handles it not being a photograph.
+ * Every sample listing used to wear the PALTAS logo, which made the whole
+ * shopfront look like a page of missing images. They now carry a real
+ * photograph chosen to suit the listing — see public/property/CREDITS.md.
+ *
+ * These are stock photographs standing in for invented properties. They are
+ * only ever attached here, to the sample catalogue. A real host's listing with
+ * no photograph gets an honest empty state instead: showing a stranger's living
+ * room as somebody's actual property is not a placeholder, it is a lie about
+ * something a person is being asked to pay for.
  */
-const PLACEHOLDER = "/paltas-logo.png";
+const FALLBACK_PHOTO = "/property/apartment-city.jpg";
 
 /** Deterministic, so re-running places a listing on the same day it did before. */
 function publishedDaysAgo(title, now) {
@@ -107,7 +113,7 @@ export async function addMissingSampleListings(prisma, {
         // currency and charged in another is a broken promise, not a rounding.
         price: l.price, currency: l.currency,
         maxGuests: l.maxGuests, bedrooms: l.bedrooms, bathrooms: l.bathrooms,
-        amenities: l.amenities, images: [PLACEHOLDER],
+        amenities: l.amenities, images: [l.image ?? FALLBACK_PHOTO],
         city: l.city, location: l.location, country: l.country,
         hostName: l.hostName ?? "Amina Yusuf",
         hostKind: l.kind === "SALE" ? "Agent" : "Landlord",

@@ -112,7 +112,8 @@
         "parking",
         "backup power",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Two-bed apartment, Kileleshwa",
@@ -134,7 +135,8 @@
         "balcony",
         "backup power",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Beach cottage, Diani",
@@ -155,7 +157,8 @@
         "beach access",
         "kitchen",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     },
     {
       "title": "Sea-view apartment, Nyali",
@@ -177,7 +180,8 @@
         "parking",
         "air conditioning",
         "sea view"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Family house with garden, Karen",
@@ -199,7 +203,8 @@
         "parking",
         "staff quarters",
         "solar"
-      ]
+      ],
+      "image": "/property/house-garden.jpg"
     },
     {
       "title": "Serviced apartment, Upper Hill",
@@ -221,7 +226,8 @@
         "parking",
         "housekeeping",
         "workspace"
-      ]
+      ],
+      "image": "/property/studio-small.jpg"
     },
     {
       "title": "Townhouse in Nyali, three bed",
@@ -243,7 +249,8 @@
         "garden",
         "backup power",
         "24h security"
-      ]
+      ],
+      "image": "/property/house-garden.jpg"
     },
     {
       "title": "One-bed in Kilimani, furnished",
@@ -264,7 +271,8 @@
         "workspace",
         "parking",
         "backup power"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Lakefront cottage, Naivasha",
@@ -286,7 +294,8 @@
         "kitchen",
         "garden",
         "24h security"
-      ]
+      ],
+      "image": "/property/lakeside.jpg"
     },
     {
       "title": "Farmhouse with a view, Naivasha",
@@ -309,7 +318,8 @@
         "solar",
         "garden",
         "backup power"
-      ]
+      ],
+      "image": "/property/lakeside.jpg"
     },
     {
       "title": "Two-bed cabin near the lake",
@@ -331,7 +341,8 @@
         "borehole",
         "solar",
         "workspace"
-      ]
+      ],
+      "image": "/property/lakeside.jpg"
     },
     {
       "title": "Cabin under Mount Kenya",
@@ -353,7 +364,8 @@
         "kitchen",
         "solar",
         "garden"
-      ]
+      ],
+      "image": "/property/cabin-mountain.jpg"
     },
     {
       "title": "Ridge house with fireplace, Nanyuki",
@@ -375,7 +387,8 @@
         "kitchen",
         "garden",
         "workspace"
-      ]
+      ],
+      "image": "/property/cabin-mountain.jpg"
     },
     {
       "title": "Four-acre plot with borehole, Nanyuki",
@@ -396,7 +409,8 @@
         "parking",
         "garden",
         "solar"
-      ]
+      ],
+      "image": "/property/cabin-mountain.jpg"
     },
     {
       "title": "Apartment above Camps Bay",
@@ -418,7 +432,8 @@
         "parking",
         "sea view",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Sea Point studio, walk to the promenade",
@@ -439,7 +454,8 @@
         "workspace",
         "parking",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Family house in Constantia",
@@ -461,7 +477,8 @@
         "parking",
         "24h security",
         "backup power"
-      ]
+      ],
+      "image": "/property/house-garden.jpg"
     },
     {
       "title": "Woodstock loft with a desk",
@@ -482,7 +499,8 @@
         "workspace",
         "parking",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Marina apartment with a balcony",
@@ -505,7 +523,8 @@
         "parking",
         "air conditioning",
         "sea view"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Downtown studio near the fountain",
@@ -527,7 +546,8 @@
         "pool",
         "air conditioning",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Palm Jumeirah three-bed",
@@ -550,7 +570,8 @@
         "parking",
         "air conditioning",
         "sea view"
-      ]
+      ],
+      "image": "/property/studio-small.jpg"
     },
     {
       "title": "Two-bed in Jumeirah Village",
@@ -572,7 +593,8 @@
         "parking",
         "air conditioning",
         "24h security"
-      ]
+      ],
+      "image": "/property/villa-pool.jpg"
     },
     {
       "title": "Corniche apartment with sea view",
@@ -594,7 +616,8 @@
         "parking",
         "sea view",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Saadiyat studio near the museums",
@@ -616,7 +639,8 @@
         "beach access",
         "air conditioning",
         "parking"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Family villa in Khalifa City",
@@ -639,7 +663,8 @@
         "garden",
         "parking",
         "24h security"
-      ]
+      ],
+      "image": "/property/villa-pool.jpg"
     },
     {
       "title": "Södermalm apartment with a balcony",
@@ -660,7 +685,8 @@
         "workspace",
         "kitchen",
         "balcony"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Studio in Vasastan",
@@ -680,7 +706,8 @@
         "wifi",
         "workspace",
         "kitchen"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Archipelago house, sleeps six",
@@ -702,7 +729,8 @@
         "parking",
         "garden",
         "sea view"
-      ]
+      ],
+      "image": "/property/house-garden.jpg"
     },
     {
       "title": "One-bed in Kungsholmen",
@@ -722,7 +750,8 @@
         "wifi",
         "workspace",
         "kitchen"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Haga flat with a bay window",
@@ -742,7 +771,8 @@
         "wifi",
         "kitchen",
         "workspace"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Two-bed near Avenyn",
@@ -763,7 +793,8 @@
         "kitchen",
         "workspace",
         "balcony"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "House with a garden in Majorna",
@@ -783,7 +814,8 @@
         "garden",
         "parking",
         "kitchen"
-      ]
+      ],
+      "image": "/property/house-garden.jpg"
     },
     {
       "title": "Le Marais one-bed",
@@ -803,7 +835,8 @@
         "wifi",
         "kitchen",
         "workspace"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Studio near Canal Saint-Martin",
@@ -823,7 +856,8 @@
         "wifi",
         "workspace",
         "kitchen"
-      ]
+      ],
+      "image": "/property/apartment-modern.jpg"
     },
     {
       "title": "Family apartment in the 15e",
@@ -844,7 +878,8 @@
         "kitchen",
         "workspace",
         "parking"
-      ]
+      ],
+      "image": "/property/studio-small.jpg"
     },
     {
       "title": "Pied-à-terre near Bastille",
@@ -863,7 +898,8 @@
       "amenities": [
         "kitchen",
         "workspace"
-      ]
+      ],
+      "image": "/property/townhouse.jpg"
     },
     {
       "title": "Villa with a pool in Seminyak",
@@ -885,7 +921,8 @@
         "garden",
         "air conditioning",
         "housekeeping"
-      ]
+      ],
+      "image": "/property/terrace-sea.jpg"
     },
     {
       "title": "Rice-field house in Ubud",
@@ -906,7 +943,8 @@
         "pool",
         "garden",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/terrace-sea.jpg"
     },
     {
       "title": "Surf house in Canggu",
@@ -928,7 +966,8 @@
         "beach access",
         "workspace",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/terrace-sea.jpg"
     },
     {
       "title": "Long-stay villa, Umalas",
@@ -950,7 +989,8 @@
         "workspace",
         "garden",
         "air conditioning"
-      ]
+      ],
+      "image": "/property/terrace-sea.jpg"
     },
     {
       "title": "Stone Town house with a roof terrace",
@@ -971,7 +1011,8 @@
         "air conditioning",
         "kitchen",
         "sea view"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     },
     {
       "title": "Beach bungalow, Paje",
@@ -992,7 +1033,8 @@
         "beach access",
         "air conditioning",
         "sea view"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     },
     {
       "title": "Nungwi villa with a pool",
@@ -1015,7 +1057,8 @@
         "housekeeping",
         "air conditioning",
         "sea view"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     },
     {
       "title": "Shoreditch loft",
@@ -1035,7 +1078,8 @@
         "wifi",
         "workspace",
         "kitchen"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Two-bed in Bermondsey",
@@ -1056,7 +1100,8 @@
         "kitchen",
         "workspace",
         "balcony"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Garden flat in Peckham",
@@ -1077,7 +1122,8 @@
         "garden",
         "kitchen",
         "workspace"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Riad with a courtyard pool",
@@ -1098,7 +1144,8 @@
         "pool",
         "air conditioning",
         "housekeeping"
-      ]
+      ],
+      "image": "/property/terrace-sea.jpg"
     },
     {
       "title": "Room in a riad, Medina",
@@ -1118,7 +1165,8 @@
         "wifi",
         "air conditioning",
         "housekeeping"
-      ]
+      ],
+      "image": "/property/hotel-suite.jpg"
     },
     {
       "title": "Villa in the Palmeraie",
@@ -1141,7 +1189,8 @@
         "air conditioning",
         "housekeeping",
         "parking"
-      ]
+      ],
+      "image": "/property/resort-beach.jpg"
     },
     {
       "title": "Loft in Westlands, short stays",
@@ -1163,7 +1212,8 @@
         "parking",
         "backup power",
         "24h security"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Old Town apartment, Mombasa",
@@ -1184,7 +1234,8 @@
         "air conditioning",
         "kitchen",
         "sea view"
-      ]
+      ],
+      "image": "/property/apartment-city.jpg"
     },
     {
       "title": "Studio by the lake gate, Naivasha",
@@ -1205,7 +1256,8 @@
         "parking",
         "kitchen",
         "24h security"
-      ]
+      ],
+      "image": "/property/lakeside.jpg"
     },
     {
       "title": "Two-bed near the airstrip, Nanyuki",
@@ -1227,7 +1279,8 @@
         "kitchen",
         "solar",
         "workspace"
-      ]
+      ],
+      "image": "/property/cabin-mountain.jpg"
     },
     {
       "title": "Beachfront villa, Diani",
@@ -1251,7 +1304,8 @@
         "air conditioning",
         "24h security",
         "sea view"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     },
     {
       "title": "Garden cottage, Diani",
@@ -1272,7 +1326,8 @@
         "garden",
         "kitchen",
         "beach access"
-      ]
+      ],
+      "image": "/property/beach-house.jpg"
     }
   ]
 }

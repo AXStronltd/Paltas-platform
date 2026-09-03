@@ -421,5 +421,6 @@
   "row.placesToStay.title": "Lugares para ficar em {place}",
   "row.placesToStay.subtitle": "Onde dormir em {place}",
   "row.exploreCity.title": "Explore {place}",
-  "row.exploreCity.subtitle": "Tudo o que anunciamos em {place}"
+  "row.exploreCity.subtitle": "Tudo o que anunciamos em {place}",
+  "listing.noPhoto": "Foto em breve"
 }

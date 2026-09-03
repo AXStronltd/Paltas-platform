@@ -31,8 +31,19 @@ interface ApiListing {
   }[];
 }
 
-/** A stand-in when a host published without photographs. */
-const PLACEHOLDER = "/paltas-logo.png";
+/**
+ * What a listing shows when its host published without photographs.
+ *
+ * Nothing — deliberately. The two tempting answers are both wrong. The PALTAS
+ * logo turned the whole shopfront into a page of missing images. A stock
+ * photograph of somebody else's house would be worse: this is a real property a
+ * real person is being asked to pay for, and a picture of a different building
+ * is not a placeholder, it is a false statement about the thing being sold.
+ *
+ * An empty string reaches `SafeImage`, which draws an honest "no photograph
+ * yet" panel that could not be mistaken for the property.
+ */
+const NO_PHOTOGRAPH = "";
 
 /**
  * The demo catalogue's `type` is a fixed vocabulary; a real listing has none.
@@ -70,8 +81,8 @@ export function adaptListing(l: ApiListing): Listing {
     baths: l.bathrooms,
     maxGuests: l.maxGuests,
     amenities: l.amenities,
-    imageUrl: l.images[0] ?? PLACEHOLDER,
-    gallery: l.images.length ? l.images : [PLACEHOLDER],
+    imageUrl: l.images[0] ?? NO_PHOTOGRAPH,
+    gallery: l.images.length ? l.images : [NO_PHOTOGRAPH],
     superhost: false,
     hostId: l.hostName,
     description: l.description,

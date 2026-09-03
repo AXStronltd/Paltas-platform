@@ -119,7 +119,9 @@ function ListingDialog({ properties, onClose, onDone }: {
   const [form, setForm] = useState({
     propertyId: properties[0]?.id ?? "", title: "", summary: "", description: "",
     kind: "RENT", price: "", maxGuests: "2", bedrooms: "1", bathrooms: "1",
-    amenities: "wifi, parking, 24h security", images: "/paltas-logo.png",
+    // Empty, not the PALTAS logo. Pre-filling a host's photographs with our own
+    // mark is how a shopfront ends up advertising fifty-eight identical logos.
+    amenities: "wifi, parking, 24h security", images: "",
     hostName: "", hostKind: "Landlord",
   });
   const [error, setError] = useState<string | null>(null);

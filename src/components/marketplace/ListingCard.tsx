@@ -34,7 +34,7 @@ export function ListingCard({ listing, onClick }: { listing: Listing; onClick: (
   return (
     <button className="card" onClick={onClick}>
       <div className="card-img">
-        <SafeImage src={listing.imageUrl} alt={listing.name} />
+        <SafeImage src={listing.imageUrl} alt={listing.name} emptyLabel={t("listing.noPhoto")} />
         {listing.bookable && (
           <span className="card-badge instant">{t("card.instantConfirmation")}</span>
         )}
