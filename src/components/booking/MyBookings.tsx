@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import { useGuest } from "./GuestProvider";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 import {
   getMyBookings, cancelBooking, payForBooking, money,
   type GuestBooking, type BookingStatus,
@@ -30,17 +31,12 @@ function getStripe(): Promise<Stripe | null> | null {
   return stripePromise;
 }
 
-const LABEL: Record<BookingStatus, string> = {
-  PENDING: "Awaiting payment",
-  CONFIRMED: "Confirmed",
-  CHECKED_IN: "You're staying now",
-  COMPLETED: "Completed",
-  CANCELLED: "Cancelled",
-  REFUNDED: "Refunded",
-};
+/** Status wording lives in the catalogues, keyed by the status itself. */
+const labelKey = (s: BookingStatus) => `bookings.status.${s}`;
 
 export function MyBookings() {
   const { guest, loading: guestLoading } = useGuest();
+  const { t } = useI18n();
   const [bookings, setBookings] = useState<GuestBooking[] | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -56,13 +52,13 @@ export function MyBookings() {
   useEffect(() => { void load(); }, [load]);
 
   async function cancel(b: GuestBooking) {
-    const reason = prompt(`Cancel booking ${b.reference}? Tell the host why:`);
+    const reason = prompt(t("bookings.cancelPrompt", { ref: b.reference }));
     if (!reason?.trim()) return;
     setBusy(b.id);
     const res = await cancelBooking(b.id, reason.trim());
     setBusy(null);
     if (res.error) { setNotice(res.error.message); return; }
-    setNotice(`Booking ${b.reference} cancelled. The dates are back on sale.`);
+    setNotice(t("bookings.cancelled", { ref: b.reference }));
     void load();
   }
 
@@ -74,28 +70,37 @@ export function MyBookings() {
     setPaying({ id: b.id, secret: res.data!.clientSecret, label: money(b.total, b.currency) });
   }
 
-  if (guestLoading) return <p className="muted">Loading…</p>;
+  const Heading = () => (
+    <>
+      <h1 className="choose-title">{t("bookings.title")}</h1>
+      <p className="choose-sub">{t("bookings.sub")}</p>
+    </>
+  );
+
+  if (guestLoading) return <><Heading /><p className="muted">{t("common.loading")}</p></>;
 
   if (!guest) {
     return (
+      <><Heading />
       <div className="empty-state">
-        <p>Sign in to see your bookings.</p>
+        <p>{t("bookings.signInPrompt")}</p>
         <p className="muted">
           You are given an account when you make your first booking.{" "}
-          <Link href="/">Find somewhere to stay.</Link>
+          <Link href="/">{t("menu.findStay")}</Link>
         </p>
-      </div>
+      </div></>
     );
   }
 
-  if (bookings === null) return <p className="muted">Loading your bookings…</p>;
+  if (bookings === null) return <><Heading /><p className="muted">{t("bookings.loading")}</p></>;
 
   if (bookings.length === 0) {
     return (
+      <><Heading />
       <div className="empty-state">
-        <p>You have no bookings yet.</p>
-        <p className="muted"><Link href="/">Browse places to stay.</Link></p>
-      </div>
+        <p>{t("bookings.none")}</p>
+        <p className="muted"><Link href="/">{t("bookings.browse")}</Link></p>
+      </div></>
     );
   }
 
@@ -103,6 +108,7 @@ export function MyBookings() {
 
   return (
     <>
+      <Heading />
       {notice && <div className="book-note">{notice}</div>}
 
       {bookings.map((b) => (
@@ -110,7 +116,7 @@ export function MyBookings() {
           <div style={{ flex: 1 }}>
             <b>{b.listing?.title ?? "Stay"}</b>
             <span>
-              {b.reference} · {b.checkIn.slice(0, 10)} → {b.checkOut.slice(0, 10)} · {b.nights} nights
+              {b.reference} · {b.checkIn.slice(0, 10)} → {b.checkOut.slice(0, 10)} · {t("bookings.nights", { count: b.nights })}
               {b.roomType ? ` · ${b.roomType.name}` : ""}
               {b.rooms > 1 ? ` · ${b.rooms} rooms` : ""}
             </span>
@@ -119,16 +125,16 @@ export function MyBookings() {
           <div style={{ textAlign: "right" }}>
             <b>{money(b.total, b.currency)}</b>
             <div className={`pill pill-${b.status === "CANCELLED" || b.status === "REFUNDED" ? "red" : b.status === "PENDING" ? "amber" : "green"}`}>
-              {LABEL[b.status]}
+              {t(labelKey(b.status))}
             </div>
             <div className="room-acts">
               {b.status === "PENDING" && (
                 <button disabled={busy === b.id} onClick={() => pay(b)}>
-                  {busy === b.id ? "…" : "Pay now"}
+                  {busy === b.id ? "…" : t("bookings.payNow")}
                 </button>
               )}
               {(b.status === "PENDING" || b.status === "CONFIRMED") && (
-                <button disabled={busy === b.id} onClick={() => cancel(b)}>Cancel</button>
+                <button disabled={busy === b.id} onClick={() => cancel(b)}>{t("bookings.cancel")}</button>
               )}
             </div>
           </div>
@@ -141,7 +147,7 @@ export function MyBookings() {
             <Elements stripe={stripe} options={{ clientSecret: paying.secret, appearance: { theme: "flat" } }}>
               <PayLater
                 label={paying.label}
-                onDone={() => { setPaying(null); setNotice("Payment sent. Your booking updates once it clears."); void load(); }}
+                onDone={() => { setPaying(null); setNotice(t("bookings.paySent")); void load(); }}
               />
             </Elements>
           </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Portal } from "./Portal";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Mobile navigation. On phones the header links are hidden; this provides a
@@ -13,19 +14,20 @@ import { useEffect, useState } from "react";
  */
 
 const GUEST = [
-  { href: "/", label: "Stays", icon: "home" },
-  { href: "/bookings", label: "My bookings", icon: "calendar" },
-  { href: "/buy-sell", label: "Buy / Sell", icon: "home" },
+  { href: "/", key: "tab.stays", icon: "home" },
+  { href: "/bookings", key: "menu.myBookings", icon: "calendar" },
+  { href: "/buy-sell", key: "nav.buySell", icon: "home" },
 ];
 const PORTALS = [
-  { href: "/portal/hotel", label: "Hotel", icon: "hotel" },
-  { href: "/portal/landlord", label: "Landlord", icon: "landlord" },
-  { href: "/portal/agent", label: "Agent", icon: "agent" },
-  { href: "/portal/developer", label: "Developer", icon: "developer" },
-  { href: "/manage", label: "Management", icon: "landlord" },
+  { href: "/portal/hotel", key: "nav.hotel", icon: "hotel" },
+  { href: "/portal/landlord", key: "nav.landlord", icon: "landlord" },
+  { href: "/portal/agent", key: "nav.agent", icon: "agent" },
+  { href: "/portal/developer", key: "nav.developer", icon: "developer" },
+  { href: "/manage", key: "nav.management", icon: "landlord" },
 ];
 
 export function MobileMenu() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const path = usePathname();
 
@@ -56,25 +58,25 @@ export function MobileMenu() {
           <div className="mobile-menu">
             <div className="mm-head">
               <div className="brand">PALTAS<span>.</span></div>
-              <button className="mm-close" aria-label="Close" onClick={() => setOpen(false)}>✕</button>
+              <button className="mm-close" aria-label={t("menu.close")} onClick={() => setOpen(false)}>✕</button>
             </div>
 
-            <div className="mm-section">Explore</div>
+            <div className="mm-section">{t("menu.explore")}</div>
             {GUEST.map((l) => (
               <Link key={l.href} href={l.href} className={`mm-link ${path === l.href ? "on" : ""}`}>
-                <Icon name={l.icon} /> {l.label}
+                <Icon name={l.icon} /> {t(l.key)}
               </Link>
             ))}
 
-            <div className="mm-section">Business portals</div>
+            <div className="mm-section">{t("menu.portals")}</div>
             {PORTALS.map((l) => (
               <Link key={l.href} href={l.href} className={`mm-link ${path.startsWith(l.href) ? "on" : ""}`}>
-                <Icon name={l.icon} /> {l.label}
+                <Icon name={l.icon} /> {t(l.key)}
               </Link>
             ))}
 
             <div className="mm-foot">
-              <Link href="/" className="btn btn-primary" style={{ width: "100%" }}>Find a stay</Link>
+              <Link href="/" className="btn btn-primary" style={{ width: "100%" }}>{t("menu.findStay")}</Link>
             </div>
           </div>
         </div>

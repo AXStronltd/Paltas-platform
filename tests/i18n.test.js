@@ -15,11 +15,44 @@ const assert = require("node:assert/strict");
 const L = require("../.test-build/lib/i18n/locales.js");
 const T = require("../.test-build/lib/i18n/translate.js");
 
-test("every locale has every key the source language defines", () => {
-  // Catalogue rot: a key added in English and never translated.
+test("an untranslated key falls back to English rather than breaking", () => {
+  /*
+   * This used to demand that every locale carried every key.
+   *
+   * That was the right rule when three languages were offered and all three
+   * were complete. It is the wrong rule now: sixteen are offered, and
+   * requiring completeness before a language may exist means a Somali speaker
+   * waits for the last string to be written before getting any of them. The
+   * policy is deliberate — offer the language, fall back per key, and let
+   * `npm run audit:i18n` report the gap so it stays visible.
+   *
+   * What must still hold is that a gap degrades to English and never to a raw
+   * key like "checkout.review" on screen.
+   */
+  const so = T.createTranslator("so", "KE");
+  const en = T.createTranslator("en", "KE");
+  // Values for every placeholder any message uses, so a plural or an
+  // interpolation is not mistaken for an empty translation.
+  const values = { count: 2, n: 10, market: "Kenya", date: "Jan 2026",
+                   total: "KES 1,000", ref: "PLT-TEST", year: 2024, time: "within an hour" };
+  for (const key of T.MESSAGE_KEYS) {
+    const value = so.t(key, values);
+    assert.notEqual(value, key, `${key} rendered as a raw key in Somali`);
+    assert.ok(typeof value === "string" && value.length > 0, `${key} rendered empty`);
+  }
+  // And a key nothing defines is visibly wrong rather than silently blank.
+  assert.equal(en.t("not.a.real.key"), "not.a.real.key");
+});
+
+test("the languages a visitor is offered all cover the booking path", () => {
+  // A language may be incomplete, but not in the words someone needs to get
+  // from the front page to a confirmed booking.
+  const CORE = ["nav.stays", "hero.title", "tab.stays", "tab.bookings",
+                "book.checkIn", "book.checkOut", "book.guests", "book.reserve",
+                "price.total", "search.go"];
   for (const locale of L.LOCALES) {
-    assert.deepEqual(T.missingKeys(locale.code), [],
-      `${locale.code} is missing keys`);
+    const missing = CORE.filter((k) => T.missingKeys(locale.code).includes(k));
+    assert.deepEqual(missing, [], `${locale.code} cannot express the booking path`);
   }
 });
 

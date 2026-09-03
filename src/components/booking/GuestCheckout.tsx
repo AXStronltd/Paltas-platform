@@ -6,6 +6,7 @@ import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import type { Listing } from "@/lib/models";
 import { useGuest } from "./GuestProvider";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 import {
   createBooking, payForBooking, money, newIdempotencyKey,
   type GuestBooking, type Quote,
@@ -45,6 +46,7 @@ export function GuestCheckout({
   onClose: () => void;
 }) {
   const { guest, signIn, register } = useGuest();
+  const { t } = useI18n();
   const [step, setStep] = useState<Step>(guest ? "review" : "account");
   const [booking, setBooking] = useState<GuestBooking | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -100,26 +102,25 @@ export function GuestCheckout({
 
         {step === "review" && (
           <>
-            <h2>Review your stay</h2>
+            <h2>{t("checkout.review")}</h2>
             <p className="lede">{listing.name}{listing.city ? ` · ${listing.city}` : ""}</p>
             <div className="book-breakdown">
-              <div><span>Check-in</span><span>{request.checkIn}</span></div>
-              <div><span>Check-out</span><span>{request.checkOut}</span></div>
-              <div><span>Guests</span><span>{request.guests}</span></div>
-              {request.rooms > 1 && <div><span>Rooms</span><span>{request.rooms}</span></div>}
+              <div><span>{t("book.checkIn")}</span><span>{request.checkIn}</span></div>
+              <div><span>{t("book.checkOut")}</span><span>{request.checkOut}</span></div>
+              <div><span>{t("book.guests")}</span><span>{request.guests}</span></div>
+              {request.rooms > 1 && <div><span>{t("book.rooms")}</span><span>{request.rooms}</span></div>}
               <div><span>{quote.nights} nights</span><span>{money(quote.subtotal, quote.currency)}</span></div>
-              <div><span>Service fee</span><span>{money(quote.serviceFee, quote.currency)}</span></div>
-              <div><span>Taxes</span><span>{money(quote.taxes, quote.currency)}</span></div>
-              <div className="book-total"><span>Total</span><span>{money(quote.total, quote.currency)}</span></div>
+              <div><span>{t("book.serviceFee")}</span><span>{money(quote.serviceFee, quote.currency)}</span></div>
+              <div><span>{t("book.taxes")}</span><span>{money(quote.taxes, quote.currency)}</span></div>
+              <div className="book-total"><span>{t("price.total")}</span><span>{money(quote.total, quote.currency)}</span></div>
             </div>
             {error && <div className="book-note bad">{error}</div>}
             <button className="btn btn-primary" disabled={busy} onClick={reserve}>
-              {busy ? "Reserving…" : `Reserve and pay ${money(quote.total, quote.currency)}`}
+              {busy ? t("checkout.reserving") : t("checkout.reserveAndPay", { total: money(quote.total, quote.currency) })}
             </button>
-            <button className="btn" disabled={busy} onClick={onClose}>Back</button>
+            <button className="btn" disabled={busy} onClick={onClose}>{t("common.back")}</button>
             <p className="reassure">
-              Your dates are checked again as you reserve. If someone took the last room while you were
-              deciding, you will be told here and not charged.
+              {t("checkout.reassure")}
             </p>
           </>
         )}
@@ -136,7 +137,7 @@ export function GuestCheckout({
 
         {step === "pay" && clientSecret && !stripe && (
           <>
-            <h2>Card payments are not available</h2>
+            <h2>{t("checkout.noCard")}</h2>
             <p className="lede">
               Your booking {booking?.reference} is held. Payment is not configured on this site yet.
             </p>
@@ -157,6 +158,7 @@ function AccountStep({
   signIn: (email: string, password: string) => Promise<string | null>;
   register: (i: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
 }) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"register" | "signin">("register");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -180,37 +182,35 @@ function AccountStep({
     // The same card as everywhere else, minus its own frame — the checkout
     // modal already provides one.
     <form className="auth-card" onSubmit={submit} noValidate>
-      <h1 className="auth-title">{mode === "signin" ? "Sign in to book" : "Create your account"}</h1>
+      <h1 className="auth-title">{t(mode === "signin" ? "checkout.signInTitle" : "checkout.createTitle")}</h1>
       <p className="auth-sub">
-        {mode === "signin"
-          ? "Welcome back."
-          : "You need an account so you can find this booking again and cancel it if plans change."}
+        {t(mode === "signin" ? "checkout.signInSub" : "checkout.createSub")}
       </p>
 
       <div className="auth-fields">
         {mode === "register" && (
-          <AuthField label="Full name" value={name} onChange={setName}
+          <AuthField label={t("auth.fullName")} value={name} onChange={setName}
             autoComplete="name" required autoFocus />
         )}
 
-        <AuthField label="Email" type="email" value={email} onChange={setEmail}
+        <AuthField label={t("auth.email")} type="email" value={email} onChange={setEmail}
           placeholder="you@example.com" autoComplete="email" required
           autoFocus={mode === "signin"} />
 
-        <AuthField label="Password" type="password" value={password} onChange={setPassword}
+        <AuthField label={t("auth.password")} type="password" value={password} onChange={setPassword}
           placeholder="••••••••" required
           minLength={mode === "register" ? 10 : undefined}
           autoComplete={mode === "register" ? "new-password" : "current-password"}
-          hint={mode === "register" ? "At least 10 characters." : undefined} />
+          hint={mode === "register" ? t("auth.minChars", { n: 10 }) : undefined} />
 
         <AuthError>{error}</AuthError>
 
-        <AuthSubmit busy={busy} busyLabel={mode === "signin" ? "Signing in…" : "Creating…"}>
-          {mode === "signin" ? "Sign in" : "Create account and continue"}
+        <AuthSubmit busy={busy} busyLabel={t(mode === "signin" ? "auth.signingIn" : "auth.creating")}>
+          {t(mode === "signin" ? "auth.signIn" : "checkout.continue")}
         </AuthSubmit>
 
         <AuthAlt onClick={() => { setMode(mode === "signin" ? "register" : "signin"); setError(null); }}>
-          {mode === "signin" ? "I need an account" : "I already have an account"}
+          {t(mode === "signin" ? "checkout.needAccount" : "checkout.haveAccount")}
         </AuthAlt>
       </div>
     </form>
@@ -220,6 +220,7 @@ function AccountStep({
 function PayStep({ amountLabel, reference, onPaid }: {
   amountLabel: string; reference: string; onPaid: () => void;
 }) {
+  const { t } = useI18n();
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
@@ -240,12 +241,12 @@ function PayStep({ amountLabel, reference, onPaid }: {
 
   return (
     <form onSubmit={pay}>
-      <h2>Pay {amountLabel}</h2>
-      <p className="lede">Booking {reference}. Your card details go straight to Stripe and never reach this site.</p>
+      <h2>{t("checkout.payTitle", { total: amountLabel })}</h2>
+      <p className="lede">{t("checkout.payingNote", { ref: reference })}</p>
       <PaymentElement />
       {error && <div className="book-note bad">{error}</div>}
       <button className="btn btn-primary" type="submit" disabled={!stripe || busy}>
-        {busy ? "Paying…" : `Pay ${amountLabel}`}
+        {busy ? t("checkout.paying") : t("checkout.payTitle", { total: amountLabel })}
       </button>
     </form>
   );
@@ -254,21 +255,22 @@ function PayStep({ amountLabel, reference, onPaid }: {
 function DoneStep({ booking, error, onClose }: {
   booking: GuestBooking | null; error: string | null; onClose: () => void;
 }) {
+  const { t } = useI18n();
   const router = useRouter();
   return (
     <>
-      <h2>{error ? "Your booking is held" : "Thank you — you're booked"}</h2>
+      <h2>{t(error ? "checkout.held" : "checkout.thanks")}</h2>
       <p className="lede">
         {error
           ? error
-          : `Booking ${booking?.reference}. We are confirming your payment now; your booking updates the moment it clears.`}
+          : t("checkout.confirmingNote", { ref: booking?.reference ?? "" })}
       </p>
       {/* Deliberately not "confirmed": the webhook decides that, and it may not
           have arrived yet. Promising confirmation here would sometimes be a lie. */}
       <button className="btn btn-primary" onClick={() => { onClose(); router.push("/bookings"); }}>
-        See my bookings
+        {t("checkout.seeBookings")}
       </button>
-      <button className="btn" onClick={onClose}>Close</button>
+      <button className="btn" onClick={onClose}>{t("checkout.close")}</button>
     </>
   );
 }

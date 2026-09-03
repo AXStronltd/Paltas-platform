@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useGuest } from "@/components/booking/GuestProvider";
 import { useToast, personalWelcome } from "@/components/ui/Toast";
 import { Portal } from "./Portal";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 import { AuthCard, AuthTabs, AuthField, AuthError, AuthSubmit, AuthAlt } from "@/components/auth/AuthUI";
 
 /**
@@ -18,6 +19,7 @@ const MIN_PASSWORD = 10;
 export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: () => void }) {
   const toast = useToast();
   const { signIn, register } = useGuest();
+  const { t } = useI18n();
   const [tab, setTab] = useState<"in" | "up" | "forgot">("up");
   const [notice, setNotice] = useState("");
   const [name, setName] = useState("");
@@ -30,14 +32,14 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     e.preventDefault();
     setErr("");
 
-    if (!email.trim()) return setErr("Please enter your email address.");
-    if (tab !== "forgot" && !password) return setErr("Please enter a password.");
+    if (!email.trim()) return setErr(t("auth.needEmail"));
+    if (tab !== "forgot" && !password) return setErr(t("auth.needPassword"));
     if (tab === "up") {
-      if (!name.trim()) return setErr("Please enter your name.");
+      if (!name.trim()) return setErr(t("auth.needName"));
       // Checked here so the refusal is immediate and explains itself, and again
       // on the server, which is the one that decides.
       if (password.length < MIN_PASSWORD) {
-        return setErr(`Please use at least ${MIN_PASSWORD} characters — it protects your bookings.`);
+        return setErr(t("auth.tooShort", { n: MIN_PASSWORD }));
       }
     }
 
@@ -76,34 +78,31 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
       <div className="scrim" onClick={(e) => e.target === e.currentTarget && !busy && onClose()}>
         <div className="modal auth-modal">
           <AuthCard
-            title={tab === "up" ? "Join PALTAS" : tab === "forgot" ? "Reset your password" : "Welcome back"}
-            subtitle={tab === "up"
-              ? "One account to book stays, manage them, and keep everything in one place."
-              : tab === "forgot"
-                ? "Enter the address you signed up with and we will send you a link."
-                : "Sign in to see your bookings and pick up where you left off."}
+            title={tab === "up" ? t("auth.join") : tab === "forgot" ? t("auth.resetTitle") : t("auth.welcomeBack")}
+            subtitle={tab === "up" ? t("auth.joinSub")
+              : tab === "forgot" ? t("auth.resetSub") : t("auth.signInSub")}
             onSubmit={submit}
           >
             {tab !== "forgot" && (
               <AuthTabs value={tab} onChange={(v) => { setTab(v); setErr(""); setNotice(""); }}
-                labels={{ up: "Create account", in: "Sign in" }} />
+                labels={{ up: t("auth.createAccount"), in: t("auth.signIn") }} />
             )}
 
             {tab === "up" && (
-              <AuthField label="Full name" value={name} onChange={setName}
+              <AuthField label={t("auth.fullName")} value={name} onChange={setName}
                 placeholder="Your name" autoComplete="name" required autoFocus />
             )}
 
-            <AuthField label="Email" type="email" value={email} onChange={setEmail}
+            <AuthField label={t("auth.email")} type="email" value={email} onChange={setEmail}
               placeholder="you@example.com" autoComplete="email" required
               autoFocus={tab === "in"} />
 
             {tab !== "forgot" && (
-            <AuthField label="Password" type="password" value={password} onChange={setPassword}
+            <AuthField label={t("auth.password")} type="password" value={password} onChange={setPassword}
               placeholder="••••••••" required
               minLength={tab === "up" ? MIN_PASSWORD : undefined}
               autoComplete={tab === "up" ? "new-password" : "current-password"}
-              hint={tab === "up" ? `At least ${MIN_PASSWORD} characters.` : undefined} />
+              hint={tab === "up" ? t("auth.minChars", { n: MIN_PASSWORD }) : undefined} />
             )}
 
             {notice && <p className="auth-notice">{notice}</p>}
@@ -111,19 +110,19 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
             <AuthError>{err}</AuthError>
 
             <AuthSubmit busy={busy}
-              busyLabel={tab === "up" ? "Creating…" : tab === "forgot" ? "Sending…" : "Signing in…"}>
-              {tab === "up" ? "Create account" : tab === "forgot" ? "Send reset link" : "Sign in"}
+              busyLabel={tab === "up" ? t("auth.creating") : tab === "forgot" ? t("auth.sending") : t("auth.signingIn")}>
+              {tab === "up" ? t("auth.createAccount") : tab === "forgot" ? t("auth.sendReset") : t("auth.signIn")}
             </AuthSubmit>
 
             {/* Somebody locked out has no other way back in. */}
             {tab === "in" && (
               <AuthAlt onClick={() => { setTab("forgot"); setErr(""); setNotice(""); }}>
-                I have forgotten my password
+                {t("auth.forgot")}
               </AuthAlt>
             )}
             {tab === "forgot" && (
               <AuthAlt onClick={() => { setTab("in"); setErr(""); setNotice(""); }}>
-                Back to sign in
+                {t("auth.backToSignIn")}
               </AuthAlt>
             )}
           </AuthCard>
