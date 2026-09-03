@@ -1,5 +1,5 @@
 {
-  "name": "PALTAS — Smart Living",
+  "name": "PALTAS \u2014 Smart Living",
   "short_name": "PALTAS",
   "description": "Homes, apartments and unique stays across Africa and beyond.",
   "start_url": "/",
@@ -7,7 +7,11 @@
   "background_color": "#ffffff",
   "theme_color": "#00c4ac",
   "orientation": "portrait-primary",
-  "categories": ["travel", "lifestyle", "business"],
+  "categories": [
+    "travel",
+    "lifestyle",
+    "business"
+  ],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -29,7 +33,29 @@
     }
   ],
   "shortcuts": [
-    { "name": "Find a stay", "url": "/", "description": "Browse stays" },
-    { "name": "My bookings", "url": "/bookings", "description": "Your protected bookings" }
+    {
+      "name": "Find a stay",
+      "short_name": "Stays",
+      "url": "/",
+      "description": "Browse places to stay"
+    },
+    {
+      "name": "Buy or sell",
+      "short_name": "Buy / Sell",
+      "url": "/buy-sell",
+      "description": "Property for sale, or list your own"
+    },
+    {
+      "name": "My bookings",
+      "short_name": "Bookings",
+      "url": "/bookings",
+      "description": "Your bookings and stays"
+    },
+    {
+      "name": "Manage my properties",
+      "short_name": "Manage",
+      "url": "/manage",
+      "description": "Owners, agents and staff"
+    }
   ]
 }

@@ -14,14 +14,32 @@ export function PWARegister() {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
+    // Somebody who dismissed this does not want to be asked again today.
+    const snoozedUntil = Number(localStorage.getItem("paltas_install_snoozed") ?? 0);
+    if (Date.now() < snoozedUntil) return;
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setDeferred(e);
-      setShow(true);
+      // Not immediately. Asking someone to install an app before they have
+      // seen what it does interrupts the first impression and lands on top of
+      // whatever they were about to tap.
+      timer = setTimeout(() => setShow(true), 25_000);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      if (timer) clearTimeout(timer);
+    };
   }, []);
+
+  function dismiss() {
+    setShow(false);
+    // A week. Long enough not to nag, short enough to catch someone who has
+    // since decided they use this often.
+    localStorage.setItem("paltas_install_snoozed", String(Date.now() + 7 * 864e5));
+  }
 
   async function install() {
     if (!deferred) return;
@@ -38,10 +56,12 @@ export function PWARegister() {
       <div className="pwa-ico">P</div>
       <div className="pwa-txt">
         <b>Install PALTAS</b>
-        <span>Add to your home screen — works like an app, even offline.</span>
+        {/* One short line. Three lines of explanation made this tall enough to
+            cover whatever was underneath it. */}
+        <span>Works like an app, even offline.</span>
       </div>
       <button className="pwa-install" onClick={install}>Install</button>
-      <button className="pwa-close" onClick={() => setShow(false)} aria-label="Dismiss">✕</button>
+      <button className="pwa-close" onClick={dismiss} aria-label="Dismiss">✕</button>
     </div>
   );
 }
