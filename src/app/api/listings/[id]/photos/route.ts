@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
-import { badRequest, fail, guard, handle, ok, readJson } from "@/server/http";
+import { badRequest, fail, guard, guardList, handle, ok, readJson } from "@/server/http";
+import type { Actor } from "@/lib/security/types";
 import { writeAudit } from "@/server/audit";
 import { PERMISSIONS } from "@/lib/security/permissions";
 import {
@@ -32,19 +33,44 @@ export const dynamic = "force-dynamic";
  * served back from an origin holding session cookies that is stored XSS.
  */
 
-/** The listing, if this caller may edit it. Shared by all three verbs. */
-async function editableListing(id: string) {
+/**
+ * The listing, if this caller may edit it.
+ *
+ * Three steps, and the first one is the point. Looking the listing up before
+ * establishing that the caller is anyone at all turns this into an existence
+ * oracle: an anonymous request gets 404 for an invented id and 401 for a real
+ * one, which is a way to enumerate every listing on the platform without ever
+ * signing in. `guardList` settles that first — no session is 401 whatever id
+ * was asked for — and the scoped check follows once there is something to scope
+ * to.
+ */
+async function editableListing(id: string): Promise<
+  | { ok: true; listing: { id: string; orgId: string; propertyId: string; title: string; images: string[] }; actor: Actor }
+  | { ok: false; response: NextResponse }
+> {
+  const gate = await guardList(PERMISSIONS.LISTING_UPDATE);
+  if (!gate.ok) return { ok: false, response: gate.response };
+
   const listing = await prisma.propertyListing.findUnique({
     where: { id },
     select: { id: true, orgId: true, propertyId: true, title: true, images: true },
   });
-  if (!listing) return { listing: null, g: null };
+  if (!listing) return { ok: false, response: fail(404, { code: "not_found", message: "No such listing." }) };
+
   const g = await guard(PERMISSIONS.LISTING_UPDATE, { propertyId: listing.propertyId });
-  return { listing, g };
+  if (!g.ok) return { ok: false, response: g.response };
+
+  return { ok: true, listing, actor: g.actor };
 }
 
 export async function POST(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
   return handle(async () => {
+    // Who before what: an unauthorised caller learns nothing about this
+    // listing, nor about which formats we accept, by probing this endpoint.
+    const access = await editableListing(params.id);
+    if (!access.ok) return access.response;
+    const { listing } = access;
+
     const body = await readJson<{ contentType?: string; size?: number }>(req);
     const contentType = (body?.contentType ?? "").split(";")[0].trim().toLowerCase();
 
@@ -56,12 +82,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (body?.size && body.size > MAX_BYTES) {
       return badRequest(`That photograph is larger than ${Math.floor(MAX_BYTES / 1024 / 1024)} MB.`);
     }
-
-    const { listing, g } = await editableListing(params.id);
-    // Authorisation before existence: a stranger must not learn which listing
-    // ids are real by watching which ones 404.
-    if (!listing) return fail(404, { code: "not_found", message: "No such listing." });
-    if (!g!.ok) return g!.response;
 
     if (listing.images.length >= MAX_PER_LISTING) {
       return badRequest(`A listing may carry ${MAX_PER_LISTING} photographs. Remove one first.`);
@@ -86,13 +106,13 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
   return handle(async () => {
+    const access = await editableListing(params.id);
+    if (!access.ok) return access.response;
+    const { listing } = access;
+
     const body = await readJson<{ key?: string }>(req);
     const key = body?.key?.trim();
     if (!key) return badRequest("key is required.");
-
-    const { listing, g } = await editableListing(params.id);
-    if (!listing) return fail(404, { code: "not_found", message: "No such listing." });
-    if (!g!.ok) return g!.response;
 
     /*
      * The browser chose this key from what POST handed it, and a browser can
@@ -125,7 +145,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       data: { images: next.images },
     });
     await writeAudit({
-      actor: g!.actor,
+      actor: access.actor,
       action: "listing.photo.add",
       entityType: "PropertyListing",
       entityId: listing.id,
@@ -144,12 +164,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
   return handle(async () => {
+    const access = await editableListing(params.id);
+    if (!access.ok) return access.response;
+    const { listing } = access;
+
     const key = new URL(req.url).searchParams.get("key")?.trim();
     if (!key) return badRequest("key is required.");
-
-    const { listing, g } = await editableListing(params.id);
-    if (!listing) return fail(404, { code: "not_found", message: "No such listing." });
-    if (!g!.ok) return g!.response;
 
     if (!listing.images.includes(key)) {
       return badRequest("That photograph is not on this listing.");
@@ -162,7 +182,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     await deleteObject(key);
 
     await writeAudit({
-      actor: g!.actor,
+      actor: access.actor,
       action: "listing.photo.remove",
       entityType: "PropertyListing",
       entityId: listing.id,

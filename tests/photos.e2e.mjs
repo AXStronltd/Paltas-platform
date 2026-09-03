@@ -65,6 +65,26 @@ check((await anon.patch(`/listings/${listing.id}/photos`, { key: "x" })).status 
 check((await anon.del(`/listings/${listing.id}/photos?key=x`)).status === 401,
   "nor delete one");
 
+console.log("\nA STRANGER LEARNS NOTHING BY PROBING");
+/*
+ * The bug this replaces: the listing was looked up before the caller was
+ * identified, so an anonymous request got 404 for an invented id and 401 for a
+ * real one — a way to enumerate every listing on the platform without ever
+ * signing in. Both must now be the same answer.
+ */
+const real = await anon.post(`/listings/${listing.id}/photos`, { contentType: "image/jpeg" });
+const fake = await anon.post("/listings/definitely-not-a-real-id/photos", { contentType: "image/jpeg" });
+check(real.status === fake.status,
+  "a real listing id and an invented one answer identically",
+  `real ${real.status} vs invented ${fake.status}`);
+check(real.status === 401, "and both are simply 'sign in'", `${real.status}`);
+
+// Nor by sending something invalid: the caller is judged before the request is.
+const badType = await anon.post(`/listings/${listing.id}/photos`, { contentType: "image/svg+xml" });
+check(badType.status === 401,
+  "a rejected file type from a stranger is still 401, not 400",
+  `${badType.status}`);
+
 console.log("\nONLY THE FORMATS A CAMERA PRODUCES");
 for (const [type, why] of [
   ["image/svg+xml", "SVG is a document that can carry script"],
