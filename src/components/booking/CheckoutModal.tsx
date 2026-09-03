@@ -5,7 +5,7 @@ import type { Listing, Booking } from "@/lib/models";
 import { PricePanel } from "@/components/marketplace/PricePanel";
 import { priceBreakdown, paymentModeFor } from "@/lib/services/pricingService";
 import { createBooking, makeIdempotencyKey } from "@/lib/services/bookingService";
-import { getCurrentUser, signIn } from "@/lib/services/authService";
+import { useGuest } from "@/components/booking/GuestProvider";
 import { useToast, personalSuccess, personalError } from "@/components/ui/Toast";
 import { paymentOptions, type PaymentOption } from "@/lib/providers/registry";
 
@@ -23,7 +23,11 @@ export function CheckoutModal({
   listing: Listing; nights: number; onClose: () => void; onComplete: (bookingId: string) => void;
 }) {
   const toast = useToast();
-  const existing = getCurrentUser();
+  // This is the preview checkout for the demo catalogue — see ListingDetail.
+  // It reads the real session so it cannot disagree with the header about who
+  // is signed in, but it takes no money and books nothing.
+  const { guest } = useGuest();
+  const existing = guest;
   const [step, setStep] = useState<Step>(existing ? "method" : "account");
   const [name, setName] = useState(existing?.name ?? "");
   const [email, setEmail] = useState(existing?.email ?? "");
@@ -39,10 +43,9 @@ export function CheckoutModal({
   const pm = paymentModeFor(listing);
   const options = paymentOptions();
 
-  async function handleAccount() {
-    setBusy(true);
-    await signIn({ name: name || "Guest", email: email || "guest@paltas.com" });
-    setBusy(false);
+  function handleAccount() {
+    // A preview needs no account. Creating one here would have meant a second
+    // sign-up path with different rules from the real one.
     setStep("method");
   }
 
@@ -51,16 +54,16 @@ export function CheckoutModal({
     if (option.method === "mobile_money") setProcessingHint("Check your phone and approve the prompt…");
     else setProcessingHint("Processing your payment…");
     setStep("processing");
-    const user = getCurrentUser()!;
+    const user = guest;
     const res = await createBooking({
       listing, checkIn: "2025-08-30", checkOut: "2025-09-02", nights, guests: 2,
-      buyerId: user.id, buyerName: user.name, idempotencyKey: idemKey, simulateFailure: simFail,
+      buyerId: user?.id ?? "preview", buyerName: user?.name ?? (name || "Guest"), idempotencyKey: idemKey, simulateFailure: simFail,
       method: option.method, providerName: option.providerName, phone,
     });
     setBooking(res.data);
     setStep("result");
     // personalized, animated feedback
-    const who = getCurrentUser()?.name;
+    const who = guest?.name;
     if (res.data && res.data.status !== "failed") {
       toast.success(
         personalSuccess(who),

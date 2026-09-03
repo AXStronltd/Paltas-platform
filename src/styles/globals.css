@@ -140,8 +140,46 @@ img { display: block; max-width: 100%; }
 .review p { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
 
 /* modal / checkout */
-.scrim { position: fixed; inset: 0; background: rgba(10,18,31,.5); backdrop-filter: blur(4px); z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.modal { background: #fff; width: 100%; max-width: 460px; max-height: 92vh; overflow: auto; border-radius: 20px; padding: 26px; box-shadow: var(--shadow-lg); }
+/*
+ * Modals.
+ *
+ * The scrim scrolls, and the modal is centred with `margin: auto` rather than
+ * `align-items: center`. That distinction is the whole fix: a flex item taller
+ * than a centre-aligned container overflows in BOTH directions, and the top
+ * half becomes unreachable — no amount of scrolling brings it back, because
+ * the scroll container only goes down. It is why the "Full name" label was
+ * sliced in half on a short window.
+ *
+ * `margin: auto` centres when there is room and falls back to normal
+ * scrolling when there is not, which is what was wanted all along.
+ *
+ * Heights use dvh, not vh: on mobile browsers vh is the height with the
+ * address bar hidden, so a form sized to 92vh is taller than the screen the
+ * moment the bar is showing.
+ */
+.scrim {
+  position: fixed; inset: 0;
+  background: rgba(10,18,31,.5);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Scrolling the modal must not scroll the page behind it. */
+  overscroll-behavior: contain;
+}
+.modal {
+  background: #fff;
+  width: 100%;
+  max-width: 460px;
+  /* Centres vertically when it fits; leaves the top reachable when it does not. */
+  margin: auto;
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: var(--shadow-lg);
+}
 .modal h2 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
 .modal p.lede { color: var(--muted); margin: 6px 0 18px; }
 .field { margin-bottom: 14px; }
@@ -1190,3 +1228,33 @@ img { display: block; max-width: 100%; }
   /* iOS zooms inputs under 16px and throws the form out of position. */
   .enquiry input, .enquiry select, .enquiry textarea { font-size: 16px; }
 }
+
+/* --------------------------- modals on phones --------------------------- */
+/*
+ * A dialogue that fills the screen from the bottom reads as native, and more
+ * usefully it removes the question of whether the whole form fits: it scrolls
+ * inside itself and the header stays put.
+ */
+@media (max-width: 560px) {
+  .scrim { padding: 0; align-items: flex-end; }
+  .modal {
+    margin: 0;
+    max-width: none;
+    border-radius: 20px 20px 0 0;
+    padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+    /* Never taller than the visible viewport, and scrolls inside if it wants to be. */
+    max-height: 92dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* iOS zooms any focused input below 16px, which shifts the whole dialogue. */
+  .modal input, .modal select, .modal textarea { font-size: 16px; }
+}
+
+/* A short window on a laptop hits the same problem as a phone. */
+@media (max-height: 640px) {
+  .scrim { padding: 12px; }
+  .modal { padding: 18px; }
+}
+
+.field-hint { display: block; font-size: 12px; color: var(--muted); margin-top: 5px; }

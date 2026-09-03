@@ -1,26 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MobileMenu } from "./MobileMenu";
 import { AuthModal } from "./AuthModal";
-import { getCurrentUser, refreshUser, signOut, type User } from "@/lib/services/authService";
+import { useGuest } from "@/components/booking/GuestProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 
 export function Header() {
   const { t } = useI18n();
-  const [user, setUser] = useState<User | null>(null);
+  // The one source of truth for who is signed in — a real server-verified
+  // session, not a variable this component owns.
+  const { guest, signOut } = useGuest();
   const [showAuth, setShowAuth] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    refreshUser().then((u) => setUser(u));
-  }, []);
-
-  function handleSignOut() {
-    signOut();
-    setUser(null);
+  async function handleSignOut() {
+    await signOut();
     setMenuOpen(false);
   }
 
@@ -50,13 +47,13 @@ export function Header() {
         <div className="header-right">
           <LocaleSwitcher />
           <Link href="/bookings" className="header-heart" aria-label="Saved">♡</Link>
-          {user ? (
+          {guest ? (
             <div className="header-account" onClick={() => setMenuOpen((v) => !v)} style={{ cursor: "pointer", position: "relative" }}>
-              <span className="header-avatar">{user.name.charAt(0).toUpperCase()}</span>
-              {user.name.split(" ")[0]} ▾
+              <span className="header-avatar">{guest.name.charAt(0).toUpperCase()}</span>
+              {guest.name.split(" ")[0]} ▾
               {menuOpen && (
                 <div className="account-menu" onClick={(e) => e.stopPropagation()}>
-                  <div className="account-menu-name">{user.name}<span>{user.email}</span></div>
+                  <div className="account-menu-name">{guest.name}<span>{guest.email}</span></div>
                   <Link href="/bookings" className="account-menu-item" onClick={() => setMenuOpen(false)}>{t("nav.bookings")}</Link>
                   <Link href="/manage" className="account-menu-item" onClick={() => setMenuOpen(false)}>Property management</Link>
                   <button className="account-menu-item" onClick={handleSignOut}>{t("nav.signOut")}</button>
@@ -74,7 +71,7 @@ export function Header() {
         <MobileMenu />
       </div>
 
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} onDone={() => refreshUser().then(setUser)} />}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </header>
   );
 }

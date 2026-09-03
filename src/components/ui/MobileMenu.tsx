@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Portal } from "./Portal";
 import { useEffect, useState } from "react";
 
 /**
@@ -50,6 +51,7 @@ export function MobileMenu() {
       </button>
 
       {open && (
+        <Portal>
         <div className="mobile-menu-scrim" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div className="mobile-menu">
             <div className="mm-head">
@@ -76,6 +78,7 @@ export function MobileMenu() {
             </div>
           </div>
         </div>
+        </Portal>
       )}
     </>
   );
