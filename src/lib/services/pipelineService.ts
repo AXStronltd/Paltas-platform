@@ -1,4 +1,5 @@
 import { api } from "./managementApi";
+import { displayLocale } from "@/lib/i18n/displayLocale";
 
 /**
  * Leads, viewings and developments — the agent and developer portals.
@@ -145,7 +146,7 @@ export const updateUnit = (id: string, input: { price?: number; type?: string; b
 
 /* -------------------------------- Display ------------------------------- */
 
-export function money(amount: number, currency: string, locale = "en"): string {
+export function money(amount: number, currency: string, locale = displayLocale()): string {
   try {
     return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
   } catch {
@@ -153,9 +154,9 @@ export function money(amount: number, currency: string, locale = "en"): string {
   }
 }
 
-export const shortDate = (iso: string, locale = "en") =>
+export const shortDate = (iso: string, locale = displayLocale()) =>
   new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(iso));
 
-export const dateTime = (iso: string, locale = "en") =>
+export const dateTime = (iso: string, locale = displayLocale()) =>
   new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
     .format(new Date(iso));

@@ -28,7 +28,7 @@ export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
         aria-label={t("locale.chooseLanguage")}
       >
         <span aria-hidden="true">🌐</span>
-        {compact ? current?.code.toUpperCase() : `${current?.nativeName} · ${marketConfig.currency}`}
+        {compact ? current?.code.toUpperCase() : `${current?.nativeName} · ${marketConfig.name}`}
         <span className="chev" aria-hidden="true">▾</span>
       </button>
 
@@ -54,6 +54,11 @@ export function LocaleSwitcher({ compact = false }: { compact?: boolean }) {
 
             <div className="locale-group">
               <h4>{t("locale.market")}</h4>
+              {/* The market decides local payment methods and tenancy notes, not
+                  the price on a listing: prices stay in the currency the host set
+                  them in. Saying so here stops the currency code reading as a
+                  promise to convert. */}
+              <p className="locale-note">{t("locale.marketNote")}</p>
               {/* The places we know well, first. */}
               {markets.map((m) => (
                 <button

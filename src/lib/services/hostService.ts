@@ -1,4 +1,5 @@
 import { api } from "./managementApi";
+import { displayLocale } from "@/lib/i18n/displayLocale";
 
 /**
  * Rooms, bookings and availability — the hotel and landlord half of the portal.
@@ -122,7 +123,7 @@ export const releaseDates = (id: string) => api.del<{ deleted: boolean }>(`/avai
  * showing a Kenyan rate with a euro symbol because of a browser setting would
  * be worse than showing nothing.
  */
-export function money(amount: number, currency: string, locale = "en"): string {
+export function money(amount: number, currency: string, locale = displayLocale()): string {
   try {
     return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
   } catch {
@@ -130,7 +131,7 @@ export function money(amount: number, currency: string, locale = "en"): string {
   }
 }
 
-export const shortDate = (iso: string, locale = "en") =>
+export const shortDate = (iso: string, locale = displayLocale()) =>
   new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(iso));
 
 /* ------------------------------- Landlord ------------------------------- */

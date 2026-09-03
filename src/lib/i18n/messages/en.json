@@ -1,6 +1,9 @@
 {
-  "$meta": { "locale": "en", "reviewedBy": "native", "note": "Source language." },
-
+  "$meta": {
+    "locale": "en",
+    "reviewedBy": "native",
+    "note": "Source language."
+  },
   "nav.stays": "Stays",
   "nav.buySell": "Buy / Sell",
   "nav.developer": "Developer",
@@ -11,21 +14,18 @@
   "nav.bookings": "My bookings",
   "nav.signIn": "Sign in",
   "nav.signOut": "Sign out",
-
   "locale.language": "Language",
   "locale.market": "Country",
   "locale.chooseLanguage": "Choose your language",
   "locale.chooseMarket": "Choose a country",
   "locale.showingFor": "Showing properties in {market}",
   "locale.switchHint": "Your language and the country you are browsing are separate — change either.",
-
   "promo.hajj.question": "Planning Hajj?",
   "promo.hajj.headline": "Stay within walking distance of the Haram.",
   "promo.umrah.question": "Or Umrah, this season?",
   "promo.marrakesh.question": "Thinking Marrakesh?",
   "promo.miami.question": "Or Miami?",
   "promo.cta": "Explore stays",
-
   "price.total": "Total",
   "price.forNights": "for {count, plural, one {# night} other {# nights}}",
   "price.nothingFurther": "nothing further to pay",
@@ -38,19 +38,44 @@
   "price.taxes": "{taxLabel}",
   "price.taxesNote": "Collected and remitted for you",
   "price.pledge": "This is the amount you will be charged. No booking fee, no facility fee, no currency mark-up, and no line added at the payment step.",
-
   "trust.idVerified": "ID verified",
   "trust.ownershipVerified": "Ownership verified",
   "trust.propertyInspected": "Property inspected",
   "trust.licensed": "Licensed",
   "trust.payoutsVerified": "Payouts verified",
   "trust.checked": "checked {date}",
-
   "search.guests": "{count, plural, one {# guest} other {# guests}}",
   "search.bedrooms": "{count, plural, one {# bedroom} other {# bedrooms}}",
   "search.noResults": "Nothing found. Try widening your search.",
-
   "market.tenancyNote": "Local tenancy note",
   "market.paymentMethods": "Ways to pay here",
-  "market.popularCities": "Popular in {market}"
+  "market.popularCities": "Popular in {market}",
+  "locale.marketNote": "Prices are shown in each property's own currency, never converted.",
+  "hero.title": "Find your next place to stay.",
+  "hero.subtitle": "Homes, apartments and unique stays — booked, paid and protected in one place.",
+  "tab.stays": "Stays",
+  "tab.bookings": "Bookings",
+  "tab.menu": "Menu",
+  "buysell.title": "Buying or selling?",
+  "buysell.subtitle": "Tell us which, and we will put you in front of the right person.",
+  "buysell.buy": "I want to buy",
+  "buysell.sell": "I want to sell",
+  "buysell.buyBody": "Browse homes, apartments and land for sale. Tell us what you are looking for and an agent will bring you matches.",
+  "buysell.sellBody": "List your property with PALTAS. We will value it, photograph it, and put it in front of buyers who are already looking.",
+  "buysell.buyCta": "Browse properties",
+  "buysell.sellCta": "List my property",
+  "buysell.renting": "Renting instead?",
+  "buysell.findStay": "Find a place to stay",
+  "book.checkIn": "Check-in",
+  "book.checkOut": "Check-out",
+  "book.guests": "Guests",
+  "book.rooms": "Rooms",
+  "book.perNight": "per night",
+  "book.reserve": "Reserve",
+  "book.checking": "Checking availability…",
+  "book.unavailable": "Not available",
+  "book.serviceFee": "Service fee",
+  "book.taxes": "Taxes",
+  "book.noHidden": "This price is what you pay — there is nothing added at the end.",
+  "book.room": "Room"
 }

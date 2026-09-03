@@ -5,7 +5,10 @@
  * big headline, and a floating search bar (Where to / Check in / Check out /
  * Guests / Search). Purely presentational; the Search button scrolls to results.
  */
+import { useI18n } from "@/components/i18n/LocaleProvider";
+
 export function Hero() {
+  const { t } = useI18n();
   return (
     <section className="hero">
       <div className="hero-photo" />
@@ -13,7 +16,7 @@ export function Hero() {
       <div className="hero-inner container">
         <span className="hero-badge">✦ Welcome to PALTAS</span>
         <h1 className="hero-title">
-          Find your next<br />place to <span className="grad">stay.</span>
+          {t("hero.title")}
         </h1>
         <p className="hero-sub">Homes, apartments and unique stays<br />across Africa and beyond.</p>
 

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Listing } from "@/lib/models";
 import { getQuote, isoDate, money, type QuoteAnswer } from "@/lib/services/guestService";
 import { GuestCheckout } from "./GuestCheckout";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * Dates, guests, and what it would actually cost.
@@ -18,6 +19,7 @@ import { GuestCheckout } from "./GuestCheckout";
  * implying the room is held.
  */
 export function BookingPanel({ listing }: { listing: Listing }) {
+  const { t } = useI18n();
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   const threeNights = new Date(tomorrow); threeNights.setDate(threeNights.getDate() + 3);
 
@@ -56,12 +58,12 @@ export function BookingPanel({ listing }: { listing: Listing }) {
     <div className="book-card">
       <div className="book-price">
         <b>{money(roomType?.rate ?? listing.price, currency)}</b>
-        <span> per night</span>
+        <span> {t("book.perNight")}</span>
       </div>
 
       {listing.roomTypes && listing.roomTypes.length > 0 && (
         <div className="bf">
-          <label htmlFor="bp-room">Room</label>
+          <label htmlFor="bp-room">{t("book.room")}</label>
           <select id="bp-room" value={roomTypeId ?? ""} onChange={(e) => setRoomTypeId(e.target.value)}>
             {listing.roomTypes.map((r) => (
               <option key={r.id} value={r.id}>
@@ -74,12 +76,12 @@ export function BookingPanel({ listing }: { listing: Listing }) {
 
       <div className="book-fields">
         <div className="bf">
-          <label htmlFor="bp-in">Check-in</label>
+          <label htmlFor="bp-in">{t("book.checkIn")}</label>
           <input id="bp-in" type="date" value={checkIn} min={isoDate(new Date())}
             onChange={(e) => setCheckIn(e.target.value)} />
         </div>
         <div className="bf">
-          <label htmlFor="bp-out">Check-out</label>
+          <label htmlFor="bp-out">{t("book.checkOut")}</label>
           <input id="bp-out" type="date" value={checkOut} min={checkIn}
             onChange={(e) => setCheckOut(e.target.value)} />
         </div>
@@ -87,13 +89,13 @@ export function BookingPanel({ listing }: { listing: Listing }) {
 
       <div className="book-fields">
         <div className="bf">
-          <label htmlFor="bp-guests">Guests</label>
+          <label htmlFor="bp-guests">{t("book.guests")}</label>
           <input id="bp-guests" type="number" min={1} max={listing.maxGuests * rooms} value={guests}
             onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 1))} />
         </div>
         {listing.roomTypes && listing.roomTypes.length > 0 && (
           <div className="bf">
-            <label htmlFor="bp-rooms">Rooms</label>
+            <label htmlFor="bp-rooms">{t("book.rooms")}</label>
             <input id="bp-rooms" type="number" min={1} max={20} value={rooms}
               onChange={(e) => setRooms(Math.max(1, Number(e.target.value) || 1))} />
           </div>
@@ -114,20 +116,19 @@ export function BookingPanel({ listing }: { listing: Listing }) {
         <div className="book-breakdown">
           <div><span>{money(q.nightlyRate, q.currency)} × {q.nights} nights{rooms > 1 ? ` × ${rooms} rooms` : ""}</span><span>{money(q.subtotal, q.currency)}</span></div>
           {q.cleaningFee > 0 && <div><span>Cleaning</span><span>{money(q.cleaningFee, q.currency)}</span></div>}
-          <div><span>Service fee</span><span>{money(q.serviceFee, q.currency)}</span></div>
-          <div><span>Taxes</span><span>{money(q.taxes, q.currency)}</span></div>
+          <div><span>{t("book.serviceFee")}</span><span>{money(q.serviceFee, q.currency)}</span></div>
+          <div><span>{t("book.taxes")}</span><span>{money(q.taxes, q.currency)}</span></div>
           {q.discountAmount > 0 && <div><span>Discount</span><span>−{money(q.discountAmount, q.currency)}</span></div>}
           <div className="book-total"><span>Total</span><span>{money(q.total, q.currency)}</span></div>
         </div>
       )}
 
       <button className="btn btn-primary" disabled={!canBook} onClick={() => setCheckoutOpen(true)}>
-        {loading ? "Checking availability…" : answer?.available ? "Reserve" : "Not available"}
+        {loading ? t("book.checking") : answer?.available ? t("book.reserve") : t("book.unavailable")}
       </button>
 
       <div className="reassure">
-        This price is what you pay — there is nothing added at the end.
-        {" "}Dates are only held once your booking is confirmed.
+        {t("book.noHidden")}
       </div>
 
       {checkoutOpen && q && (

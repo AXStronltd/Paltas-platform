@@ -11,6 +11,8 @@
  * because a card was declined is worse than one that says the card was declined.
  */
 
+import { displayLocale } from "@/lib/i18n/displayLocale";
+
 export interface GuestFailure { code: string; message: string }
 export interface GuestResult<T> { data: T | null; error: GuestFailure | null }
 
@@ -127,7 +129,7 @@ export const payForBooking = (id: string) =>
 
 /* -------------------------------- Display ------------------------------- */
 
-export function money(amount: number, currency: string, locale = "en"): string {
+export function money(amount: number, currency: string, locale = displayLocale()): string {
   try {
     return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
   } catch {

@@ -1,12 +1,13 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   DEFAULT_LOCALE, DEFAULT_MARKET, LOCALES, MARKETS,
   isLocale, isMarket, marketOf, type LocaleCode, type MarketCode,
 } from "@/lib/i18n/locales";
 import { COUNTRY_CURRENCY } from "@/lib/i18n/countries";
 import { createTranslator, type Translator } from "@/lib/i18n/translate";
+import { setDisplayLocale } from "@/lib/i18n/displayLocale";
 
 /**
  * Language and market, available to every component.
@@ -52,6 +53,23 @@ export function LocaleProvider({
     setLocaleState(code);
     persist("paltas_locale", code);
   }, []);
+
+  /*
+   * Two things follow the chosen language, and both were being missed.
+   *
+   * `<html lang>` is set by the server from the cookie, so switching language
+   * without reloading left the document claiming to be English while showing
+   * Swedish. Screen readers announce in the wrong language, browsers offer to
+   * translate a page that is already translated, and native date pickers keep
+   * English month names.
+   *
+   * And the money and date helpers take a locale that nothing was passing, so
+   * every figure rendered in English regardless.
+   */
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    setDisplayLocale(locale);
+  }, [locale]);
 
   const setMarket = useCallback((code: MarketCode) => {
     setMarketState(code);
