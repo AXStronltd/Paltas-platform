@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { TabBar } from "./TabBar";
+import { BuildStamp } from "./BuildStamp";
 
 /**
  * The marketplace's header and bottom tab bar.
@@ -21,6 +22,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     <>
       <Header />
       {children}
+      <BuildStamp />
       <TabBar />
     </>
   );

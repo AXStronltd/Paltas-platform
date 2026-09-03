@@ -2,13 +2,23 @@
 //
 // Bumping this name is what retires an old cache: `activate` deletes every
 // cache whose key is not this one.
-const CACHE = "paltas-v2";
+const CACHE = "paltas-v3";
 const CORE = ["/", "/bookings", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()),
   );
+});
+
+/*
+ * A page can ask this worker to step aside immediately, which is what the
+ * "load the new version" control does. Without it, a visitor holding a stale
+ * shell has to close every tab before an update reaches them — and most people
+ * never do, so they simply conclude the site is broken.
+ */
+self.addEventListener("message", (event) => {
+  if (event.data === "paltas:skip-waiting") self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {

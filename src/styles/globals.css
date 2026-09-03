@@ -1583,3 +1583,24 @@ body:has(.scrim) .tabbar { display: none; }
   color: var(--teal-ink); font-size: 13.5px; line-height: 1.5;
   padding: 11px 13px; border-radius: 12px; margin: 0;
 }
+
+/* Which build this is. Quiet, but readable when someone needs it. */
+.build-stamp {
+  text-align: center; font-size: 11px; color: var(--muted);
+  padding: 20px 0 8px; margin: 0; letter-spacing: .3px; opacity: .65;
+}
+.build-stale {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: var(--z-prompt);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--ink); color: #fff;
+  padding: 11px 14px; border-radius: 12px; box-shadow: var(--shadow-lg);
+  font-size: 13.5px; font-weight: 600;
+}
+.build-stale button {
+  border: none; background: var(--grad); color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 800;
+  padding: 7px 13px; border-radius: 9px; cursor: pointer;
+}
+@media (min-width: 701px) { .build-stale { bottom: 20px; } }
