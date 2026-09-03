@@ -408,5 +408,17 @@
   "discover.work.title": "Spazio per lavorare",
   "discover.work.subtitle": "Una vera scrivania, non il tavolo della cucina",
   "discover.popular.title": "I meglio recensiti",
-  "discover.popular.subtitle": "Valutati da ospiti che ci hanno soggiornato"
+  "discover.popular.subtitle": "Valutati da ospiti che ci hanno soggiornato",
+  "row.popularHomes.title": "Alloggi popolari a {place}",
+  "row.popularHomes.subtitle": "Valutati da ospiti che ci hanno soggiornato",
+  "row.thisWeekend.title": "Disponibile questo fine settimana a {place}",
+  "row.thisWeekend.subtitle": "Libero da venerdì a domenica",
+  "row.nextMonth.title": "Disponibile il mese prossimo a {place}",
+  "row.nextMonth.subtitle": "Libero per tutto il mese",
+  "row.stayIn.title": "Soggiorna a {place}",
+  "row.stayIn.subtitle": "A notte o al mese",
+  "row.placesToStay.title": "Dove alloggiare a {place}",
+  "row.placesToStay.subtitle": "Dove dormire a {place}",
+  "row.exploreCity.title": "Esplora {place}",
+  "row.exploreCity.subtitle": "Tutto ciò che proponiamo a {place}"
 }

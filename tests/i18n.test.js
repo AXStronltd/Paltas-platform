@@ -356,3 +356,42 @@ test("a country suggests its language, for the countries we can speak", () => {
     assert.ok(L.isLocale(lang), `${country} suggests ${lang}, which is not offered`);
   }
 });
+
+const P = require("../.test-build/lib/i18n/places.js");
+
+test("a city is spelled the way the reader would spell it", () => {
+  // The heading is ours to write, so it uses the reader's exonym; the listing's
+  // own location line still shows whatever the host typed.
+  assert.equal(P.cityName("Gothenburg", "sv"), "Göteborg");
+  assert.equal(P.cityName("Cape Town", "de"), "Kapstadt");
+  assert.equal(P.cityName("London", "fr"), "Londres");
+  assert.equal(P.cityName("Stockholm", "lt"), "Stokholmas");
+  assert.match(P.cityName("Dubai", "ar"), /[؀-ۿ]/, "Dubai in Arabic is still in Latin script");
+  assert.match(P.cityName("Paris", "zh"), /[一-鿿]/, "Paris in Chinese is still in Latin script");
+});
+
+test("a city we cannot spell is left exactly as the host typed it", () => {
+  // Guessing at a town nobody wrote down for us is worse than leaving it alone.
+  assert.equal(P.cityName("Kisumu", "fr"), "Kisumu");
+  assert.equal(P.cityName("Eldoret", "ar"), "Eldoret");
+  assert.equal(P.cityName("Gothenburg", "xx"), "Gothenburg", "an unknown language falls through");
+  assert.equal(P.cityName("", "sv"), "");
+  assert.equal(P.cityName(null, "sv"), "");
+  assert.equal(P.cityName(undefined, "sv"), "");
+});
+
+test("a regional locale finds its base language", () => {
+  // "pt-BR" and "zh-Hans" must not miss the translation "pt" and "zh" carry.
+  assert.equal(P.cityName("London", "pt-BR"), P.cityName("London", "pt"));
+  assert.equal(P.cityName("Paris", "zh-Hans"), P.cityName("Paris", "zh"));
+  assert.equal(P.cityName("Cape Town", "DE"), "Kapstadt", "and the match is case-insensitive");
+});
+
+test("no city translation is blank, or accidentally the key", () => {
+  for (const city of P.TRANSLATED_CITIES) {
+    for (const code of L.LOCALES.map((l) => l.code)) {
+      const name = P.cityName(city, code);
+      assert.ok(name && name.trim().length > 0, `${city} in ${code} came back empty`);
+    }
+  }
+});

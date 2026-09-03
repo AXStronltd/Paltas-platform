@@ -1341,6 +1341,10 @@ model PropertyListing {
   images    String[] @default([])
   city      String?
   location  String?
+  /// ISO 3166-1 alpha-2. A listing's own country, not its landlord's: an agency
+  /// in Nairobi may well be selling a flat in Lisbon, and the shopfront has to
+  /// know which one the visitor is looking at.
+  country   String?
 
   /// Who is publicly answerable for the listing — landlord, agent or developer.
   hostName String
@@ -1364,6 +1368,8 @@ model PropertyListing {
   reviews   Review[]
 
   @@index([status, kind])
+  @@index([status, country])
+  @@index([status, city])
   @@index([orgId])
   @@index([propertyId])
   leads    Lead[]

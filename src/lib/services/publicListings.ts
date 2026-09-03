@@ -19,7 +19,7 @@ interface ApiListing {
   kind: "STAY" | "RENT" | "SALE"; price: number; currency: string;
   maxGuests: number; bedrooms: number; bathrooms: number;
   amenities: string[]; images: string[];
-  city: string | null; location: string | null;
+  city: string | null; location: string | null; country?: string | null;
   hostName: string; hostKind: string; publishedAt: string | null;
   priceUnit?: string;
   rating?: number | null;
@@ -58,9 +58,10 @@ export function adaptListing(l: ApiListing): Listing {
     type: inferType(l),
     location: l.location ?? l.city ?? "",
     city: l.city ?? "",
-    // The public projection does not carry a country, and inventing one would
-    // put listings in the wrong filter. The city is what the host stated.
-    country: "",
+    // The listing's own country, which it now carries: an agency in Nairobi may
+    // be selling a flat in Lisbon, and a row headed "Places in Sweden" has to
+    // be able to tell.
+    country: l.country ?? "",
     price: l.price,
     currency: l.currency,
     rating: l.rating ?? 0,
@@ -114,11 +115,20 @@ async function fetchJson<T>(path: string): Promise<T | null> {
   }
 }
 
-export async function fetchRealListings(params: { kind?: string; city?: string; guests?: number } = {}): Promise<Listing[]> {
+export async function fetchRealListings(params: {
+  kind?: string; city?: string; country?: string; guests?: number;
+  /** Both, or neither: half a date range is not a question. */
+  availableFrom?: string; availableTo?: string;
+} = {}): Promise<Listing[]> {
   const q = new URLSearchParams();
   if (params.kind) q.set("kind", params.kind);
   if (params.city) q.set("city", params.city);
+  if (params.country) q.set("country", params.country);
   if (params.guests) q.set("guests", String(params.guests));
+  if (params.availableFrom && params.availableTo) {
+    q.set("availableFrom", params.availableFrom);
+    q.set("availableTo", params.availableTo);
+  }
   const json = await fetchJson<{ listings: ApiListing[] }>(`/public/listings${q.toString() ? `?${q}` : ""}`);
   return (json?.listings ?? []).map(adaptListing);
 }

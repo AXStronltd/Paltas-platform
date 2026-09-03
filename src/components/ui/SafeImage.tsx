@@ -8,9 +8,16 @@ import { useState } from "react";
  * broken-image icon — so the live site never renders visibly broken cards.
  */
 export function SafeImage({
-  src, alt, className, style,
+  src, alt, className, style, loading = "lazy",
 }: {
   src: string; alt: string; className?: string; style?: React.CSSProperties;
+  /**
+   * Lazy by default, because most images on a page of carousels are off to the
+   * right of it. The first screenful is worth passing "eager": deferring what
+   * the visitor is already looking at is the one case where lazy loading makes
+   * a page feel slower rather than faster.
+   */
+  loading?: "eager" | "lazy";
 }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
@@ -31,6 +38,6 @@ export function SafeImage({
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} loading="lazy" className={className} style={style} onError={() => setFailed(true)} />
+    <img src={src} alt={alt} loading={loading} className={className} style={style} onError={() => setFailed(true)} />
   );
 }

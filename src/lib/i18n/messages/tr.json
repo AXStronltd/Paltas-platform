@@ -401,5 +401,17 @@
   "discover.work.title": "Çalışacak yer",
   "discover.work.subtitle": "Mutfak masası değil, gerçek bir çalışma masası",
   "discover.popular.title": "En iyi değerlendirilenler",
-  "discover.popular.subtitle": "Gerçekten kalan misafirlerin puanladığı"
+  "discover.popular.subtitle": "Gerçekten kalan misafirlerin puanladığı",
+  "row.popularHomes.title": "{place} şehrinde popüler evler",
+  "row.popularHomes.subtitle": "Orada kalan misafirlerin puanladığı",
+  "row.thisWeekend.title": "{place} şehrinde bu hafta sonu müsait",
+  "row.thisWeekend.subtitle": "Cumadan pazara boş",
+  "row.nextMonth.title": "{place} şehrinde gelecek ay müsait",
+  "row.nextMonth.subtitle": "Ay boyunca boş",
+  "row.stayIn.title": "{place} şehrinde konaklayın",
+  "row.stayIn.subtitle": "Gecelik ya da aylık",
+  "row.placesToStay.title": "{place} şehrinde konaklama yerleri",
+  "row.placesToStay.subtitle": "{place} şehrinde nerede kalınır",
+  "row.exploreCity.title": "{place} şehrini keşfedin",
+  "row.exploreCity.subtitle": "{place} şehrinde sunduğumuz her şey"
 }

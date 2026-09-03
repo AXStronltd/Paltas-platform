@@ -399,5 +399,17 @@
   "discover.work.title": "የመሥሪያ ቦታ",
   "discover.work.subtitle": "እውነተኛ ጠረጴዛ እንጂ የወጥ ቤት ጠረጴዛ አይደለም",
   "discover.popular.title": "በጣም የተመሰገኑ",
-  "discover.popular.subtitle": "በእውነት በቆዩ እንግዶች የተሰጠ ደረጃ"
+  "discover.popular.subtitle": "በእውነት በቆዩ እንግዶች የተሰጠ ደረጃ",
+  "row.popularHomes.title": "በ{place} ተወዳጅ ቤቶች",
+  "row.popularHomes.subtitle": "እዚያ በቆዩ እንግዶች የተሰጠ ደረጃ",
+  "row.thisWeekend.title": "በ{place} በዚህ ሳምንት መጨረሻ ክፍት",
+  "row.thisWeekend.subtitle": "ከዓርብ እስከ እሁድ ክፍት",
+  "row.nextMonth.title": "በ{place} በሚቀጥለው ወር ክፍት",
+  "row.nextMonth.subtitle": "ወሩን በሙሉ ክፍት",
+  "row.stayIn.title": "በ{place} ይቆዩ",
+  "row.stayIn.subtitle": "በሌሊት ወይም በወር",
+  "row.placesToStay.title": "በ{place} የመቆያ ቦታዎች",
+  "row.placesToStay.subtitle": "በ{place} የት እንደሚያድሩ",
+  "row.exploreCity.title": "{place}ን ያስሱ",
+  "row.exploreCity.subtitle": "በ{place} የምናቀርበው ሁሉ"
 }

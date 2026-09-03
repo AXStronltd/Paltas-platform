@@ -1,9 +1,104 @@
 {
-  "$note": "Sample inventory so a new deployment's marketplace is not empty. Read by both prisma/seed.mjs (fresh databases) and prisma/sync-listings.mjs (databases that were already seeded). Delete these rows once real hosts publish.",
+  "$note": "Sample inventory so a new deployment's marketplace is not empty, spread across enough of the world that the homepage rows populate for a visitor anywhere. Read by both prisma/seed.mjs (fresh databases) and prisma/sync-listings.mjs (databases that were already seeded); both create the named property if it does not exist yet. Prices are in each city's own currency and are never converted. Delete these rows once real hosts publish — `npm run db:sync-listings -- --list` names them.",
+  "properties": [
+    {
+      "name": "Kilimani Heights",
+      "address": "Dennis Pritt Road",
+      "city": "Nairobi",
+      "country": "KE"
+    },
+    {
+      "name": "Nyali Court",
+      "address": "Links Road",
+      "city": "Mombasa",
+      "country": "KE"
+    },
+    {
+      "name": "Diani Sands",
+      "address": "Diani Beach Road",
+      "city": "Kwale",
+      "country": "KE"
+    },
+    {
+      "name": "Naivasha Lakeside",
+      "address": "Moi South Lake Road",
+      "city": "Naivasha",
+      "country": "KE"
+    },
+    {
+      "name": "Mount Kenya Ridge",
+      "address": "Nanyuki–Timau Road",
+      "city": "Nanyuki",
+      "country": "KE"
+    },
+    {
+      "name": "Camps Bay House",
+      "address": "Victoria Road",
+      "city": "Cape Town",
+      "country": "ZA"
+    },
+    {
+      "name": "Marina Residences",
+      "address": "Al Marsa Street",
+      "city": "Dubai",
+      "country": "AE"
+    },
+    {
+      "name": "Corniche Towers",
+      "address": "Corniche Road",
+      "city": "Abu Dhabi",
+      "country": "AE"
+    },
+    {
+      "name": "Södermalm Apartments",
+      "address": "Hornsgatan",
+      "city": "Stockholm",
+      "country": "SE"
+    },
+    {
+      "name": "Haga Court",
+      "address": "Haga Nygata",
+      "city": "Gothenburg",
+      "country": "SE"
+    },
+    {
+      "name": "Le Marais Residences",
+      "address": "Rue des Archives",
+      "city": "Paris",
+      "country": "FR"
+    },
+    {
+      "name": "Seminyak Villas",
+      "address": "Jalan Kayu Aya",
+      "city": "Bali",
+      "country": "ID"
+    },
+    {
+      "name": "Stone Town Houses",
+      "address": "Shangani Street",
+      "city": "Zanzibar",
+      "country": "TZ"
+    },
+    {
+      "name": "Shoreditch Lofts",
+      "address": "Rivington Street",
+      "city": "London",
+      "country": "GB"
+    },
+    {
+      "name": "Medina Riads",
+      "address": "Derb Sidi Bouloukat",
+      "city": "Marrakesh",
+      "country": "MA"
+    }
+  ],
   "listings": [
     {
       "title": "Studio in Westlands, walk to Sarit",
+      "property": "Kilimani Heights",
       "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
       "location": "Westlands",
       "kind": "RENT",
       "price": 42000,
@@ -21,7 +116,10 @@
     },
     {
       "title": "Two-bed apartment, Kileleshwa",
+      "property": "Kilimani Heights",
       "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
       "location": "Kileleshwa",
       "kind": "RENT",
       "price": 78000,
@@ -40,7 +138,10 @@
     },
     {
       "title": "Beach cottage, Diani",
+      "property": "Diani Sands",
       "city": "Kwale",
+      "country": "KE",
+      "currency": "KES",
       "location": "Diani Beach",
       "kind": "STAY",
       "price": 11500,
@@ -58,7 +159,10 @@
     },
     {
       "title": "Sea-view apartment, Nyali",
+      "property": "Nyali Court",
       "city": "Mombasa",
+      "country": "KE",
+      "currency": "KES",
       "location": "Nyali",
       "kind": "STAY",
       "price": 8200,
@@ -77,7 +181,10 @@
     },
     {
       "title": "Family house with garden, Karen",
+      "property": "Kilimani Heights",
       "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
       "location": "Karen",
       "kind": "SALE",
       "price": 62000000,
@@ -96,7 +203,10 @@
     },
     {
       "title": "Serviced apartment, Upper Hill",
+      "property": "Kilimani Heights",
       "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
       "location": "Upper Hill",
       "kind": "STAY",
       "price": 13400,
@@ -115,7 +225,10 @@
     },
     {
       "title": "Townhouse in Nyali, three bed",
+      "property": "Nyali Court",
       "city": "Mombasa",
+      "country": "KE",
+      "currency": "KES",
       "location": "Nyali",
       "kind": "SALE",
       "price": 24500000,
@@ -134,7 +247,10 @@
     },
     {
       "title": "One-bed in Kilimani, furnished",
+      "property": "Kilimani Heights",
       "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
       "location": "Kilimani",
       "kind": "STAY",
       "price": 6800,
@@ -148,6 +264,1014 @@
         "workspace",
         "parking",
         "backup power"
+      ]
+    },
+    {
+      "title": "Lakefront cottage, Naivasha",
+      "property": "Naivasha Lakeside",
+      "city": "Naivasha",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Moi South Lake",
+      "kind": "STAY",
+      "price": 9800,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 5,
+      "summary": "Fever trees, fire pit, hippos at dusk.",
+      "description": "A two-bedroom cottage on a fenced plot running down to the lake, under yellow-barked fever trees. Fire pit, outdoor kitchen and a caretaker on site. Hell's Gate is twenty minutes away.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "garden",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Farmhouse with a view, Naivasha",
+      "property": "Naivasha Lakeside",
+      "city": "Naivasha",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Kongoni",
+      "kind": "STAY",
+      "price": 16500,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "maxGuests": 8,
+      "summary": "Whole farmhouse, sleeps eight.",
+      "description": "A working farm's guest house with a wide veranda facing the escarpment. Four bedrooms, a long kitchen table, solar hot water and a generator for the evenings.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "solar",
+        "garden",
+        "backup power"
+      ]
+    },
+    {
+      "title": "Two-bed cabin near the lake",
+      "property": "Naivasha Lakeside",
+      "city": "Naivasha",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Moi South Lake",
+      "kind": "RENT",
+      "price": 55000,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Long lets, ten minutes from town.",
+      "description": "A timber-clad two-bedroom cabin on a smallholding ten minutes from Naivasha town, let by the month. Borehole water, solar, and space to park two cars.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "borehole",
+        "solar",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Cabin under Mount Kenya",
+      "property": "Mount Kenya Ridge",
+      "city": "Nanyuki",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Timau",
+      "kind": "STAY",
+      "price": 12200,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "The mountain from the bed, on a clear morning.",
+      "description": "A stone-and-timber cabin at 2,100 metres with the peak framed in the bedroom window. Wood stove, hot water from solar, and blankets enough for the cold nights.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "solar",
+        "garden"
+      ]
+    },
+    {
+      "title": "Ridge house with fireplace, Nanyuki",
+      "property": "Mount Kenya Ridge",
+      "city": "Nanyuki",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Nanyuki",
+      "kind": "STAY",
+      "price": 18900,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "summary": "Open fire, big windows, quiet.",
+      "description": "A three-bedroom house on a ridge outside Nanyuki, with an open fire in the sitting room and windows down one whole side. Ol Pejeta is an hour; the airstrip is fifteen minutes.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "garden",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Four-acre plot with borehole, Nanyuki",
+      "property": "Mount Kenya Ridge",
+      "city": "Nanyuki",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Timau",
+      "kind": "SALE",
+      "price": 18500000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "summary": "Four acres, water, and a house already on it.",
+      "description": "Four fenced acres on the Timau road with an existing three-bedroom house, a producing borehole and mains power. Title deed ready, survey done.",
+      "amenities": [
+        "borehole",
+        "parking",
+        "garden",
+        "solar"
+      ]
+    },
+    {
+      "title": "Apartment above Camps Bay",
+      "property": "Camps Bay House",
+      "city": "Cape Town",
+      "country": "ZA",
+      "currency": "ZAR",
+      "location": "Camps Bay",
+      "kind": "STAY",
+      "price": 2400,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Twelve Apostles behind, Atlantic in front.",
+      "description": "A two-bedroom apartment on the slope above Camps Bay beach, with the mountains behind and the sea from the balcony. Ten minutes to the V&A by car.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "parking",
+        "sea view",
+        "air conditioning"
+      ]
+    },
+    {
+      "title": "Sea Point studio, walk to the promenade",
+      "property": "Camps Bay House",
+      "city": "Cape Town",
+      "country": "ZA",
+      "currency": "ZAR",
+      "location": "Sea Point",
+      "kind": "STAY",
+      "price": 1450,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Two streets from the sea wall.",
+      "description": "A compact studio two streets back from the Sea Point promenade, with a proper desk, fast fibre and a secure garage bay. Restaurants on the corner.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "parking",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Family house in Constantia",
+      "property": "Camps Bay House",
+      "city": "Cape Town",
+      "country": "ZA",
+      "currency": "ZAR",
+      "location": "Constantia",
+      "kind": "SALE",
+      "price": 8900000,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "maxGuests": 8,
+      "summary": "Oaks, a pool, and the vineyards behind.",
+      "description": "A four-bedroom family house on a quiet Constantia lane, with old oaks, a north-facing pool and the vineyards up the hill. Double garage and a cottage at the back.",
+      "amenities": [
+        "pool",
+        "garden",
+        "parking",
+        "24h security",
+        "backup power"
+      ]
+    },
+    {
+      "title": "Woodstock loft with a desk",
+      "property": "Camps Bay House",
+      "city": "Cape Town",
+      "country": "ZA",
+      "currency": "ZAR",
+      "location": "Woodstock",
+      "kind": "RENT",
+      "price": 14500,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Converted warehouse, long lets.",
+      "description": "A one-bedroom loft in a converted Woodstock warehouse, let by the month. Concrete floors, tall windows, fibre, and a co-working floor downstairs.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "parking",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Marina apartment with a balcony",
+      "property": "Marina Residences",
+      "city": "Dubai",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Dubai Marina",
+      "kind": "STAY",
+      "price": 620,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 3,
+      "summary": "The walk downstairs, the water in front.",
+      "description": "A one-bedroom apartment on the twenty-second floor overlooking the marina, with a balcony, a shared pool and gym, and the Marina Walk at street level.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "gym",
+        "parking",
+        "air conditioning",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Downtown studio near the fountain",
+      "property": "Marina Residences",
+      "city": "Dubai",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Downtown Dubai",
+      "kind": "STAY",
+      "price": 480,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Ten minutes' walk to the Burj.",
+      "description": "A studio in Downtown with a fitted kitchen, a desk by the window and a view down the boulevard. The fountain show is a ten-minute walk; the metro is closer.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "pool",
+        "air conditioning",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Palm Jumeirah three-bed",
+      "property": "Marina Residences",
+      "city": "Dubai",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Palm Jumeirah",
+      "kind": "STAY",
+      "price": 1850,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "maxGuests": 6,
+      "summary": "Beach access, sleeps six.",
+      "description": "A three-bedroom apartment on the Palm with direct beach access, a large terrace and a shared pool. Parking for two, and a supermarket in the building.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "beach access",
+        "parking",
+        "air conditioning",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Two-bed in Jumeirah Village",
+      "property": "Marina Residences",
+      "city": "Dubai",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Jumeirah Village Circle",
+      "kind": "RENT",
+      "price": 7200,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Annual lets, quiet circle.",
+      "description": "A two-bedroom apartment in a low-rise block in JVC, let annually. Covered parking, a shared pool, and a park across the road.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "parking",
+        "air conditioning",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Corniche apartment with sea view",
+      "property": "Corniche Towers",
+      "city": "Abu Dhabi",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Corniche",
+      "kind": "STAY",
+      "price": 540,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "The Gulf from the living room.",
+      "description": "A two-bedroom apartment facing the Corniche, with the beach across the road and the cycle path below. Covered parking and a pool on the podium.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "parking",
+        "sea view",
+        "air conditioning"
+      ]
+    },
+    {
+      "title": "Saadiyat studio near the museums",
+      "property": "Corniche Towers",
+      "city": "Abu Dhabi",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Saadiyat Island",
+      "kind": "STAY",
+      "price": 430,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Walk to the Louvre.",
+      "description": "A quiet studio on Saadiyat with a desk, blackout blinds and a short walk to the Louvre Abu Dhabi. Beach club access included.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "beach access",
+        "air conditioning",
+        "parking"
+      ]
+    },
+    {
+      "title": "Family villa in Khalifa City",
+      "property": "Corniche Towers",
+      "city": "Abu Dhabi",
+      "country": "AE",
+      "currency": "AED",
+      "location": "Khalifa City",
+      "kind": "RENT",
+      "price": 11500,
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "maxGuests": 8,
+      "summary": "Garden, maid's room, annual let.",
+      "description": "A four-bedroom villa in a compound in Khalifa City, with a walled garden, a maid's room and shared pool and gym. Fifteen minutes from the airport.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "gym",
+        "garden",
+        "parking",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Södermalm apartment with a balcony",
+      "property": "Södermalm Apartments",
+      "city": "Stockholm",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Södermalm",
+      "kind": "STAY",
+      "price": 1850,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Top floor, over the rooftops.",
+      "description": "A two-bedroom flat on the top floor of a 1920s block on Hornsgatan, with a small balcony over the courtyard. Ten minutes' walk to Slussen and the ferries.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "kitchen",
+        "balcony"
+      ]
+    },
+    {
+      "title": "Studio in Vasastan",
+      "property": "Södermalm Apartments",
+      "city": "Stockholm",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Vasastan",
+      "kind": "STAY",
+      "price": 1150,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Quiet street, fast fibre.",
+      "description": "A studio on a quiet Vasastan street with a proper desk, a good chair and fibre throughout. Two minutes to the metro, five to Vasaparken.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "kitchen"
+      ]
+    },
+    {
+      "title": "Archipelago house, sleeps six",
+      "property": "Södermalm Apartments",
+      "city": "Stockholm",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Värmdö",
+      "kind": "STAY",
+      "price": 3200,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "summary": "Own jetty, an hour from town.",
+      "description": "A red timber house on Värmdö with its own jetty, a sauna and a rowing boat. An hour from Stockholm by car, and the water is swimmable from June.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "parking",
+        "garden",
+        "sea view"
+      ]
+    },
+    {
+      "title": "One-bed in Kungsholmen",
+      "property": "Södermalm Apartments",
+      "city": "Stockholm",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Kungsholmen",
+      "kind": "RENT",
+      "price": 16500,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Long lets by the water.",
+      "description": "A one-bedroom flat on Kungsholmen let by the month, a street back from the Mälaren shore path. Laundry in the building, bike storage in the courtyard.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "kitchen"
+      ]
+    },
+    {
+      "title": "Haga flat with a bay window",
+      "property": "Haga Court",
+      "city": "Gothenburg",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Haga",
+      "kind": "STAY",
+      "price": 1320,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 3,
+      "summary": "Cobbles below, cinnamon buns on the corner.",
+      "description": "A one-bedroom flat in a wooden Haga landshövdingehus, with a bay window over the cobbles. The café on the corner is the reason people come to Haga.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Two-bed near Avenyn",
+      "property": "Haga Court",
+      "city": "Gothenburg",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Vasastaden",
+      "kind": "STAY",
+      "price": 1680,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Walk to everything.",
+      "description": "A two-bedroom flat off Avenyn, five minutes from Götaplatsen and the concert hall. High ceilings, a long kitchen table, and a tram stop outside.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "workspace",
+        "balcony"
+      ]
+    },
+    {
+      "title": "House with a garden in Majorna",
+      "property": "Haga Court",
+      "city": "Gothenburg",
+      "country": "SE",
+      "currency": "SEK",
+      "location": "Majorna",
+      "kind": "SALE",
+      "price": 6200000,
+      "bedrooms": 4,
+      "bathrooms": 2,
+      "maxGuests": 8,
+      "summary": "Wooden house, apple trees, near the river.",
+      "description": "A four-bedroom wooden house in Majorna with apple trees and a greenhouse, ten minutes from the river and the Klippan ferry. Roof replaced in 2021.",
+      "amenities": [
+        "garden",
+        "parking",
+        "kitchen"
+      ]
+    },
+    {
+      "title": "Le Marais one-bed",
+      "property": "Le Marais Residences",
+      "city": "Paris",
+      "country": "FR",
+      "currency": "EUR",
+      "location": "Le Marais",
+      "kind": "STAY",
+      "price": 185,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Third floor, no lift, worth it.",
+      "description": "A one-bedroom on the third floor of a seventeenth-century building on rue des Archives, with beams, a small kitchen and windows onto the street. No lift.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Studio near Canal Saint-Martin",
+      "property": "Le Marais Residences",
+      "city": "Paris",
+      "country": "FR",
+      "currency": "EUR",
+      "location": "10e",
+      "kind": "STAY",
+      "price": 135,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Two streets from the canal.",
+      "description": "A quiet studio two streets from the Canal Saint-Martin, with a desk, a good mattress and a boulangerie underneath. République is a seven-minute walk.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "kitchen"
+      ]
+    },
+    {
+      "title": "Family apartment in the 15e",
+      "property": "Le Marais Residences",
+      "city": "Paris",
+      "country": "FR",
+      "currency": "EUR",
+      "location": "15e",
+      "kind": "STAY",
+      "price": 290,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "summary": "Sleeps six, lift, quiet courtyard.",
+      "description": "A three-bedroom apartment on a courtyard in the 15th, with a lift, a proper family kitchen and a park at the end of the road. Montparnasse in fifteen minutes.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "workspace",
+        "parking"
+      ]
+    },
+    {
+      "title": "Pied-à-terre near Bastille",
+      "property": "Le Marais Residences",
+      "city": "Paris",
+      "country": "FR",
+      "currency": "EUR",
+      "location": "11e",
+      "kind": "SALE",
+      "price": 690000,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Two bedrooms, fifth floor, lift.",
+      "description": "A two-bedroom apartment on the fifth floor near Bastille, with a lift, parquet throughout and a cellar. Building renovated in 2019.",
+      "amenities": [
+        "kitchen",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Villa with a pool in Seminyak",
+      "property": "Seminyak Villas",
+      "city": "Bali",
+      "country": "ID",
+      "currency": "IDR",
+      "location": "Seminyak",
+      "kind": "STAY",
+      "price": 2400000,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Private pool, walled garden, ten minutes to the beach.",
+      "description": "A two-bedroom villa behind a wall off Jalan Kayu Aya, with a private pool, an open-sided living room and frangipani over the water. Staff come daily.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "garden",
+        "air conditioning",
+        "housekeeping"
+      ]
+    },
+    {
+      "title": "Rice-field house in Ubud",
+      "property": "Seminyak Villas",
+      "city": "Bali",
+      "country": "ID",
+      "currency": "IDR",
+      "location": "Ubud",
+      "kind": "STAY",
+      "price": 1350000,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "The terraces start at the veranda.",
+      "description": "A one-bedroom house on the edge of the rice terraces north of Ubud, with an open bathroom, a day bed on the veranda and nothing but the fields in front.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "garden",
+        "air conditioning"
+      ]
+    },
+    {
+      "title": "Surf house in Canggu",
+      "property": "Seminyak Villas",
+      "city": "Bali",
+      "country": "ID",
+      "currency": "IDR",
+      "location": "Canggu",
+      "kind": "STAY",
+      "price": 1750000,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "maxGuests": 6,
+      "summary": "Boards in the garage, break down the lane.",
+      "description": "A three-bedroom house a lane back from Batu Bolong, with board storage, an outdoor shower and a shared pool. The break is a two-minute walk.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "beach access",
+        "workspace",
+        "air conditioning"
+      ]
+    },
+    {
+      "title": "Long-stay villa, Umalas",
+      "property": "Seminyak Villas",
+      "city": "Bali",
+      "country": "ID",
+      "currency": "IDR",
+      "location": "Umalas",
+      "kind": "RENT",
+      "price": 32000000,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Monthly lets, desk and fibre.",
+      "description": "A two-bedroom villa in Umalas let by the month, with a pool, a covered workspace and fibre that holds up for calls. Scooter parking behind the gate.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "workspace",
+        "garden",
+        "air conditioning"
+      ]
+    },
+    {
+      "title": "Stone Town house with a roof terrace",
+      "property": "Stone Town Houses",
+      "city": "Zanzibar",
+      "country": "TZ",
+      "currency": "TZS",
+      "location": "Stone Town",
+      "kind": "STAY",
+      "price": 210000,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Carved doors, and the rooftops at sunset.",
+      "description": "A two-bedroom house in Shangani with a carved door, a courtyard and a roof terrace looking over the old town to the water. The fish market is five minutes.",
+      "amenities": [
+        "wifi",
+        "air conditioning",
+        "kitchen",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Beach bungalow, Paje",
+      "property": "Stone Town Houses",
+      "city": "Zanzibar",
+      "country": "TZ",
+      "currency": "TZS",
+      "location": "Paje",
+      "kind": "STAY",
+      "price": 165000,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Straight onto the sand.",
+      "description": "A thatched bungalow on the beach at Paje, with a veranda facing east for the sunrise and a kite school two doors down. Breakfast included.",
+      "amenities": [
+        "wifi",
+        "beach access",
+        "air conditioning",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Nungwi villa with a pool",
+      "property": "Stone Town Houses",
+      "city": "Zanzibar",
+      "country": "TZ",
+      "currency": "TZS",
+      "location": "Nungwi",
+      "kind": "STAY",
+      "price": 380000,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "maxGuests": 6,
+      "summary": "Pool, cook, and the north beach.",
+      "description": "A three-bedroom villa above Nungwi beach with a pool, a cook who comes in the morning and a path down to the sand. The dhow trips leave from below.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "beach access",
+        "housekeeping",
+        "air conditioning",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Shoreditch loft",
+      "property": "Shoreditch Lofts",
+      "city": "London",
+      "country": "GB",
+      "currency": "GBP",
+      "location": "Shoreditch",
+      "kind": "STAY",
+      "price": 165,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Warehouse conversion off Rivington Street.",
+      "description": "A one-bedroom loft in a converted warehouse off Rivington Street, with tall windows, a desk and a lift. Old Street is a six-minute walk.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "kitchen"
+      ]
+    },
+    {
+      "title": "Two-bed in Bermondsey",
+      "property": "Shoreditch Lofts",
+      "city": "London",
+      "country": "GB",
+      "currency": "GBP",
+      "location": "Bermondsey",
+      "kind": "STAY",
+      "price": 215,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Between the river and the Blue.",
+      "description": "A two-bedroom flat in Bermondsey with a small terrace, ten minutes from Tower Bridge on foot and five from the Jubilee line. Bermondsey Street on the doorstep.",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "workspace",
+        "balcony"
+      ]
+    },
+    {
+      "title": "Garden flat in Peckham",
+      "property": "Shoreditch Lofts",
+      "city": "London",
+      "country": "GB",
+      "currency": "GBP",
+      "location": "Peckham",
+      "kind": "RENT",
+      "price": 2350,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Own garden, monthly let.",
+      "description": "A two-bedroom garden flat in Peckham let by the month, with its own patch behind and a shed. Rye Lane is five minutes; the overground is seven.",
+      "amenities": [
+        "wifi",
+        "garden",
+        "kitchen",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Riad with a courtyard pool",
+      "property": "Medina Riads",
+      "city": "Marrakesh",
+      "country": "MA",
+      "currency": "MAD",
+      "location": "Medina",
+      "kind": "STAY",
+      "price": 1450,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "maxGuests": 6,
+      "summary": "Inside the walls, cool all day.",
+      "description": "A restored riad off Derb Sidi Bouloukat with a plunge pool in the courtyard, zellige to head height and a roof terrace for breakfast. Jemaa el-Fna is a six-minute walk.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "air conditioning",
+        "housekeeping"
+      ]
+    },
+    {
+      "title": "Room in a riad, Medina",
+      "property": "Medina Riads",
+      "city": "Marrakesh",
+      "country": "MA",
+      "currency": "MAD",
+      "location": "Medina",
+      "kind": "STAY",
+      "price": 620,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "One room, breakfast on the roof.",
+      "description": "A double room with an en-suite in a small family-run riad, breakfast served on the roof terrace. The hosts arrange the airport transfer and the hammam.",
+      "amenities": [
+        "wifi",
+        "air conditioning",
+        "housekeeping"
+      ]
+    },
+    {
+      "title": "Villa in the Palmeraie",
+      "property": "Medina Riads",
+      "city": "Marrakesh",
+      "country": "MA",
+      "currency": "MAD",
+      "location": "Palmeraie",
+      "kind": "STAY",
+      "price": 2600,
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "maxGuests": 8,
+      "summary": "Palms, a long pool, and the Atlas behind.",
+      "description": "A four-bedroom villa in the Palmeraie with a twenty-metre pool, a walled garden of olives and palms, and the Atlas on the horizon. Staff and a cook included.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "garden",
+        "air conditioning",
+        "housekeeping",
+        "parking"
+      ]
+    },
+    {
+      "title": "Loft in Westlands, short stays",
+      "property": "Kilimani Heights",
+      "city": "Nairobi",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Westlands",
+      "kind": "STAY",
+      "price": 9400,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 3,
+      "summary": "Mezzanine bedroom, walk to the restaurants.",
+      "description": "A double-height loft off Woodvale Grove with the bed on the mezzanine and a desk below. Backup power, secure parking, and Westlands on the doorstep.",
+      "amenities": [
+        "wifi",
+        "workspace",
+        "parking",
+        "backup power",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Old Town apartment, Mombasa",
+      "property": "Nyali Court",
+      "city": "Mombasa",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Old Town",
+      "kind": "STAY",
+      "price": 7100,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "maxGuests": 4,
+      "summary": "Carved balcony over the lane.",
+      "description": "A two-bedroom apartment in a restored Old Town building, with a carved wooden balcony over the lane and the fort five minutes away. Ceiling fans and air conditioning in both rooms.",
+      "amenities": [
+        "wifi",
+        "air conditioning",
+        "kitchen",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Studio by the lake gate, Naivasha",
+      "property": "Naivasha Lakeside",
+      "city": "Naivasha",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Moi South Lake",
+      "kind": "STAY",
+      "price": 6400,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Small, quiet, and close to the water.",
+      "description": "A one-room studio by the gate of a lakeside plot, with a kitchenette, a shaded stoop and the water a two-minute walk through the acacias.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "24h security"
+      ]
+    },
+    {
+      "title": "Two-bed near the airstrip, Nanyuki",
+      "property": "Mount Kenya Ridge",
+      "city": "Nanyuki",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Nanyuki",
+      "kind": "STAY",
+      "price": 10600,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "maxGuests": 4,
+      "summary": "Ten minutes from the strip, good for an early flight.",
+      "description": "A two-bedroom cottage ten minutes from Nanyuki airstrip, with a wood stove, hot water from solar and a caretaker who will do breakfast if asked the night before.",
+      "amenities": [
+        "wifi",
+        "parking",
+        "kitchen",
+        "solar",
+        "workspace"
+      ]
+    },
+    {
+      "title": "Beachfront villa, Diani",
+      "property": "Diani Sands",
+      "city": "Kwale",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Diani Beach",
+      "kind": "STAY",
+      "price": 24500,
+      "bedrooms": 4,
+      "bathrooms": 4,
+      "maxGuests": 8,
+      "summary": "On the sand, with a cook and a pool.",
+      "description": "A four-bedroom villa directly on Diani beach, with a pool, a cook and a housekeeper included, and the reef a short swim out. Askari on the gate day and night.",
+      "amenities": [
+        "wifi",
+        "pool",
+        "beach access",
+        "housekeeping",
+        "air conditioning",
+        "24h security",
+        "sea view"
+      ]
+    },
+    {
+      "title": "Garden cottage, Diani",
+      "property": "Diani Sands",
+      "city": "Kwale",
+      "country": "KE",
+      "currency": "KES",
+      "location": "Diani Beach",
+      "kind": "STAY",
+      "price": 7600,
+      "bedrooms": 1,
+      "bathrooms": 1,
+      "maxGuests": 2,
+      "summary": "Set back in the trees, five minutes to the sand.",
+      "description": "A one-bedroom cottage in a garden of frangipani and coconut palms, five minutes' walk from the beach road crossing. Mosquito nets, a fan, and a hammock.",
+      "amenities": [
+        "wifi",
+        "garden",
+        "kitchen",
+        "beach access"
       ]
     }
   ]

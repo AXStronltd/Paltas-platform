@@ -399,5 +399,17 @@
   "discover.work.title": "کام کرنے کی جگہ",
   "discover.work.subtitle": "اصل میز، باورچی خانے کی میز نہیں",
   "discover.popular.title": "بہترین جائزے والے",
-  "discover.popular.subtitle": "ان مہمانوں کی درجہ بندی جو واقعی ٹھہرے"
+  "discover.popular.subtitle": "ان مہمانوں کی درجہ بندی جو واقعی ٹھہرے",
+  "row.popularHomes.title": "{place} میں مقبول گھر",
+  "row.popularHomes.subtitle": "وہاں ٹھہرنے والے مہمانوں کی درجہ بندی",
+  "row.thisWeekend.title": "{place} میں اس ویک اینڈ دستیاب",
+  "row.thisWeekend.subtitle": "جمعہ سے اتوار تک خالی",
+  "row.nextMonth.title": "{place} میں اگلے مہینے دستیاب",
+  "row.nextMonth.subtitle": "پورا مہینہ خالی",
+  "row.stayIn.title": "{place} میں قیام کریں",
+  "row.stayIn.subtitle": "رات کے حساب سے یا مہینے کے",
+  "row.placesToStay.title": "{place} میں قیام کی جگہیں",
+  "row.placesToStay.subtitle": "{place} میں کہاں سوئیں",
+  "row.exploreCity.title": "{place} دریافت کریں",
+  "row.exploreCity.subtitle": "{place} میں ہماری تمام فہرستیں"
 }

@@ -399,5 +399,17 @@
   "discover.work.title": "مساحة للعمل",
   "discover.work.subtitle": "مكتب حقيقي، لا طاولة مطبخ",
   "discover.popular.title": "الأعلى تقييمًا",
-  "discover.popular.subtitle": "بتقييم ضيوف أقاموا فعلًا"
+  "discover.popular.subtitle": "بتقييم ضيوف أقاموا فعلًا",
+  "row.popularHomes.title": "منازل مفضّلة في {place}",
+  "row.popularHomes.subtitle": "بتقييم ضيوف أقاموا فيها",
+  "row.thisWeekend.title": "متاح نهاية هذا الأسبوع في {place}",
+  "row.thisWeekend.subtitle": "شاغر من الجمعة إلى الأحد",
+  "row.nextMonth.title": "متاح الشهر القادم في {place}",
+  "row.nextMonth.subtitle": "شاغر طوال الشهر",
+  "row.stayIn.title": "أقم في {place}",
+  "row.stayIn.subtitle": "بالليلة أو بالشهر",
+  "row.placesToStay.title": "أماكن للإقامة في {place}",
+  "row.placesToStay.subtitle": "مكان تبيت فيه في {place}",
+  "row.exploreCity.title": "اكتشف {place}",
+  "row.exploreCity.subtitle": "كل ما نعرضه في {place}"
 }

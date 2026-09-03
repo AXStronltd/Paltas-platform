@@ -398,5 +398,17 @@
   "discover.work.title": "可办公",
   "discover.work.subtitle": "一张真正的书桌，而非餐桌",
   "discover.popular.title": "评价最好",
-  "discover.popular.subtitle": "由真正入住过的房客评分"
+  "discover.popular.subtitle": "由真正入住过的房客评分",
+  "row.popularHomes.title": "{place}的热门房源",
+  "row.popularHomes.subtitle": "由真正入住过的房客评分",
+  "row.thisWeekend.title": "{place}本周末可订",
+  "row.thisWeekend.subtitle": "周五至周日空房",
+  "row.nextMonth.title": "{place}下月可订",
+  "row.nextMonth.subtitle": "整月空房",
+  "row.stayIn.title": "入住{place}",
+  "row.stayIn.subtitle": "按晚或按月",
+  "row.placesToStay.title": "{place}的住宿",
+  "row.placesToStay.subtitle": "在{place}住哪里",
+  "row.exploreCity.title": "探索{place}",
+  "row.exploreCity.subtitle": "我们在{place}的全部房源"
 }

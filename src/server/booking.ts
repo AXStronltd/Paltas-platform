@@ -24,7 +24,7 @@ import { checkAvailability, isValidRange, nightsBetween, quote, type AddonSelect
  */
 
 /** Which bookings still hold inventory. Cancelled ones release it. */
-const HOLDS_INVENTORY: BookingStatus[] = ["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"];
+export const HOLDS_INVENTORY: BookingStatus[] = ["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"];
 
 /** What the guest chose, by id and quantity. Never a price. */
 export interface AddonRequest {

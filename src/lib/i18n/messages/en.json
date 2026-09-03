@@ -395,5 +395,17 @@
   "discover.work.title": "Space to work",
   "discover.work.subtitle": "A proper desk, not a kitchen table",
   "discover.popular.title": "Best reviewed",
-  "discover.popular.subtitle": "Rated by guests who actually stayed"
+  "discover.popular.subtitle": "Rated by guests who actually stayed",
+  "row.popularHomes.title": "Popular homes in {place}",
+  "row.popularHomes.subtitle": "Rated by guests who stayed",
+  "row.thisWeekend.title": "Available this weekend in {place}",
+  "row.thisWeekend.subtitle": "Free Friday to Sunday",
+  "row.nextMonth.title": "Available next month in {place}",
+  "row.nextMonth.subtitle": "Free for the whole month",
+  "row.stayIn.title": "Stay in {place}",
+  "row.stayIn.subtitle": "By the night or the month",
+  "row.placesToStay.title": "Places to stay in {place}",
+  "row.placesToStay.subtitle": "Somewhere to sleep in {place}",
+  "row.exploreCity.title": "Explore {place}",
+  "row.exploreCity.subtitle": "Everything we list in {place}"
 }

@@ -15,6 +15,9 @@ import { dirname, join } from "node:path";
 import { randomBytes, randomInt, scrypt as _scrypt } from "node:crypto";
 import { promisify } from "node:util";
 import { PrismaClient } from "@prisma/client";
+// Shared with prisma/sync-listings.mjs, so a fresh database and an existing
+// one end up with the same sample inventory, placed the same way.
+import { addMissingSampleListings } from "./sample-inventory.mjs";
 
 const scrypt = promisify(_scrypt);
 const prisma = new PrismaClient();
@@ -23,7 +26,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const SYSTEM_ROLES = JSON.parse(readFileSync(join(here, "../src/lib/security/system-roles.json"), "utf8"));
 // Shared with prisma/sync-listings.mjs, so a fresh database and an existing one
 // end up with the same sample inventory.
-const SAMPLE_LISTINGS = JSON.parse(readFileSync(join(here, "sample-listings.json"), "utf8")).listings;
+
 
 /** Must match src/server/password.ts exactly, or nothing seeded here can log in. */
 async function hashPassword(password) {
@@ -787,7 +790,7 @@ async function main() {
       maxGuests: 2, bedrooms: 1, bathrooms: 1,
       amenities: ["wifi", "parking", "backup power", "borehole water", "24h security"],
       images: ["/paltas-logo.png"],
-      city: "Nairobi", location: "Dennis Pritt Road",
+      city: "Nairobi", country: "KE", location: "Dennis Pritt Road",
       hostName: "Amina Yusuf", hostKind: "Landlord",
       publishedAt: days(-9), publishedById: owner.id, createdById: manager.id,
     },
@@ -808,7 +811,7 @@ async function main() {
       maxGuests: 2, bedrooms: 1, bathrooms: 1,
       amenities: ["wifi", "pool", "breakfast", "parking", "air conditioning"],
       images: ["/paltas-logo.png"],
-      city: "Mombasa", location: "Nyali Road",
+      city: "Mombasa", country: "KE", location: "Nyali Road",
       hostName: "Hassan Omar", hostKind: "Hotel",
       publishedAt: days(-20), publishedById: owner.id, createdById: manager.id,
     },
@@ -846,26 +849,9 @@ async function main() {
   // discovery rows below the fold have nothing of their own to show. These are
   // spread across cities and price points so filtering by city, kind or budget
   // actually narrows something.
-  const moreListings = SAMPLE_LISTINGS;
-
-  for (const l of moreListings) {
-    await prisma.propertyListing.create({
-      data: {
-        orgId: org.id,
-        propertyId: l.city === "Mombasa" || l.city === "Kwale" ? nyali.id : kilimani.id,
-        title: l.title, summary: l.summary, description: l.description,
-        kind: l.kind, status: "PUBLISHED",
-        price: l.price, currency: "KES",
-        maxGuests: l.maxGuests, bedrooms: l.bedrooms, bathrooms: l.bathrooms,
-        amenities: l.amenities, images: ["/paltas-logo.png"],
-        city: l.city, location: l.location,
-        hostName: l.city === "Mombasa" || l.city === "Kwale" ? "Hassan Omar" : "Amina Yusuf",
-        hostKind: l.kind === "SALE" ? "Agent" : "Landlord",
-        publishedAt: days(-Math.floor(Math.random() * 40) - 1),
-        publishedById: owner.id, createdById: manager.id,
-      },
-    });
-  }
+  await addMissingSampleListings(prisma, {
+    orgId: org.id, ownerId: owner.id, createdById: manager.id,
+  });
 
   // A property for sale, so /buy has genuine stock rather than an empty page.
   await prisma.propertyListing.create({
@@ -881,7 +867,7 @@ async function main() {
       maxGuests: 8, bedrooms: 4, bathrooms: 3,
       amenities: ["garden", "borehole", "parking", "staff quarters", "24h security"],
       images: ["/paltas-logo.png"],
-      city: "Nairobi", location: "Lavington",
+      city: "Nairobi", country: "KE", location: "Lavington",
       hostName: "Amina Yusuf", hostKind: "Agent",
       publishedAt: days(-14), publishedById: owner.id, createdById: manager.id,
     },
@@ -1036,7 +1022,7 @@ async function main() {
       kind: "STAY", status: "DRAFT", price: 14500, currency: "KES",
       maxGuests: 4, bedrooms: 2, bathrooms: 2,
       amenities: ["wifi", "pool", "beach access"], images: [],
-      city: "Kwale", location: "Diani Beach Road",
+      city: "Kwale", country: "KE", location: "Diani Beach Road",
       hostName: "Salim Bakari", hostKind: "Landlord", createdById: owner2.id,
     },
   });

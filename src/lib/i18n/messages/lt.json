@@ -402,5 +402,17 @@
   "discover.work.title": "Vieta darbui",
   "discover.work.subtitle": "Tikras rašomasis stalas, o ne virtuvinis",
   "discover.popular.title": "Geriausiai vertinami",
-  "discover.popular.subtitle": "Įvertinti svečių, kurie iš tikrųjų apsistojo"
+  "discover.popular.subtitle": "Įvertinti svečių, kurie iš tikrųjų apsistojo",
+  "row.popularHomes.title": "Populiarūs būstai: {place}",
+  "row.popularHomes.subtitle": "Įvertinti svečių, kurie ten apsistojo",
+  "row.thisWeekend.title": "Laisva šį savaitgalį: {place}",
+  "row.thisWeekend.subtitle": "Laisva nuo penktadienio iki sekmadienio",
+  "row.nextMonth.title": "Laisva kitą mėnesį: {place}",
+  "row.nextMonth.subtitle": "Laisva visą mėnesį",
+  "row.stayIn.title": "Apsistokite: {place}",
+  "row.stayIn.subtitle": "Nakvynėmis arba mėnesiais",
+  "row.placesToStay.title": "Kur apsistoti: {place}",
+  "row.placesToStay.subtitle": "Kur nakvoti: {place}",
+  "row.exploreCity.title": "Atraskite: {place}",
+  "row.exploreCity.subtitle": "Viskas, ką siūlome: {place}"
 }

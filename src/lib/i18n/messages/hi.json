@@ -401,5 +401,17 @@
   "discover.work.title": "काम करने की जगह",
   "discover.work.subtitle": "असली डेस्क, रसोई की मेज़ नहीं",
   "discover.popular.title": "सबसे बेहतर समीक्षित",
-  "discover.popular.subtitle": "उन मेहमानों की रेटिंग जो सचमुच ठहरे"
+  "discover.popular.subtitle": "उन मेहमानों की रेटिंग जो सचमुच ठहरे",
+  "row.popularHomes.title": "{place} में लोकप्रिय घर",
+  "row.popularHomes.subtitle": "वहाँ ठहरे मेहमानों की रेटिंग",
+  "row.thisWeekend.title": "{place} में इस सप्ताहांत उपलब्ध",
+  "row.thisWeekend.subtitle": "शुक्रवार से रविवार तक खाली",
+  "row.nextMonth.title": "{place} में अगले महीने उपलब्ध",
+  "row.nextMonth.subtitle": "पूरे महीने खाली",
+  "row.stayIn.title": "{place} में ठहरें",
+  "row.stayIn.subtitle": "रात के हिसाब से या महीने के",
+  "row.placesToStay.title": "{place} में ठहरने की जगहें",
+  "row.placesToStay.subtitle": "{place} में कहाँ सोएँ",
+  "row.exploreCity.title": "{place} को देखें",
+  "row.exploreCity.subtitle": "{place} में हमारी सभी लिस्टिंग"
 }

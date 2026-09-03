@@ -10,6 +10,7 @@
       "preview.via",
       "price.taxes",
       "price.total",
+      "row.exploreCity.title",
       "tab.menu",
       "toast.success",
       "toast.successNamed",
@@ -408,5 +409,17 @@
   "discover.work.title": "Espaço para trabalhar",
   "discover.work.subtitle": "Uma mesa de trabalho de verdade, não a da cozinha",
   "discover.popular.title": "Mais bem avaliados",
-  "discover.popular.subtitle": "Avaliados por hóspedes que realmente ficaram"
+  "discover.popular.subtitle": "Avaliados por hóspedes que realmente ficaram",
+  "row.popularHomes.title": "Acomodações populares em {place}",
+  "row.popularHomes.subtitle": "Avaliadas por hóspedes que ficaram",
+  "row.thisWeekend.title": "Disponível neste fim de semana em {place}",
+  "row.thisWeekend.subtitle": "Livre de sexta a domingo",
+  "row.nextMonth.title": "Disponível no mês que vem em {place}",
+  "row.nextMonth.subtitle": "Livre o mês inteiro",
+  "row.stayIn.title": "Fique em {place}",
+  "row.stayIn.subtitle": "Por noite ou por mês",
+  "row.placesToStay.title": "Lugares para ficar em {place}",
+  "row.placesToStay.subtitle": "Onde dormir em {place}",
+  "row.exploreCity.title": "Explore {place}",
+  "row.exploreCity.subtitle": "Tudo o que anunciamos em {place}"
 }

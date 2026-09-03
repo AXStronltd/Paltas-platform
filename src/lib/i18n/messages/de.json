@@ -408,5 +408,17 @@
   "discover.work.title": "Platz zum Arbeiten",
   "discover.work.subtitle": "Ein richtiger Schreibtisch, kein Küchentisch",
   "discover.popular.title": "Am besten bewertet",
-  "discover.popular.subtitle": "Bewertet von Gästen, die wirklich dort waren"
+  "discover.popular.subtitle": "Bewertet von Gästen, die wirklich dort waren",
+  "row.popularHomes.title": "Beliebte Unterkünfte in {place}",
+  "row.popularHomes.subtitle": "Bewertet von Gästen, die dort waren",
+  "row.thisWeekend.title": "Dieses Wochenende frei in {place}",
+  "row.thisWeekend.subtitle": "Freitag bis Sonntag verfügbar",
+  "row.nextMonth.title": "Nächsten Monat frei in {place}",
+  "row.nextMonth.subtitle": "Den ganzen Monat verfügbar",
+  "row.stayIn.title": "Übernachten in {place}",
+  "row.stayIn.subtitle": "Pro Nacht oder pro Monat",
+  "row.placesToStay.title": "Unterkünfte in {place}",
+  "row.placesToStay.subtitle": "Wo Sie in {place} schlafen können",
+  "row.exploreCity.title": "{place} entdecken",
+  "row.exploreCity.subtitle": "Alles, was wir in {place} anbieten"
 }

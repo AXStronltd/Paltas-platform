@@ -401,5 +401,17 @@
   "discover.work.title": "Meel lagu shaqeeyo",
   "discover.work.subtitle": "Miis shaqo dhab ah, ma aha miiska jikada",
   "discover.popular.title": "Kuwa ugu faallo wanaagsan",
-  "discover.popular.subtitle": "Waxaa qiimeeyay marti dhab ahaan degay"
+  "discover.popular.subtitle": "Waxaa qiimeeyay marti dhab ahaan degay",
+  "row.popularHomes.title": "Guryo caan ah oo {place} ku yaal",
+  "row.popularHomes.subtitle": "Waxaa qiimeeyay marti halkaas degay",
+  "row.thisWeekend.title": "Banaan toddobaadkan dhammaadkiis {place}",
+  "row.thisWeekend.subtitle": "Banaan Jimce ilaa Axad",
+  "row.nextMonth.title": "Banaan bisha soo socota {place}",
+  "row.nextMonth.subtitle": "Banaan bisha oo dhan",
+  "row.stayIn.title": "Deg {place}",
+  "row.stayIn.subtitle": "Habeenkii ama bishii",
+  "row.placesToStay.title": "Meelo lagu dego {place}",
+  "row.placesToStay.subtitle": "Halka aad ku seexan karto {place}",
+  "row.exploreCity.title": "Baadh {place}",
+  "row.exploreCity.subtitle": "Wax kasta oo aan ku leenahay {place}"
 }

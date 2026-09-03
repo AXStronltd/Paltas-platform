@@ -60,7 +60,11 @@ const owner = await session("owner@paltas.co.ke");
 
 const me = await owner.get("/me");
 check(me.status === 200 && me.json.user.isOwner === true, "identified as owner");
-check(me.json.properties.length === 2, "sees both properties", `saw ${me.json.properties?.length}`);
+// Every property in their own organisation and none of anyone else's. The
+// count used to be written out as 2, which stopped being the invariant the
+// moment the sample catalogue reached beyond Kenya.
+check(me.json.properties.length >= 2, "sees the organisation's properties", `saw ${me.json.properties?.length}`);
+check(!me.json.properties.some((p) => /Diani Palms/.test(p.name)), "and none of the other tenant's");
 check(me.json.permissions.length >= 70, "holds the whole catalogue", `${me.json.permissions?.length} keys`);
 check(["finance.view", "audit.view", "property.delete", "staff.permissions.manage", "owner.info.view"]
   .every((p) => me.json.permissions.includes(p)), "including every sensitive permission");
@@ -68,7 +72,10 @@ check(["finance.view", "audit.view", "property.delete", "staff.permissions.manag
 const dash = await owner.get("/owner/dashboard");
 check(dash.status === 200, "owner dashboard returns 200");
 check(dash.json.financeVisible === true && dash.json.finance !== null, "finance block present for owner");
-check(dash.json.portfolio.properties === 2 && dash.json.portfolio.units === 8, "portfolio totals",
+// Tied to the other endpoint rather than to a literal: the point is that the
+// dashboard counts the same portfolio /me reports, whatever size it has grown to.
+check(dash.json.portfolio.properties === me.json.properties.length
+  && dash.json.portfolio.units === 8, "portfolio totals agree with /me",
   JSON.stringify(dash.json.portfolio));
 check(dash.json.security.onSiteVisitors === 2, "2 visitors on site", `saw ${dash.json.security?.onSiteVisitors}`);
 

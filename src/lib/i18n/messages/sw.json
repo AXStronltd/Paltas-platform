@@ -402,5 +402,17 @@
   "discover.work.title": "Nafasi ya kufanya kazi",
   "discover.work.subtitle": "Dawati halisi, si meza ya jikoni",
   "discover.popular.title": "Zilizopewa alama bora",
-  "discover.popular.subtitle": "Zimekadiriwa na wageni waliokaa kweli"
+  "discover.popular.subtitle": "Zimekadiriwa na wageni waliokaa kweli",
+  "row.popularHomes.title": "Nyumba maarufu {place}",
+  "row.popularHomes.subtitle": "Zimekadiriwa na wageni waliokaa",
+  "row.thisWeekend.title": "Zinapatikana wikendi hii {place}",
+  "row.thisWeekend.subtitle": "Wazi Ijumaa hadi Jumapili",
+  "row.nextMonth.title": "Zinapatikana mwezi ujao {place}",
+  "row.nextMonth.subtitle": "Wazi mwezi mzima",
+  "row.stayIn.title": "Kaa {place}",
+  "row.stayIn.subtitle": "Kwa usiku au kwa mwezi",
+  "row.placesToStay.title": "Sehemu za kukaa {place}",
+  "row.placesToStay.subtitle": "Mahali pa kulala {place}",
+  "row.exploreCity.title": "Gundua {place}",
+  "row.exploreCity.subtitle": "Kila tunachoorodhesha {place}"
 }

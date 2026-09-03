@@ -405,5 +405,17 @@
   "discover.work.title": "Plats att arbeta",
   "discover.work.subtitle": "Ett riktigt skrivbord, inte köksbordet",
   "discover.popular.title": "Bäst omdömen",
-  "discover.popular.subtitle": "Betygsatta av gäster som faktiskt bott där"
+  "discover.popular.subtitle": "Betygsatta av gäster som faktiskt bott där",
+  "row.popularHomes.title": "Populära boenden i {place}",
+  "row.popularHomes.subtitle": "Betygsatta av gäster som bott där",
+  "row.thisWeekend.title": "Ledigt i helgen i {place}",
+  "row.thisWeekend.subtitle": "Fritt fredag till söndag",
+  "row.nextMonth.title": "Ledigt nästa månad i {place}",
+  "row.nextMonth.subtitle": "Fritt hela månaden",
+  "row.stayIn.title": "Bo i {place}",
+  "row.stayIn.subtitle": "Per natt eller per månad",
+  "row.placesToStay.title": "Boenden i {place}",
+  "row.placesToStay.subtitle": "Var du kan sova i {place}",
+  "row.exploreCity.title": "Utforska {place}",
+  "row.exploreCity.subtitle": "Allt vi har i {place}"
 }
