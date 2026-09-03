@@ -1,6 +1,6 @@
 import { Prisma, type BookingStatus } from "@prisma/client";
 import { prisma } from "@/server/db";
-import { checkAvailability, isValidRange, nightsBetween, quote, type Occupancy } from "@/lib/booking/availability";
+import { checkAvailability, isValidRange, nightsBetween, quote, type AddonSelection, type Occupancy } from "@/lib/booking/availability";
 
 /**
  * Booking, server side.
@@ -26,6 +26,14 @@ import { checkAvailability, isValidRange, nightsBetween, quote, type Occupancy }
 /** Which bookings still hold inventory. Cancelled ones release it. */
 const HOLDS_INVENTORY: BookingStatus[] = ["PENDING", "CONFIRMED", "CHECKED_IN", "COMPLETED"];
 
+/** What the guest chose, by id and quantity. Never a price. */
+export interface AddonRequest {
+  offeringId: string;
+  quantity?: number;
+  scheduledFor?: Date | null;
+  note?: string | null;
+}
+
 export interface BookingRequest {
   listingId: string;
   roomTypeId?: string | null;
@@ -35,6 +43,7 @@ export interface BookingRequest {
   rooms: number;
   guestNote?: string | null;
   idempotencyKey: string;
+  addons?: AddonRequest[];
 }
 
 export type BookingOutcome =
@@ -114,10 +123,13 @@ export async function priceAndCheck(input: {
   checkIn: Date;
   checkOut: Date;
   rooms: number;
+  guests?: number;
+  /** Chosen by id. Prices come from the offering, never from the caller. */
+  addons?: AddonRequest[];
 }) {
   const listing = await prisma.propertyListing.findFirst({
     where: { id: input.listingId, status: "PUBLISHED" },
-    select: { id: true, price: true, currency: true, maxGuests: true, propertyId: true, unitId: true, kind: true },
+    select: { id: true, price: true, currency: true, maxGuests: true, propertyId: true, unitId: true, kind: true, orgId: true },
   });
   if (!listing) return { ok: false as const, status: 404, error: "That listing is not available." };
 
@@ -151,14 +163,56 @@ export async function priceAndCheck(input: {
   });
 
   const nightlyRate = roomType?.rate ?? listing.price;
+  const currency = roomType?.currency ?? listing.currency;
+
+  // Add-ons are looked up, not trusted. A caller names an offering; the price,
+  // the pricing model and even the name come from the row.
+  let selections: AddonSelection[] = [];
+  let offerings: { id: string; name: string; kind: string; price: number; currency: string; pricing: string }[] = [];
+  if (input.addons?.length) {
+    const ids = [...new Set(input.addons.map((a) => a.offeringId))];
+    offerings = await prisma.serviceOffering.findMany({
+      where: {
+        id: { in: ids },
+        active: true,
+        // Offered by whoever owns this listing, at this property or across
+        // their organisation. Otherwise a guest could attach one host's cheap
+        // service to another host's booking.
+        orgId: listing.orgId,
+        OR: [{ propertyId: null }, { propertyId: listing.propertyId }, { listingId: listing.id }],
+      },
+      select: { id: true, name: true, kind: true, price: true, currency: true, pricing: true },
+    });
+    if (offerings.length !== ids.length) {
+      return { ok: false as const, status: 400, error: "One of those services is not available here." };
+    }
+    // Mixing currencies within one payment would produce a total that means
+    // nothing. Refused rather than converted at a rate nobody agreed.
+    const wrong = offerings.find((o) => o.currency !== currency);
+    if (wrong) {
+      return { ok: false as const, status: 400, error: `"${wrong.name}" is priced in ${wrong.currency}, not ${currency}.` };
+    }
+
+    selections = input.addons.map((a) => {
+      const o = offerings.find((x) => x.id === a.offeringId)!;
+      return {
+        offeringId: o.id, name: o.name, unitPrice: o.price,
+        pricing: o.pricing as AddonSelection["pricing"],
+        quantity: Math.max(1, Math.min(20, a.quantity ?? 1)),
+      };
+    });
+  }
+
   const q = quote({
     nightlyRate,
     nights: nightsBetween(input.checkIn, input.checkOut),
     rooms: input.rooms,
-    currency: roomType?.currency ?? listing.currency,
+    guests: input.guests ?? 1,
+    currency,
+    addons: selections,
   });
 
-  return { ok: true as const, listing, roomType, availability: answer, quote: q, totalRooms };
+  return { ok: true as const, listing, roomType, availability: answer, quote: q, totalRooms, offerings };
 }
 
 /**
@@ -171,6 +225,8 @@ export async function createBooking(guestId: string, req: BookingRequest): Promi
     checkIn: req.checkIn,
     checkOut: req.checkOut,
     rooms: req.rooms,
+    guests: req.guests,
+    addons: req.addons,
   });
   if (!priced.ok) return priced;
 
@@ -224,9 +280,29 @@ export async function createBooking(guestId: string, req: BookingRequest): Promi
             discountAmount: priced.quote.discountAmount,
             total: priced.quote.total,
             currency: priced.quote.currency,
+            addonsTotal: priced.quote.addonsTotal,
             status: "PENDING",
             idempotencyKey: req.idempotencyKey,
             guestNote: req.guestNote ?? null,
+            addons: {
+              create: priced.quote.addons.map((a) => {
+                const chosen = req.addons?.find((r) => r.offeringId === a.offeringId);
+                const offering = priced.offerings.find((o) => o.id === a.offeringId)!;
+                return {
+                  offeringId: a.offeringId,
+                  // Copied, not referenced: a host raising their price next
+                  // month must not change what this guest agreed to pay.
+                  name: a.name,
+                  kind: offering.kind as never,
+                  unitPrice: a.unitPrice,
+                  quantity: a.quantity ?? 1,
+                  amount: a.amount,
+                  currency: priced.quote.currency,
+                  scheduledFor: chosen?.scheduledFor ?? null,
+                  note: chosen?.note?.slice(0, 500) ?? null,
+                };
+              }),
+            },
           },
           select: { id: true },
         });

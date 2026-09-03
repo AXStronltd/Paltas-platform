@@ -154,6 +154,12 @@ export const PERMISSIONS = {
   LISTING_REVIEW: "listing.review",
 
   // -- Bookings and inventory -----------------------------------------------
+  // -- Trip services: transfers, cleaning, drivers ---------------------------
+  SERVICE_VIEW: "service.view",
+  SERVICE_MANAGE: "service.manage",
+  /** Arranging and confirming what a guest booked alongside their stay. */
+  SERVICE_FULFIL: "service.fulfil",
+
   // -- Sales pipeline: leads, viewings, developments -------------------------
   LEAD_VIEW: "lead.view",
   LEAD_CREATE: "lead.create",
@@ -425,6 +431,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: P.LISTING_PUBLISH, label: "Publish listings", hint: "Make a listing visible to the public.", sensitive: true },
       { key: P.LISTING_UNPUBLISH, label: "Unpublish listings", hint: "Take a listing down." },
       { key: P.LISTING_REVIEW, label: "Review listings", hint: "Approve or reject what appears on the marketplace.", sensitive: true },
+    ],
+  },
+  {
+    key: "services",
+    label: "Trip services",
+    permissions: [
+      { key: P.SERVICE_VIEW, label: "View services", hint: "Transfers, cleaning and other extras offered with a stay." },
+      { key: P.SERVICE_MANAGE, label: "Manage services", hint: "Add services and set their prices.", sensitive: true },
+      { key: P.SERVICE_FULFIL, label: "Arrange services", hint: "Confirm and complete what a guest booked." },
     ],
   },
   {

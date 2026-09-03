@@ -20,6 +20,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
     const checkOut = new Date(String(url.searchParams.get("checkOut")));
     const rooms = Math.max(1, Math.min(20, Number(url.searchParams.get("rooms")) || 1));
     const roomTypeId = url.searchParams.get("roomTypeId");
+    const guests = Math.max(1, Math.min(50, Number(url.searchParams.get("guests")) || 1));
+
+    // Repeatable: ?addon=<id> or ?addon=<id>:<qty>. A list rather than a JSON
+    // body so the whole quote stays a GET and stays shareable.
+    const addons = url.searchParams.getAll("addon").map((raw) => {
+      const [offeringId, qty] = raw.split(":");
+      return { offeringId, quantity: Math.max(1, Math.min(20, Number(qty) || 1)) };
+    }).filter((a) => a.offeringId);
 
     const result = await priceAndCheck({
       listingId: params.id,
@@ -27,6 +35,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }):
       checkIn,
       checkOut,
       rooms,
+      guests,
+      addons,
     });
 
     if (!result.ok) {

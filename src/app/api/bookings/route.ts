@@ -73,6 +73,16 @@ export async function POST(req: Request): Promise<NextResponse> {
       checkIn, checkOut, guests, rooms,
       guestNote: typeof body.guestNote === "string" ? body.guestNote.slice(0, 800) : null,
       idempotencyKey,
+      // The guest names services by id and quantity. Never a price — the same
+      // rule the room rate follows.
+      addons: Array.isArray(body.addons)
+        ? (body.addons as Record<string, unknown>[]).slice(0, 20).map((a) => ({
+            offeringId: String(a.offeringId ?? ""),
+            quantity: Number(a.quantity) || 1,
+            scheduledFor: a.scheduledFor ? new Date(String(a.scheduledFor)) : null,
+            note: typeof a.note === "string" ? a.note : null,
+          })).filter((a) => a.offeringId)
+        : undefined,
     });
 
     if (!result.ok) {

@@ -27,6 +27,14 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
           },
         },
         roomType: { select: { name: true, beds: true } },
+        addonsTotal: true,
+        addons: {
+          orderBy: { createdAt: "asc" },
+          select: {
+            id: true, name: true, kind: true, unitPrice: true, quantity: true,
+            amount: true, currency: true, scheduledFor: true, note: true, status: true,
+          },
+        },
         events: { orderBy: { at: "asc" }, select: { status: true, note: true, at: true, actor: true } },
         review: { select: { id: true, stars: true, body: true, hostReply: true } },
       },

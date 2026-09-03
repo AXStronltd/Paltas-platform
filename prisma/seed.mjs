@@ -946,6 +946,30 @@ async function main() {
     ],
   });
 
+  // The rest of the trip. An airport transfer serves every property in the
+  // city, so it hangs off the organisation; a mid-stay clean belongs to one
+  // place, so it hangs off the property.
+  await prisma.serviceOffering.createMany({
+    data: [
+      { orgId: org.id, kind: "AIRPORT_TRANSFER", name: "Airport pickup",
+        description: "Met at arrivals with a name board. One car, up to three bags.",
+        price: 3500, currency: "KES", pricing: "FLAT", noticeHours: 6,
+        providerName: "Paltas Transfers", createdById: manager.id },
+      { orgId: org.id, kind: "DRIVER", name: "Driver and car, per day",
+        description: "English-speaking driver, 8 hours, fuel included.",
+        price: 7500, currency: "KES", pricing: "PER_NIGHT", noticeHours: 24,
+        providerName: "Paltas Transfers", createdById: manager.id },
+      { orgId: org.id, propertyId: nyali.id, kind: "CLEANING", name: "Mid-stay clean",
+        description: "Full clean and fresh linen, once during your stay.",
+        price: 2200, currency: "KES", pricing: "FLAT", noticeHours: 12, createdById: manager.id },
+      { orgId: org.id, propertyId: nyali.id, kind: "BREAKFAST", name: "Breakfast",
+        description: "Served 7 to 10, per person per morning.",
+        price: 900, currency: "KES", pricing: "PER_GUEST_NIGHT", createdById: manager.id },
+      { orgId: org.id, propertyId: kilimani.id, kind: "CLEANING", name: "Weekly clean",
+        price: 1800, currency: "KES", pricing: "FLAT", createdById: manager.id },
+    ],
+  });
+
   const demoGuest = await prisma.guest.create({
     data: {
       email: "guest@example.com", name: "Fatuma Njeri",

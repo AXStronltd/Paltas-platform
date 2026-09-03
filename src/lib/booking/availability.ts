@@ -125,8 +125,47 @@ export interface Quote {
   serviceFee: number;
   taxes: number;
   discountAmount: number;
+  /** Transfers, cleaning, a driver — the rest of the trip. */
+  addonsTotal: number;
+  addons: PricedAddon[];
   total: number;
   currency: string;
+}
+
+/** How an add-on's price is arrived at. Mirrors ServicePricing in the schema. */
+export type AddonPricing = "FLAT" | "PER_NIGHT" | "PER_GUEST" | "PER_GUEST_NIGHT";
+
+export interface AddonSelection {
+  offeringId: string;
+  name: string;
+  unitPrice: number;
+  pricing: AddonPricing;
+  /** How many of the thing — two transfers, three days of driver. */
+  quantity?: number;
+}
+
+export interface PricedAddon extends AddonSelection {
+  /** What the quantity was multiplied by, so the guest can see the working. */
+  units: number;
+  amount: number;
+}
+
+/**
+ * What one add-on costs for this particular stay.
+ *
+ * The four pricing models are the difference between a transfer and a driver:
+ * one is £40, the other is £40 a day for a fortnight. Getting this wrong
+ * undercharges the host or overcharges the guest, and both are unrecoverable
+ * once the money has moved.
+ */
+export function priceAddon(a: AddonSelection, nights: number, guests: number): PricedAddon {
+  const qty = Math.max(1, a.quantity ?? 1);
+  const units =
+    a.pricing === "PER_NIGHT" ? nights
+    : a.pricing === "PER_GUEST" ? guests
+    : a.pricing === "PER_GUEST_NIGHT" ? nights * guests
+    : 1;
+  return { ...a, quantity: qty, units, amount: a.unitPrice * units * qty };
 }
 
 /**
@@ -140,23 +179,36 @@ export function quote(input: {
   nightlyRate: number;
   nights: number;
   rooms?: number;
+  guests?: number;
   currency: string;
   cleaningFee?: number;
   serviceRate?: number;
   taxRate?: number;
   discountAmount?: number;
+  /** Transfers, cleaning, a driver — priced here so there is one total. */
+  addons?: AddonSelection[];
 }): Quote {
   const rooms = Math.max(1, input.rooms ?? 1);
+  const guests = Math.max(1, input.guests ?? 1);
   const subtotal = input.nightlyRate * input.nights * rooms;
   const cleaningFee = input.cleaningFee ?? 0;
+
+  const addons = (input.addons ?? []).map((a) => priceAddon(a, input.nights, guests));
+  const addonsTotal = addons.reduce((t, a) => t + a.amount, 0);
+
+  // The platform fee is charged on the stay only. Taking a cut of a guest's
+  // airport transfer is how a bundle stops being worth using.
   const serviceFee = Math.round(subtotal * (input.serviceRate ?? 0.08));
   const discountAmount = Math.min(subtotal, input.discountAmount ?? 0);
-  const taxable = subtotal + cleaningFee + serviceFee - discountAmount;
+
+  // Add-ons are taxed with everything else — they are part of one sale.
+  const taxable = subtotal + cleaningFee + serviceFee + addonsTotal - discountAmount;
   const taxes = Math.round(Math.max(0, taxable) * (input.taxRate ?? 0.05));
   const total = Math.max(0, taxable + taxes);
 
   return {
     nights: input.nights, nightlyRate: input.nightlyRate, subtotal,
-    cleaningFee, serviceFee, taxes, discountAmount, total, currency: input.currency,
+    cleaningFee, serviceFee, taxes, discountAmount,
+    addonsTotal, addons, total, currency: input.currency,
   };
 }

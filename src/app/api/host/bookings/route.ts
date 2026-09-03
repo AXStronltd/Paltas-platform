@@ -48,6 +48,13 @@ export async function GET(req: Request): Promise<NextResponse> {
         listing: { select: { id: true, title: true } },
         property: { select: { id: true, name: true } },
         roomType: { select: { id: true, name: true } },
+        addonsTotal: true,
+        // What else has to be arranged: a transfer to meet, a clean to book.
+        addons: {
+          orderBy: { createdAt: "asc" },
+          select: { id: true, name: true, kind: true, quantity: true, amount: true,
+                    currency: true, scheduledFor: true, note: true, status: true },
+        },
       },
     });
 

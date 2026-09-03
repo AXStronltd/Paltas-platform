@@ -18,7 +18,7 @@
     "test:e2e": "npm run db:seed --silent && node tests/permissions.e2e.mjs",
     "verify": "npm run typecheck && npm run test:auth && npm run audit:routes && npm run audit:layers && npm run audit:external",
     "test:platform": "npm run db:seed --silent && node tests/platform.e2e.mjs",
-    "test:all": "npm run test:auth && npm run test:e2e && npm run test:platform && npm run test:commerce && npm run test:finance && npm run test:publishing && npm run test:booking && npm run test:external && npm run test:pipeline && npm run test:enquiry",
+    "test:all": "npm run test:auth && npm run test:e2e && npm run test:platform && npm run test:commerce && npm run test:finance && npm run test:publishing && npm run test:booking && npm run test:external && npm run test:pipeline && npm run test:enquiry && npm run test:trip",
     "test:commerce": "npm run db:seed --silent && node tests/commerce.e2e.mjs",
     "test:finance": "npm run db:seed --silent && node tests/finance.e2e.mjs",
     "test:publishing": "npm run db:seed --silent && node tests/publishing.e2e.mjs",
@@ -27,7 +27,8 @@
     "audit:external": "node scripts/audit-external.mjs",
     "test:external": "npm run db:seed --silent && node tests/external.e2e.mjs",
     "test:pipeline": "npm run db:seed --silent && node tests/pipeline.e2e.mjs",
-    "test:enquiry": "npm run db:seed --silent && node tests/enquiry.e2e.mjs"
+    "test:enquiry": "npm run db:seed --silent && node tests/enquiry.e2e.mjs",
+    "test:trip": "npm run db:seed --silent && node tests/trip.e2e.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

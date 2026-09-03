@@ -59,7 +59,10 @@
       "project.view",
       "project.manage",
       "project.unit.manage",
-      "project.unit.sell"
+      "project.unit.sell",
+      "service.view",
+      "service.manage",
+      "service.fulfil"
     ]
   },
   {
@@ -114,7 +117,8 @@
       "unit.view",
       "resident.view",
       "booking.view",
-      "booking.checkin"
+      "booking.checkin",
+      "service.view"
     ]
   },
   {
@@ -129,7 +133,9 @@
       "unit.view",
       "building.view",
       "property.view",
-      "resident.view"
+      "resident.view",
+      "service.view",
+      "service.fulfil"
     ]
   },
   {
@@ -168,7 +174,8 @@
       "listing.view",
       "booking.view",
       "lead.view",
-      "project.view"
+      "project.view",
+      "service.view"
     ]
   },
   {

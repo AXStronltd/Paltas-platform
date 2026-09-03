@@ -78,6 +78,7 @@ model Organization {
   leads    Lead[]
   viewings Viewing[]
   projects Project[]
+  serviceOfferings ServiceOffering[]
 }
 
 /// Every human the system authenticates: the owner, staff, guards and the
@@ -255,6 +256,7 @@ model Property {
   leads    Lead[]
   viewings Viewing[]
   projects Project[]
+  serviceOfferings ServiceOffering[]
 }
 
 model Building {
@@ -1348,6 +1350,7 @@ model PropertyListing {
   @@index([propertyId])
   leads    Lead[]
   viewings Viewing[]
+  serviceOfferings ServiceOffering[]
 }
 
 // ============================================================
@@ -1502,6 +1505,9 @@ model Booking {
   @@index([guestId, createdAt])
   @@index([propertyId, status])
   @@index([listingId, checkIn, checkOut])
+  addons BookingAddon[]
+  /// Add-ons, summed. Part of `total`.
+  addonsTotal Int @default(0)
 }
 
 /// Every state transition, with who caused it. A booking that changed state for
@@ -1919,4 +1925,125 @@ model ProjectUnit {
 
   @@unique([projectId, unitNo])
   @@index([projectId, status])
+}
+
+// ---------------------------------------------------------------------------
+// The whole trip, not just the room.
+//
+// A guest arriving somewhere unfamiliar needs a bed, a way in from the airport,
+// and often a cleaner or a driver while they are there. Every other platform
+// makes that three transactions with three companies, and hands off the two
+// that are hardest to arrange in an unfamiliar country. Here they are one
+// booking and one payment.
+//
+// Modelled as offerings a host publishes and add-ons a guest selects, rather
+// than as fixed fields, because what makes sense to offer differs enormously:
+// an airport transfer in Mombasa, a ski pass in Åre, a driver in Riyadh.
+// ---------------------------------------------------------------------------
+
+enum ServiceKind {
+  AIRPORT_TRANSFER
+  CAR_HIRE
+  DRIVER
+  CLEANING
+  LAUNDRY
+  BREAKFAST
+  CHEF
+  TOUR
+  CHILDCARE
+  OTHER
+}
+
+/// How the price is worked out — the difference between a £40 transfer and
+/// £40 a day for a driver is the whole bill.
+enum ServicePricing {
+  /// Once, whatever the length of stay.
+  FLAT
+  /// Multiplied by nights.
+  PER_NIGHT
+  /// Multiplied by guests.
+  PER_GUEST
+  /// Multiplied by both.
+  PER_GUEST_NIGHT
+}
+
+model ServiceOffering {
+  id         String @id @default(cuid())
+  orgId      String
+  /// Offered at one property, or across the organisation when null.
+  propertyId String?
+  listingId  String?
+
+  kind        ServiceKind
+  name        String
+  description String?
+  /// Minor units, in the currency below.
+  price    Int
+  currency String         @default("KES")
+  pricing  ServicePricing @default(FLAT)
+
+  /// Some services cannot be arranged same-day. Stated so a guest is not sold
+  /// a 6am transfer at midnight.
+  noticeHours Int @default(0)
+  /// A cap where the host can only serve so many at once. Null means no limit.
+  dailyCapacity Int?
+
+  /// Whether the host provides it themselves or a named partner does. Shown to
+  /// the guest, because "who is picking me up" is a fair question.
+  providerName String?
+
+  active    Boolean  @default(true)
+  createdById String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org      Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property Property?        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  listing  PropertyListing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  addons   BookingAddon[]
+
+  @@index([orgId, active])
+  @@index([propertyId, active])
+}
+
+enum AddonStatus {
+  /// Selected and paid for with the stay, awaiting the host arranging it.
+  REQUESTED
+  CONFIRMED
+  DELIVERED
+  CANCELLED
+}
+
+/// One service attached to one booking, priced when it was added.
+model BookingAddon {
+  id        String @id @default(cuid())
+  bookingId String
+  /// Nullable on purpose. Everything the guest agreed to is copied below, so a
+  /// retired offering must not hold a booking hostage — nor, as `Restrict`
+  /// did, make its whole organisation undeletable.
+  offeringId String?
+
+  /// Copied, not referenced. A host raising their transfer price next month
+  /// must not change what a guest already agreed to pay.
+  name     String
+  kind     ServiceKind
+  unitPrice Int
+  quantity  Int    @default(1)
+  amount    Int
+  currency  String
+
+  /// When the guest wants it, for things that happen at a time.
+  scheduledFor DateTime?
+  /// Flight number, pickup address, allergies — whatever the service needs.
+  note   String?
+  status AddonStatus @default(REQUESTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking  Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  offering ServiceOffering? @relation(fields: [offeringId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([offeringId, status])
 }

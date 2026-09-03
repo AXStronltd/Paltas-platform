@@ -131,3 +131,67 @@ test("multiple rooms multiply the subtotal, and a discount never exceeds it", ()
   assert.equal(huge.discountAmount, huge.subtotal, "capped at the subtotal");
   assert.ok(huge.total >= 0, "a booking can never total less than nothing");
 });
+
+/* --------------------------- the whole trip ---------------------------- */
+
+test("the four pricing models are the difference between a transfer and a driver", () => {
+  const nights = 5, guests = 2;
+  const flat = A.priceAddon({ offeringId: "o1", name: "Airport transfer", unitPrice: 4000, pricing: "FLAT" }, nights, guests);
+  assert.equal(flat.units, 1);
+  assert.equal(flat.amount, 4000, "a transfer is once, however long the stay");
+
+  const perNight = A.priceAddon({ offeringId: "o2", name: "Driver", unitPrice: 4000, pricing: "PER_NIGHT" }, nights, guests);
+  assert.equal(perNight.amount, 20000, "a driver is per day");
+
+  const perGuest = A.priceAddon({ offeringId: "o3", name: "Ski pass", unitPrice: 3000, pricing: "PER_GUEST" }, nights, guests);
+  assert.equal(perGuest.amount, 6000);
+
+  const both = A.priceAddon({ offeringId: "o4", name: "Breakfast", unitPrice: 800, pricing: "PER_GUEST_NIGHT" }, nights, guests);
+  assert.equal(both.amount, 8000, "breakfast is per person per morning");
+});
+
+test("quantity multiplies on top of the pricing model", () => {
+  // Two transfers — one in, one out.
+  const a = A.priceAddon({ offeringId: "o1", name: "Transfer", unitPrice: 4000, pricing: "FLAT", quantity: 2 }, 3, 2);
+  assert.equal(a.amount, 8000);
+  const b = A.priceAddon({ offeringId: "o2", name: "Driver", unitPrice: 4000, pricing: "PER_NIGHT", quantity: 2 }, 3, 2);
+  assert.equal(b.amount, 24000, "two drivers for three days");
+});
+
+test("a stay and its services come to one total", () => {
+  const q = A.quote({
+    nightlyRate: 12000, nights: 4, guests: 2, currency: "KES",
+    addons: [
+      { offeringId: "t", name: "Airport transfer", unitPrice: 4500, pricing: "FLAT", quantity: 2 },
+      { offeringId: "c", name: "Mid-stay clean", unitPrice: 2500, pricing: "FLAT" },
+    ],
+  });
+  assert.equal(q.subtotal, 48000);
+  assert.equal(q.addonsTotal, 4500 * 2 + 2500);
+  assert.equal(q.addons.length, 2, "and the guest can see the working");
+  assert.equal(q.total, q.subtotal + q.cleaningFee + q.serviceFee + q.addonsTotal - q.discountAmount + q.taxes);
+  for (const [k, v] of Object.entries(q)) {
+    if (typeof v === "number") assert.ok(Number.isInteger(v), `${k} was ${v}`);
+  }
+});
+
+test("the platform fee is charged on the stay, never on the guest's transfer", () => {
+  // Taking a cut of someone's airport pickup is how a bundle stops being worth
+  // using. The fee must not move when add-ons are added.
+  const without = A.quote({ nightlyRate: 12000, nights: 4, guests: 2, currency: "KES" });
+  const with_ = A.quote({
+    nightlyRate: 12000, nights: 4, guests: 2, currency: "KES",
+    addons: [{ offeringId: "t", name: "Transfer", unitPrice: 9000, pricing: "FLAT" }],
+  });
+  assert.equal(with_.serviceFee, without.serviceFee, "the platform fee did not move");
+  assert.ok(with_.total > without.total, "but the total did");
+  assert.equal(with_.total - without.total, 9000 + Math.round(9000 * 0.05),
+    "by the add-on and its tax, and nothing else");
+});
+
+test("no add-ons leaves every existing figure exactly as it was", () => {
+  const q = A.quote({ nightlyRate: 9500, nights: 3, currency: "KES" });
+  assert.equal(q.addonsTotal, 0);
+  assert.deepEqual(q.addons, []);
+  assert.equal(q.total, q.subtotal + q.serviceFee + q.taxes, "unchanged for a plain stay");
+});

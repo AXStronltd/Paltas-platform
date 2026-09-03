@@ -17,7 +17,8 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     const listing = await prisma.propertyListing.findFirst({
       where: { id: params.id, status: "PUBLISHED", org: { isPlatform: false } },
       select: {
-        id: true, title: true, summary: true, description: true, kind: true,
+        id: true, orgId: true, propertyId: true,
+        title: true, summary: true, description: true, kind: true,
         price: true, currency: true, maxGuests: true, bedrooms: true, bathrooms: true,
         amenities: true, images: true, city: true, location: true,
         hostName: true, hostKind: true, publishedAt: true,
@@ -42,15 +43,41 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 
     if (!listing) return fail(404, { code: "not_found", message: "Listing not found." });
 
+    // The rest of the trip: transfers, cleaning, a driver. Deciding where to
+    // stay and how to get there from the airport is one decision, not two.
+    //
+    // Queried separately rather than through the relation, because an offering
+    // may be attached to the listing, the property, or the whole organisation.
+    // These conditions must match what priceAndCheck accepts exactly — a
+    // service shown here and refused at checkout is worse than one never shown.
+    const services = await prisma.serviceOffering.findMany({
+      where: {
+        active: true,
+        orgId: listing.orgId,
+        OR: [{ propertyId: null }, { propertyId: listing.propertyId }, { listingId: listing.id }],
+      },
+      orderBy: [{ kind: "asc" }, { price: "asc" }],
+      select: {
+        id: true, kind: true, name: true, description: true,
+        price: true, currency: true, pricing: true,
+        noticeHours: true, providerName: true,
+      },
+    });
+
     const stars = listing.reviews.map((r) => r.stars);
     const rating = stars.length
       ? Math.round((stars.reduce((a, b) => a + b, 0) / stars.length) * 10) / 10
       : null;
 
+    // Stripped on the way out: they were needed to find the services, and a
+    // public projection must not carry a tenant or internal identifier.
+    const { orgId: _org, propertyId: _prop, ...publicListing } = listing;
+
     return ok({
       listing: {
-        ...listing,
+        ...publicListing,
         priceUnit: listing.kind === "STAY" ? "per night" : listing.kind === "RENT" ? "per month" : "total",
+        services,
         rating,
         reviewCount: stars.length,
         reviews: listing.reviews.map(({ guest, ...r }) => ({
