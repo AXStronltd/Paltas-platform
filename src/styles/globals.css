@@ -12,6 +12,24 @@
   --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);
   --shadow-lg: 0 18px 40px rgba(8, 20, 34, 0.16);
   --radius: 16px;
+
+  /*
+   * Layering, in one place and in order.
+   *
+   * These were scattered magic numbers, and they were wrong: a modal sat at 60
+   * while the tab bar was 70 and the install banner 80, so the sign-up form's
+   * password field and submit button were drawn underneath both. A dialogue
+   * asking for a decision must be above the furniture.
+   *
+   * Toasts stay above everything on purpose — a message about what just
+   * happened is useless if the thing that caused it covers it.
+   */
+  --z-dropdown: 20;
+  --z-header: 40;
+  --z-tabbar: 70;
+  --z-prompt: 75;   /* the install banner, and anything else uninvited */
+  --z-overlay: 100; /* modals, the mobile menu, their scrims */
+  --z-toast: 200;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +48,7 @@ img { display: block; max-width: 100%; }
 
 /* header */
 .site-header {
-  position: sticky; top: 0; z-index: 40;
+  position: sticky; top: 0; z-index: var(--z-header);
   background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
@@ -161,7 +179,7 @@ img { display: block; max-width: 100%; }
   position: fixed; inset: 0;
   background: rgba(10,18,31,.5);
   backdrop-filter: blur(4px);
-  z-index: 60;
+  z-index: var(--z-overlay);
   display: flex;
   justify-content: center;
   padding: 20px;
@@ -205,7 +223,7 @@ img { display: block; max-width: 100%; }
 
 /* ===== PWA install banner ===== */
 .pwa-banner {
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: 80;
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: var(--z-prompt);
   width: calc(100% - 32px); max-width: 460px;
   display: flex; align-items: center; gap: 12px;
   background: #fff; border: 1px solid var(--line-2); border-radius: 16px;
@@ -264,7 +282,7 @@ img { display: block; max-width: 100%; }
 
   .tabbar {
     display: grid; grid-template-columns: repeat(3, 1fr);
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-tabbar);
     background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
     padding: 6px 0 max(6px, env(safe-area-inset-bottom));
@@ -378,7 +396,7 @@ img { display: block; max-width: 100%; }
 .portal-empty { text-align: center; padding: 50px 20px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .portal-empty b { font-size: 16px; }
 .portal-empty span { font-size: 13px; color: var(--muted); }
-.portal-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 13.5px; z-index: 80; box-shadow: var(--shadow-lg); }
+.portal-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 13.5px; z-index: var(--z-toast); box-shadow: var(--shadow-lg); }
 @media (max-width: 600px) { .kpis { grid-template-columns: 1fr 1fr; } }
 
 /* ===== MOBILE MENU + PWA POLISH ===== */
@@ -403,7 +421,7 @@ img { display: block; max-width: 100%; }
 
   .mobile-menu-scrim {
     position: fixed; inset: 0; background: rgba(10,18,31,.45); backdrop-filter: blur(3px);
-    z-index: 90; display: flex; justify-content: flex-end;
+    z-index: var(--z-overlay); display: flex; justify-content: flex-end;
   }
   .mobile-menu {
     width: 82%; max-width: 340px; height: 100%; background: #fff;
@@ -440,7 +458,7 @@ img { display: block; max-width: 100%; }
 
 /* ===== ANIMATED PERSONALIZED TOASTS ===== */
 .toast-stack {
-  position: fixed; z-index: 200; left: 50%; transform: translateX(-50%);
+  position: fixed; z-index: var(--z-toast); left: 50%; transform: translateX(-50%);
   bottom: calc(24px + env(safe-area-inset-bottom));
   display: flex; flex-direction: column; gap: 10px; width: min(420px, calc(100vw - 32px));
   pointer-events: none;
@@ -683,7 +701,6 @@ img { display: block; max-width: 100%; }
 .auth-tabs button { flex: 1; padding: 10px; font-family: inherit; font-weight: 700; font-size: 14px; color: var(--muted); border-radius: 9px; }
 .auth-tabs button.on { background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(8,20,34,.08); }
 .auth-error { background: rgba(224,87,74,.1); color: #c0453a; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; }
-.auth-demo-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; }
 .field { margin-bottom: 14px; }
 .field label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
 .field input { width: 100%; border: 1.5px solid var(--line-2); border-radius: 12px; padding: 13px 15px; font-family: inherit; font-size: 15px; }
@@ -1260,3 +1277,210 @@ img { display: block; max-width: 100%; }
 .field-hint { display: block; font-size: 12px; color: var(--muted); margin-top: 5px; }
 
 .locale-note { font-size: 11.5px; color: var(--muted); line-height: 1.45; margin: 0 0 8px; }
+
+/* ---------------------------------------------------------------------------
+   Authentication.
+
+   One design for every sign-in and sign-up on the platform: the guest modal,
+   the management console, and the account step inside checkout. It lives in
+   globals.css rather than manage.css because the root layout loads this file
+   on every route, including /manage — which is why the management form could
+   not share the marketplace's styles before.
+
+   Signing in is often someone's first impression and the thing they do most
+   often. It is worth looking the same every time.
+--------------------------------------------------------------------------- */
+
+.auth-card {
+  --auth-gap: 18px;
+  background: #fff;
+  border: 1px solid var(--line-2);
+  border-radius: 22px;
+  padding: 30px 28px;
+  box-shadow: 0 22px 48px rgba(8, 20, 34, .12), 0 2px 6px rgba(8, 20, 34, .05);
+  width: 100%;
+  max-width: 420px;
+  /* Centres the standalone (non-modal) form without a wrapper. */
+  margin: auto;
+  text-align: left;
+}
+
+.auth-brand { text-align: center; margin-bottom: 20px; line-height: 1; }
+.auth-brand b {
+  font-size: 21px; font-weight: 800; letter-spacing: -.4px;
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.auth-brand small {
+  display: block; margin-top: 5px;
+  font-size: 9.5px; letter-spacing: 2.4px; font-weight: 800; color: var(--muted);
+}
+
+.auth-title {
+  font-size: 25px; font-weight: 800; letter-spacing: -.6px;
+  margin: 0 0 7px; color: var(--ink); line-height: 1.15;
+}
+.auth-sub {
+  font-size: 14px; color: var(--muted); line-height: 1.55;
+  margin: 0 0 24px;
+}
+
+/* Consistent rhythm between fields, rather than each form choosing its own. */
+.auth-fields { display: flex; flex-direction: column; gap: var(--auth-gap); }
+
+.auth-field { display: flex; flex-direction: column; gap: 7px; }
+.auth-field label {
+  font-size: 13px; font-weight: 700; color: var(--ink-2); letter-spacing: -.1px;
+}
+.auth-field input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.auth-field input::placeholder { color: #9aa4b2; }
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--teal);
+  /* A visible focus ring, which a 1px border alone is not. */
+  box-shadow: 0 0 0 3px rgba(0, 196, 172, .18);
+}
+.auth-field input:disabled { background: var(--bg-2); color: var(--muted); }
+
+/* Password fields carry a reveal control inside the box. */
+.auth-input-wrap { position: relative; display: block; }
+.auth-input-wrap input { padding-right: 68px; }
+.auth-reveal {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  border: none; background: transparent;
+  font-family: inherit; font-size: 12.5px; font-weight: 700;
+  color: var(--teal-ink); padding: 8px 10px; border-radius: 8px; cursor: pointer;
+}
+.auth-reveal:hover { background: rgba(0, 196, 172, .1); }
+
+.auth-hint { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+.auth-error {
+  display: flex; align-items: flex-start; gap: 9px;
+  background: rgba(224, 87, 74, .09);
+  border: 1px solid rgba(224, 87, 74, .25);
+  color: #b0402f;
+  font-size: 13.5px; font-weight: 600; line-height: 1.45;
+  padding: 11px 13px; border-radius: 12px; margin: 0;
+}
+.auth-error > span:first-child {
+  flex: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #c0453a; color: #fff;
+  font-size: 12px; font-weight: 800; line-height: 18px; text-align: center;
+}
+
+.auth-submit {
+  width: 100%; min-height: 50px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  background: var(--grad); color: #fff;
+  border: none; border-radius: 13px;
+  font-family: inherit; font-size: 15.5px; font-weight: 800; letter-spacing: -.2px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 196, 172, .28);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  margin-top: 4px;
+}
+.auth-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0, 196, 172, .34); }
+.auth-submit:active:not(:disabled) { transform: translateY(0); }
+.auth-submit:disabled { opacity: .62; cursor: not-allowed; box-shadow: none; }
+
+.auth-spinner {
+  width: 15px; height: 15px; flex: none;
+  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+
+.auth-alt {
+  width: 100%; padding: 12px;
+  background: transparent; border: none;
+  font-family: inherit; font-size: 13.5px; font-weight: 700; color: var(--teal-ink);
+  cursor: pointer; border-radius: 10px;
+}
+.auth-alt:hover { background: rgba(0, 196, 172, .08); }
+
+.auth-footer { margin-top: 16px; }
+
+/* Tabs, for the form that does both jobs. */
+.auth-card .auth-tabs {
+  display: flex; gap: 4px;
+  background: var(--bg-2); border-radius: 13px; padding: 4px; margin-bottom: 22px;
+}
+.auth-card .auth-tabs button {
+  flex: 1; padding: 11px 8px;
+  border: none; background: transparent; border-radius: 10px;
+  font-family: inherit; font-size: 13.5px; font-weight: 700; color: var(--muted);
+  cursor: pointer; transition: background .15s ease, color .15s ease;
+}
+.auth-card .auth-tabs button.on {
+  background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(8, 20, 34, .09);
+}
+
+/* The standalone page version — management sign-in, and anywhere else a form
+   is the whole screen rather than an overlay. */
+.auth-page {
+  display: flex; justify-content: center;
+  min-height: 100dvh;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(900px 420px at 50% -10%, rgba(0, 196, 172, .10), transparent 60%),
+    var(--bg-2);
+}
+
+/* Inside a modal the card supplies its own frame, so the modal must not add a
+   second one. */
+.modal.auth-modal {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 22px;
+}
+.modal .auth-card {
+  border: none;
+  box-shadow: none;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.modal.auth-modal .auth-card { padding: 26px 24px; }
+@media (max-width: 560px) {
+  .modal.auth-modal .auth-card { padding: 22px 18px; }
+}
+
+@media (max-width: 560px) {
+  .auth-card { --auth-gap: 16px; padding: 24px 20px; border-radius: 20px; }
+  .auth-title { font-size: 22px; }
+  .auth-sub { margin-bottom: 20px; font-size: 13.5px; }
+  /* iOS zooms any focused input under 16px, which throws the form off-screen. */
+  .auth-field input { font-size: 16px; padding: 13px 13px; }
+  .auth-submit { min-height: 52px; }
+  .auth-page { padding: 16px 14px calc(16px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-height: 700px) {
+  /* A short window is the case that used to clip. Tighten, and let it scroll. */
+  .auth-card { padding: 22px 22px; --auth-gap: 14px; }
+  .auth-sub { margin-bottom: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-submit, .auth-field input { transition: none; }
+  .auth-spinner { animation: none; }
+}
+
+/*
+ * While a dialogue is open, nothing uninvited competes with it. The install
+ * banner and the bottom tab bar both step aside rather than sitting behind a
+ * form the person is trying to complete.
+ */
+body:has(.scrim) .pwa-banner,
+body:has(.mobile-menu-scrim) .pwa-banner { display: none; }
+body:has(.scrim) .tabbar { display: none; }

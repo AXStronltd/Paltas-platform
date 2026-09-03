@@ -4,19 +4,14 @@ import { useState } from "react";
 import { useGuest } from "@/components/booking/GuestProvider";
 import { useToast, personalWelcome } from "@/components/ui/Toast";
 import { Portal } from "./Portal";
+import { AuthCard, AuthTabs, AuthField, AuthError, AuthSubmit } from "@/components/auth/AuthUI";
 
 /**
  * Create an account, or sign in.
  *
- * Real accounts, and the only kind. This used to fall back to a "demo session"
- * when Supabase was unconfigured: a client-side variable that put a name in the
- * header and granted nothing, so the site said you were signed in while every
- * page that needed a session disagreed. That was worse than refusing, because
- * it looked like it had worked.
- *
- * It now uses the same guest auth as the booking flow — scrypt-hashed
- * passwords, a hashed session token in an httpOnly cookie, verified on the
- * server for every request.
+ * Real accounts, and the only kind — the same guest auth the booking flow
+ * uses: scrypt-hashed passwords and a hashed session token in an httpOnly
+ * cookie, verified server-side on every request.
  */
 const MIN_PASSWORD = 10;
 
@@ -38,8 +33,8 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     if (!password) return setErr("Please enter a password.");
     if (tab === "up") {
       if (!name.trim()) return setErr("Please enter your name.");
-      // Checked here so the refusal is immediate and explains itself, and
-      // again on the server, which is the one that decides.
+      // Checked here so the refusal is immediate and explains itself, and again
+      // on the server, which is the one that decides.
       if (password.length < MIN_PASSWORD) {
         return setErr(`Please use at least ${MIN_PASSWORD} characters — it protects your bookings.`);
       }
@@ -62,55 +57,44 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
   }
 
   return (
-    // Portalled to <body>: the header's backdrop-filter would otherwise make
-    // it the containing block and clip this to the header's height.
+    // Portalled to <body>: the header's backdrop-filter would otherwise become
+    // the containing block and clip this to the header's height.
     <Portal>
-    <div className="scrim" onClick={(e) => e.target === e.currentTarget && !busy && onClose()}>
-      <form className="modal auth-modal" onSubmit={submit}>
-        <div className="auth-tabs">
-          <button type="button" className={tab === "up" ? "on" : ""}
-            onClick={() => { setTab("up"); setErr(""); }}>Create account</button>
-          <button type="button" className={tab === "in" ? "on" : ""}
-            onClick={() => { setTab("in"); setErr(""); }}>Sign in</button>
+      <div className="scrim" onClick={(e) => e.target === e.currentTarget && !busy && onClose()}>
+        <div className="modal auth-modal">
+          <AuthCard
+            title={tab === "up" ? "Join PALTAS" : "Welcome back"}
+            subtitle={tab === "up"
+              ? "One account to book stays, manage them, and keep everything in one place."
+              : "Sign in to see your bookings and pick up where you left off."}
+            onSubmit={submit}
+          >
+            <AuthTabs value={tab} onChange={(v) => { setTab(v); setErr(""); }}
+              labels={{ up: "Create account", in: "Sign in" }} />
+
+            {tab === "up" && (
+              <AuthField label="Full name" value={name} onChange={setName}
+                placeholder="Your name" autoComplete="name" required autoFocus />
+            )}
+
+            <AuthField label="Email" type="email" value={email} onChange={setEmail}
+              placeholder="you@example.com" autoComplete="email" required
+              autoFocus={tab === "in"} />
+
+            <AuthField label="Password" type="password" value={password} onChange={setPassword}
+              placeholder="••••••••" required
+              minLength={tab === "up" ? MIN_PASSWORD : undefined}
+              autoComplete={tab === "up" ? "new-password" : "current-password"}
+              hint={tab === "up" ? `At least ${MIN_PASSWORD} characters.` : undefined} />
+
+            <AuthError>{err}</AuthError>
+
+            <AuthSubmit busy={busy} busyLabel={tab === "up" ? "Creating…" : "Signing in…"}>
+              {tab === "up" ? "Create account" : "Sign in"}
+            </AuthSubmit>
+          </AuthCard>
         </div>
-
-        <h2>{tab === "up" ? "Join PALTAS" : "Welcome back"}</h2>
-        <p className="lede">
-          {tab === "up"
-            ? "Create your free account to book and manage stays."
-            : "Sign in to your PALTAS account."}
-        </p>
-
-        {tab === "up" && (
-          <div className="field">
-            <label htmlFor="auth-name">Full name</label>
-            <input id="auth-name" value={name} onChange={(e) => setName(e.target.value)}
-              placeholder="Your name" autoComplete="name" required />
-          </div>
-        )}
-
-        <div className="field">
-          <label htmlFor="auth-email">Email</label>
-          <input id="auth-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com" autoComplete="email" required />
-        </div>
-
-        <div className="field">
-          <label htmlFor="auth-pass">Password</label>
-          <input id="auth-pass" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••" required
-            minLength={tab === "up" ? MIN_PASSWORD : undefined}
-            autoComplete={tab === "up" ? "new-password" : "current-password"} />
-          {tab === "up" && <small className="field-hint">At least {MIN_PASSWORD} characters.</small>}
-        </div>
-
-        {err && <div className="auth-error">{err}</div>}
-
-        <button className="btn btn-primary" type="submit" disabled={busy}>
-          {busy ? "Please wait…" : tab === "up" ? "Create account" : "Sign in"}
-        </button>
-      </form>
-    </div>
+      </div>
     </Portal>
   );
 }

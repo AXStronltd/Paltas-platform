@@ -15,7 +15,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       country?: string; locale?: string;
     }>(req);
     if (!body?.email || !body.name?.trim() || !body.password) {
-      return badRequest("name, email and password are required.");
+      return badRequest("Please fill in your name, email and password.");
     }
     // Long enough to matter, without imposing rules that push people to
     // Password1! — length is what actually helps.

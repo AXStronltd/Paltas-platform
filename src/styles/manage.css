@@ -68,30 +68,6 @@
 
 /* -------------------------------- sign in ------------------------------ */
 
-.signin-wrap { display: grid; place-items: center; min-height: 100vh; background: var(--bg-2); padding: 20px; }
-.signin {
-  width: 100%; max-width: 380px; background: #fff;
-  border: 1px solid var(--line-2); border-radius: var(--radius);
-  padding: 30px 28px; box-shadow: var(--shadow-lg);
-}
-.signin h1 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
-.signin > p { font-size: 13.5px; color: var(--muted); margin: 6px 0 20px; line-height: 1.5; }
-.signin label { display: block; font-size: 12px; font-weight: 800; color: var(--ink-2); margin-bottom: 14px; }
-.signin input {
-  display: block; width: 100%; margin-top: 6px;
-  padding: 11px 13px; border: 1.5px solid var(--line-2); border-radius: 11px;
-  font-family: inherit; font-size: 14.5px; font-weight: 500; color: var(--ink);
-}
-.signin input:focus { outline: none; border-color: var(--teal); }
-.signin-submit {
-  width: 100%; padding: 12px; border-radius: 11px; margin-top: 6px;
-  background: var(--ink); color: #fff; font-family: inherit; font-weight: 800; font-size: 14.5px;
-}
-.signin-submit:disabled { opacity: .6; }
-.signin-error {
-  background: rgba(224,87,74,.1); border: 1px solid rgba(224,87,74,.3);
-  color: #c0453a; border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-bottom: 12px;
-}
 
 /* --------------------------------- page -------------------------------- */
 
@@ -632,7 +608,6 @@
   .table th, .table td { padding: 9px 10px; }
   /* Filters and toolbars wrap instead of overflowing. */
   .filters, .toolbar, .row-between { flex-wrap: wrap; gap: 8px; }
-  .signin { padding: 22px 18px; }
 }
 
 @media (max-width: 380px) {
@@ -641,7 +616,7 @@
 
 /* iOS zooms any focused input under 16px, which shifts the layout mid-form. */
 @media (max-width: 768px) {
-  .signin input, .manage input, .manage select, .manage textarea { font-size: 16px; }
+  .manage input, .manage select, .manage textarea { font-size: 16px; }
 }
 
 /* ---------------------------- operations console ------------------------ */

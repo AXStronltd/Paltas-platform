@@ -10,6 +10,7 @@ import {
   createBooking, payForBooking, money, newIdempotencyKey,
   type GuestBooking, type Quote,
 } from "@/lib/services/guestService";
+import { AuthField, AuthError, AuthSubmit, AuthAlt } from "@/components/auth/AuthUI";
 
 /**
  * Checkout, for real.
@@ -176,41 +177,42 @@ function AccountStep({
   }
 
   return (
-    <form onSubmit={submit}>
-      <h2>{mode === "signin" ? "Sign in to book" : "Create your account"}</h2>
-      <p className="lede">
+    // The same card as everywhere else, minus its own frame — the checkout
+    // modal already provides one.
+    <form className="auth-card" onSubmit={submit} noValidate>
+      <h1 className="auth-title">{mode === "signin" ? "Sign in to book" : "Create your account"}</h1>
+      <p className="auth-sub">
         {mode === "signin"
           ? "Welcome back."
-          : "You need an account so you can find your booking again and cancel it if plans change."}
+          : "You need an account so you can find this booking again and cancel it if plans change."}
       </p>
 
-      {mode === "register" && (
-        <div className="field">
-          <label htmlFor="gc-name">Full name</label>
-          <input id="gc-name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
-        </div>
-      )}
-      <div className="field">
-        <label htmlFor="gc-email">Email</label>
-        <input id="gc-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-          required autoComplete="email" />
-      </div>
-      <div className="field">
-        <label htmlFor="gc-pass">Password</label>
-        <input id="gc-pass" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-          required minLength={mode === "register" ? 10 : undefined}
-          autoComplete={mode === "register" ? "new-password" : "current-password"} />
-        {mode === "register" && <small>At least 10 characters.</small>}
-      </div>
+      <div className="auth-fields">
+        {mode === "register" && (
+          <AuthField label="Full name" value={name} onChange={setName}
+            autoComplete="name" required autoFocus />
+        )}
 
-      {error && <div className="book-note bad">{error}</div>}
+        <AuthField label="Email" type="email" value={email} onChange={setEmail}
+          placeholder="you@example.com" autoComplete="email" required
+          autoFocus={mode === "signin"} />
 
-      <button className="btn btn-primary" type="submit" disabled={busy}>
-        {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account and continue"}
-      </button>
-      <button type="button" className="btn" onClick={() => { setMode(mode === "signin" ? "register" : "signin"); setError(null); }}>
-        {mode === "signin" ? "I need an account" : "I already have an account"}
-      </button>
+        <AuthField label="Password" type="password" value={password} onChange={setPassword}
+          placeholder="••••••••" required
+          minLength={mode === "register" ? 10 : undefined}
+          autoComplete={mode === "register" ? "new-password" : "current-password"}
+          hint={mode === "register" ? "At least 10 characters." : undefined} />
+
+        <AuthError>{error}</AuthError>
+
+        <AuthSubmit busy={busy} busyLabel={mode === "signin" ? "Signing in…" : "Creating…"}>
+          {mode === "signin" ? "Sign in" : "Create account and continue"}
+        </AuthSubmit>
+
+        <AuthAlt onClick={() => { setMode(mode === "signin" ? "register" : "signin"); setError(null); }}>
+          {mode === "signin" ? "I need an account" : "I already have an account"}
+        </AuthAlt>
+      </div>
     </form>
   );
 }
