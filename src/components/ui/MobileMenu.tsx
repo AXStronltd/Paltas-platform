@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 const GUEST = [
   { href: "/", label: "Stays", icon: "home" },
   { href: "/bookings", label: "My bookings", icon: "calendar" },
+  { href: "/buy-sell", label: "Buy / Sell", icon: "home" },
 ];
 const PORTALS = [
   { href: "/portal/hotel", label: "Hotel", icon: "hotel" },

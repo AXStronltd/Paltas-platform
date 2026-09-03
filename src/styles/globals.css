@@ -1144,3 +1144,49 @@ img { display: block; max-width: 100%; }
   }
   .btn, .btn-mini, .room-acts button { min-height: 40px; }
 }
+
+/* ------------------------------ buy / sell ------------------------------ */
+
+.choose { padding: 40px 0 70px; max-width: 900px; }
+.choose-title { font-size: 30px; font-weight: 800; letter-spacing: -.6px; margin-bottom: 8px; }
+.choose-sub { color: var(--muted); font-size: 16px; margin-bottom: 28px; }
+.choose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.choose-card {
+  display: flex; flex-direction: column; gap: 8px;
+  border: 1px solid var(--line-2); border-radius: 18px; padding: 26px 24px;
+  background: #fff; box-shadow: var(--shadow-sm); text-decoration: none; color: inherit;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.choose-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--teal); }
+.choose-icon { font-size: 26px; color: var(--teal-ink); }
+.choose-card b { font-size: 19px; font-weight: 800; }
+.choose-card > span:not(.choose-icon):not(.choose-go) { color: var(--muted); font-size: 14px; line-height: 1.55; }
+.choose-go { color: var(--teal-ink); font-weight: 700; font-size: 14px; margin-top: 4px; }
+.choose-foot { margin-top: 26px; color: var(--muted); font-size: 14px; }
+.choose-foot a { color: var(--teal-ink); font-weight: 700; }
+
+.enquiry {
+  margin-top: 34px; border: 1px solid var(--line-2); border-radius: 18px;
+  padding: 24px; background: #fff; max-width: 620px;
+}
+.enquiry h2 { font-size: 19px; font-weight: 800; margin-bottom: 16px; }
+.enquiry .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.enquiry .field label { font-size: 13px; font-weight: 700; }
+.enquiry input, .enquiry select, .enquiry textarea {
+  border: 1px solid var(--line-2); border-radius: 10px; padding: 11px 12px;
+  font: inherit; font-size: 15px; background: var(--bg); color: var(--ink); width: 100%;
+}
+.enquiry textarea { resize: vertical; }
+.enquiry .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.enquiry .btn { width: 100%; margin-top: 4px; }
+
+@media (max-width: 700px) {
+  .choose-grid { grid-template-columns: 1fr; }
+  .choose-title { font-size: 25px; }
+}
+@media (max-width: 560px) {
+  .enquiry { padding: 18px 16px; }
+  .enquiry .field-row { grid-template-columns: 1fr; }
+  /* iOS zooms inputs under 16px and throws the form out of position. */
+  .enquiry input, .enquiry select, .enquiry textarea { font-size: 16px; }
+}

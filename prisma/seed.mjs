@@ -837,6 +837,26 @@ async function main() {
     },
   });
 
+  // A property for sale, so /buy has genuine stock rather than an empty page.
+  await prisma.propertyListing.create({
+    data: {
+      orgId: org.id, propertyId: kilimani.id,
+      title: "Four-bedroom townhouse, Lavington",
+      summary: "Corner plot, mature garden, off Ring Road.",
+      description:
+        "A four-bedroom townhouse on a quarter-acre corner plot in Lavington, with a mature "
+        + "garden, borehole and staff quarters. Two blocks from Ring Road Kileleshwa and a "
+        + "short drive to Yaya Centre. Title deed ready.",
+      kind: "SALE", status: "PUBLISHED", price: 48_500_000, currency: "KES",
+      maxGuests: 8, bedrooms: 4, bathrooms: 3,
+      amenities: ["garden", "borehole", "parking", "staff quarters", "24h security"],
+      images: ["/paltas-logo.png"],
+      city: "Nairobi", location: "Lavington",
+      hostName: "Amina Yusuf", hostKind: "Agent",
+      publishedAt: days(-14), publishedById: owner.id, createdById: manager.id,
+    },
+  });
+
   // A sales pipeline, so the agent and developer portals have real work in them.
   const riverside = await prisma.project.create({
     data: {

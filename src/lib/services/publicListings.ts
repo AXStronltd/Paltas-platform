@@ -75,6 +75,7 @@ export function adaptListing(l: ApiListing): Listing {
     hostId: l.hostName,
     description: l.description,
     bookable: true,
+    kind: l.kind,
     roomTypes: l.roomTypes,
   };
 }

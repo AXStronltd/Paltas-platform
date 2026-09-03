@@ -128,6 +128,13 @@ export interface Listing {
    * that does not exist.
    */
   bookable?: boolean;
+  /**
+   * What the listing is actually offering. The demo catalogue has no such
+   * distinction, so this is only set on real published rows — and it is what
+   * separates a house for sale from a room for the night, which `type` alone
+   * cannot express.
+   */
+  kind?: "SALE" | "RENT" | "STAY";
   /** Hotel room types, when the listing sells rooms rather than the whole place. */
   roomTypes?: {
     id: string; name: string; description: string | null; rate: number;

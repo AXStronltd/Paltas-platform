@@ -36,7 +36,7 @@ export function Header() {
 
         <nav className="header-nav">
           <Link href="/" className="header-link active">{t("nav.stays")}</Link>
-          <Link href="/" className="header-link">{t("nav.buySell")}</Link>
+          <Link href="/buy-sell" className="header-link">{t("nav.buySell")}</Link>
           <Link href="/portal/developer" className="header-link">{t("nav.developer")}</Link>
           <Link href="/portal/landlord" className="header-link">{t("nav.landlord")}</Link>
           <Link href="/portal/agent" className="header-link">{t("nav.agent")}</Link>
