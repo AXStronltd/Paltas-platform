@@ -1095,3 +1095,52 @@ img { display: block; max-width: 100%; }
 
 .muted { color: var(--muted); }
 .bad { color: #c0453a; }
+
+/* ---------------------------------------------------------------------------
+   Phones.
+
+   The portals are used standing up far more than sitting down — a guard at a
+   gate, an agent between viewings, a front desk with a handset. These rules
+   exist because the desktop layouts genuinely break below about 560px, not to
+   tidy them up.
+--------------------------------------------------------------------------- */
+
+/* Eight columns of availability cannot fit a 390px screen. Scroll it rather
+   than shrink each cell to something unreadable. */
+.avail-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.avail-scroll .avail-grid { min-width: 540px; }
+
+@media (max-width: 560px) {
+  /* Two date pickers side by side leaves each about 130px wide. */
+  .book-card .book-fields { grid-template-columns: 1fr; }
+  .book-card { padding: 16px; }
+
+  /* Action buttons wrap instead of forcing the row wider than the screen. */
+  .room-acts { flex-wrap: wrap; justify-content: flex-end; }
+  .room-acts button { padding: 8px 12px; font-size: 12px; }
+
+  /* A list row with an avatar, two lines of text and a price column runs out
+     of width; stack the price under the text instead. */
+  .lrow { flex-wrap: wrap; }
+  .lrow > div[style*="text-align: right"] { width: 100%; text-align: left !important; margin-top: 6px; }
+
+  .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .book-breakdown { font-size: 13px; }
+}
+
+@media (max-width: 380px) {
+  .kpis { grid-template-columns: 1fr; }
+}
+
+/* Tap targets. iOS zooms a focused input whose font is under 16px, which throws
+   the whole page out of position on a form. */
+@media (max-width: 768px) {
+  .book-card select,
+  .book-card input[type="date"],
+  .book-card input[type="number"],
+  .signin input,
+  .modal input {
+    font-size: 16px;
+  }
+  .btn, .btn-mini, .room-acts button { min-height: 40px; }
+}

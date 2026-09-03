@@ -188,3 +188,33 @@ export async function guardMaybeScoped(
   const g = await guardList(permission);
   return g.ok ? { ok: true, actor: g.actor } : g;
 }
+
+/**
+ * Paltas platform staff only.
+ *
+ * Distinct from every other check here. `guard()` asks whether someone holds a
+ * permission somewhere; this asks whether they are Paltas rather than a
+ * customer, which is not a permission and deliberately cannot be granted by
+ * one. `isPlatformAdmin` is a column on User precisely so that no permission
+ * edit, however careless, can mint platform authority.
+ *
+ * The refusal is a 404 rather than a 403. A tenant probing for an operations
+ * console should not learn that one exists.
+ */
+export async function guardPlatform(
+  action: string,
+): Promise<{ ok: true; actor: Actor } | { ok: false; response: NextResponse }> {
+  const actor = await currentActor();
+  if (!actor) return { ok: false, response: unauthorized() };
+
+  if (!actor.isPlatformAdmin) {
+    await writeAuditDenial({
+      actor,
+      permission: action,
+      entityType: "platform",
+      reason: "Not Paltas platform staff.",
+    });
+    return { ok: false, response: fail(404, { code: "not_found", message: "Not found." }) };
+  }
+  return { ok: true, actor };
+}

@@ -21,10 +21,18 @@ interface NavItem {
   label: string;
   icon: string;
   permission: string;
+  /**
+   * Paltas staff only. Not a permission, because platform authority is a column
+   * on User that no permission edit can confer — see guardPlatform. The link is
+   * hidden here and the endpoint answers 404 regardless, so hiding it is
+   * courtesy rather than protection.
+   */
+  platformOnly?: boolean;
 }
 
 const NAV: NavItem[] = [
   { href: "/manage", label: "Overview", icon: "◈", permission: PERMISSIONS.OWNER_DASHBOARD_VIEW },
+  { href: "/manage/operations", label: "Operations", icon: "◭", permission: "", platformOnly: true },
   { href: "/manage/portfolio", label: "Portfolio", icon: "▣", permission: PERMISSIONS.PROPERTY_VIEW },
   { href: "/manage/security", label: "Security", icon: "⛨", permission: PERMISSIONS.VISITOR_VIEW },
   { href: "/manage/listings", label: "Listings", icon: "◧", permission: PERMISSIONS.LISTING_VIEW },
@@ -53,7 +61,9 @@ export function ManageShell({ children }: { children: React.ReactNode }) {
 
   if (!user) return <SignIn />;
 
-  const visible = NAV.filter((item) => can(item.permission));
+  const visible = NAV.filter((item) =>
+    item.platformOnly ? user.isPlatformAdmin : can(item.permission),
+  );
   const roleLabel = user.isPlatformAdmin
     ? "Paltas Platform"
     : user.isOwner

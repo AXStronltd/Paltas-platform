@@ -85,7 +85,10 @@ for (const file of files) {
   // has a property yet; either way it authorises before acting.
   const guards = (src.match(/await guard\(/g) ?? []).length
     + (src.match(/await guardList\(/g) ?? []).length
-    + (src.match(/await guardMaybeScoped\(/g) ?? []).length;
+    + (src.match(/await guardMaybeScoped\(/g) ?? []).length
+    // guardPlatform is stricter than any permission check: it requires the
+    // account to be Paltas staff, which no grant can confer.
+    + (src.match(/await guardPlatform\(/g) ?? []).length;
   const usesActor = src.includes("currentActor()");
   const guestGuards = (src.match(/await requireGuest\(/g) ?? []).length;
 

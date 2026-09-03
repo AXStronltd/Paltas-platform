@@ -222,12 +222,17 @@ export function HotelDashboard() {
                 <span><i style={{ background: "#f5a623" }} />Limited</span>
                 <span><i style={{ background: "#e0574a" }} />Full or closed</span>
               </div>
+              {/* Scrolls sideways on a phone. Eight columns squeezed into 390px
+                  is a grid nobody can read, and a front desk checks this on a
+                  handset far more often than at a desk. */}
+              <div className="avail-scroll">
               <div className="avail-grid" style={{ gridTemplateColumns: `1.4fr repeat(${calendar.days.length},1fr)` }}>
                 <div className="avail-corner">Room</div>
                 {calendar.days.map((d) => <div key={d} className="avail-day">{shortDate(d)}</div>)}
                 {calendar.rows.map((row) => (
                   <CalendarRowCells key={row.roomTypeId} row={row} />
                 ))}
+              </div>
               </div>
               <div className="portal-note">
                 These are the same figures the booking engine uses, so what you see here is what a guest can buy.

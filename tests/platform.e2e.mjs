@@ -13,7 +13,8 @@ async function s(email) {
   if (!r.ok) throw new Error(`${email}: ${r.status}`);
   const c = (r.headers.getSetCookie() ?? []).map(x => x.split(";")[0]).join("; ");
   return { get: async (p) => { const x = await fetch(BASE + p, { headers: { Cookie: c } }); return { status: x.status, json: await x.json().catch(() => null) }; },
-           del: async (p) => { const x = await fetch(BASE + p, { method: "DELETE", headers: { Cookie: c } }); return { status: x.status, json: await x.json().catch(() => null) }; } };
+           del: async (p) => { const x = await fetch(BASE + p, { method: "DELETE", headers: { Cookie: c } }); return { status: x.status, json: await x.json().catch(() => null) }; },
+           patch: async (p, b) => { const x = await fetch(BASE + p, { method: "PATCH", headers: { Cookie: c, "Content-Type": "application/json" }, body: JSON.stringify(b) }); return { status: x.status, json: await x.json().catch(() => null) }; } };
 }
 
 console.log("PLATFORM ADMIN — admin@paltas.com");
@@ -63,6 +64,56 @@ const inTenant = await admin.get(`/properties/${diani.id}`);
 check(inTenant.status === 200, "opens Diani Palms directly", `got ${inTenant.status}`);
 const inTenant2 = await admin.get(`/properties/${kilimani.id}`);
 check(inTenant2.status === 200, "and Kilimani Heights", `got ${inTenant2.status}`);
+
+
+console.log("\nOPERATIONS CONSOLE — PALTAS STAFF ONLY");
+const mgr = await s("joseph.kamau@paltas.co.ke");
+const guard = await s("john.mutiso@paltas.co.ke");
+// 404 rather than 403: a tenant probing for an operations console should not
+// learn that one exists.
+const opsAnon = await fetch(`${BASE}/platform/overview`);
+check(opsAnon.status === 401, "signed out: refused", `${opsAnon.status}`);
+check((await amina.get("/platform/overview")).status === 404,
+  "a property owner gets a flat 404, not a 403");
+check((await mgr.get("/platform/overview")).status === 404, "so does a property manager");
+check((await guard.get("/platform/overview")).status === 404, "and a guard");
+
+const ops = await admin.get("/platform/overview");
+check(ops.status === 200, "Paltas platform staff can read it", `${ops.status}`);
+check(ops.json.portfolio.organisations >= 2, "it spans every organisation",
+  `${ops.json.portfolio?.organisations}`);
+check(ops.json.organisations.length >= 2, "and lists them");
+check(typeof ops.json.operations.openIncidents === "number", "with operational counts");
+
+// The console sits open on shared screens all day. It must carry no personal data.
+const opsBlob = JSON.stringify(ops.json);
+check(!/@/.test(opsBlob), "no email address appears anywhere in it");
+check(!opsBlob.includes("passwordHash") && !opsBlob.includes("phone"),
+  "no credentials and no phone numbers");
+const residentNames = ["Daniel Mwangi", "Faith Achieng", "Brian Otieno"];
+check(!residentNames.some((n) => opsBlob.includes(n)), "and no resident names — counts, not records");
+
+console.log("\nEVERYONE MAY EDIT THEMSELVES, AND NOBODY MAY DO MORE");
+const before = (await guard.get("/me")).json.user.name;
+const renamed = await guard.patch("/me", { name: "John M. Mutiso" });
+check(renamed.status === 200 && renamed.json.user.name === "John M. Mutiso",
+  "a guard with almost no permissions can still rename themselves", `${renamed.status}`);
+check((await guard.patch("/me", { name: "X" })).status === 400, "but not to a single character");
+
+// The fields that decide authority are columns, not permissions, precisely so
+// that no self-service edit can mint them.
+await guard.patch("/me", {
+  name: "John Mutiso", isPlatformAdmin: true, isOwner: true,
+  email: "attacker@example.com", status: "ACTIVE", orgId: "someone-elses",
+});
+const after = (await guard.get("/me")).json;
+check(after.user.isPlatformAdmin === false, "self-editing cannot grant platform authority");
+check(after.user.isOwner === false, "nor ownership");
+check(after.user.email !== "attacker@example.com", "nor change the sign-in identity",
+  after.user.email);
+check(after.user.name === before, "and the name is back as it was");
+check((await guard.get("/platform/overview")).status === 404,
+  "so the operations console is still closed to them");
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

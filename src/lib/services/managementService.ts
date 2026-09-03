@@ -453,3 +453,36 @@ export const getConnectStatus = () => api.get<ConnectStatus>("/payments/connect"
 /** Returns a short-lived, single-use Stripe-hosted onboarding link. */
 export const startConnectOnboarding = () =>
   api.post<{ url: string; accountId: string }>("/payments/connect", {});
+
+/* --------------------------- Platform operations ------------------------ */
+
+export interface PlatformOverview {
+  organisations: {
+    id: string; name: string; country: string; currency: string;
+    properties: number; users: number; stripeOnboarded: boolean; createdAt: string;
+  }[];
+  portfolio: { organisations: number; properties: number; buildings: number;
+               units: number; residents: number; staff: number };
+  bookings: { total: number; byStatus: Record<string, number>; bookedRevenue: number };
+  marketplace: {
+    listings: Record<string, number>;
+    external: { total: number; publishable: number };
+  };
+  operations: {
+    openIncidents: number; activeAlerts: number; openMaintenance: number;
+    outstandingCharges: { count: number; amount: number };
+    openLeads: number; projects: number;
+  };
+  activity24h: { action: string; count: number }[];
+  generatedAt: string;
+}
+
+/**
+ * The whole platform, for Paltas operations. Answers 404 to anyone who is not
+ * platform staff — a tenant should not learn that this console exists.
+ */
+export const getPlatformOverview = () => api.get<PlatformOverview>("/platform/overview");
+
+/** Change your own name or phone. Everyone may do this; nobody may do more. */
+export const updateMyProfile = (input: { name?: string; phone?: string }) =>
+  api.patch<{ user: { id: string; name: string; email: string; phone: string | null } }>("/me", input);

@@ -616,3 +616,49 @@
 }
 .connect-head { display: flex; align-items: flex-start; gap: 12px; }
 .connect-head > div:first-child { flex: 1; }
+
+/* ------------------------------- phones --------------------------------- */
+/*
+ * The 900px rule above turns the sidebar into a top bar. Below about 560px the
+ * content itself needs help: heads stack, and anything wide scrolls rather than
+ * pushing the page sideways.
+ */
+@media (max-width: 560px) {
+  .manage-body { padding: 16px 12px 60px; }
+  .page-head { flex-direction: column; gap: 10px; }
+  .section-head { flex-wrap: wrap; gap: 8px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .table { font-size: 12.5px; }
+  .table th, .table td { padding: 9px 10px; }
+  /* Filters and toolbars wrap instead of overflowing. */
+  .filters, .toolbar, .row-between { flex-wrap: wrap; gap: 8px; }
+  .signin { padding: 22px 18px; }
+}
+
+@media (max-width: 380px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+
+/* iOS zooms any focused input under 16px, which shifts the layout mid-form. */
+@media (max-width: 768px) {
+  .signin input, .manage input, .manage select, .manage textarea { font-size: 16px; }
+}
+
+/* ---------------------------- operations console ------------------------ */
+
+.ops-banner {
+  background: rgba(224, 87, 74, .1); border: 1px solid rgba(224, 87, 74, .3);
+  color: #a5392e; border-radius: 12px; padding: 12px 14px; margin-bottom: 18px;
+  font-size: 14px; line-height: 1.5;
+}
+.stat {
+  background: #fff; border: 1px solid var(--line-2); border-radius: 12px;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 2px;
+}
+.stat b { font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+.stat span { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+.stat-warn { border-color: rgba(245, 166, 35, .5); background: rgba(245, 166, 35, .06); }
+.stat-bad { border-color: rgba(224, 87, 74, .5); background: rgba(224, 87, 74, .06); }
+.stat-bad b { color: #c0453a; }
+.section-title { font-size: 15px; font-weight: 800; margin: 0 0 10px; }
+.muted.small { font-size: 12.5px; margin-top: 8px; line-height: 1.5; }
