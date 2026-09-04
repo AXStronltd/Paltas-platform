@@ -55,7 +55,12 @@ export function ListingCard({ listing, onClick }: { listing: Listing; onClick: (
         </div>
         {isStay && (
           <div className="card-allin">
-            <span className="t">{t("card.allInPerNight", { amount: money(allIn, listing.currency) })}</span>
+            {/* "total / night" was two different things in one phrase, and the
+                figure is neither a total nor the headline rate — it is what one
+                night actually costs once fees are counted. Built from the same
+                per-night key the price above uses, so there is one vocabulary
+                for nightly pricing and no sentence that contradicts itself. */}
+            <span className="t">{money(allIn, listing.currency)} {t("card.perNight")}</span>
             <span className="nohidden">✓ {t("price.allIncluded")}</span>
           </div>
         )}

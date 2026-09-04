@@ -147,7 +147,6 @@
   "cancellation.p2": "Pinigai grąžinami į tą pačią kortelę. Jei šeimininkui jo dalis jau pervesta, ją susigrąžiname, o ne tyliai prisiimame — pinigai grįžta ten, iš kur iškeliavo.",
   "cancellation.p3": "Šeimininko atšaukimo sąlygos, jei jis jas nustatė, matomos skelbime prieš rezervuojant. Jei objektas neatitinka aprašymo, praneškite mums iki viešnagės pabaigos: iki tol jūsų pinigai yra sulaikyti, ir būtent tai leidžia mums padėti.",
   "cancellation.title": "Rezervacijos atšaukimas",
-  "card.allInPerNight": "{amount} iš viso / naktį",
   "card.instant": "⚡ Iš karto",
   "card.instantConfirmation": "⚡ Patvirtinama iš karto",
   "card.perMonth": "/ mėn.",

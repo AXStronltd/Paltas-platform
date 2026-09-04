@@ -91,7 +91,6 @@
   "cancellation.p2": "Refunds are returned to the card you paid with. Where a host has already been paid, we recover their share rather than absorbing it quietly — the money comes back from where it went.",
   "cancellation.p3": "A host's own cancellation policy, where they set one, is shown on the listing before you book. If a property is not as advertised, tell us before the stay ends: your money is held until then, which is what gives us something to put right.",
   "cancellation.title": "Cancelling a booking",
-  "card.allInPerNight": "{amount} total / night",
   "card.instant": "⚡ Instant",
   "card.instantConfirmation": "⚡ Instant confirmation",
   "card.perMonth": "/ month",

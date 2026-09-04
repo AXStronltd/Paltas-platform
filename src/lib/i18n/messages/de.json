@@ -157,7 +157,6 @@
   "cancellation.p2": "Erstattungen gehen auf die Karte zurück, mit der Sie gezahlt haben. Wurde der Gastgeber bereits ausgezahlt, holen wir dessen Anteil zurück, statt ihn stillschweigend zu tragen — das Geld kommt dorthin zurück, woher es kam.",
   "cancellation.p3": "Die Stornobedingungen des Gastgebers stehen, sofern er welche festlegt, vor der Buchung im Inserat. Entspricht die Unterkunft nicht der Beschreibung, sagen Sie es uns vor Ende des Aufenthalts: Ihr Geld wird bis dahin einbehalten, und genau das gibt uns die Möglichkeit, etwas zu ändern.",
   "cancellation.title": "Buchung stornieren",
-  "card.allInPerNight": "{amount} gesamt / Nacht",
   "card.instant": "⚡ Sofort",
   "card.instantConfirmation": "⚡ Sofortbestätigung",
   "card.perMonth": "/ Monat",

@@ -315,12 +315,23 @@ export function buildDiscoveryRows(
   // 6. Further ahead, for the trip that is not this weekend.
   dated([...nearby, ...globals], "nextMonth", "🗓️", 2);
 
+  // Everything below this line describes a stay, so it is built from stays.
+  //
+  // It used to be built from the whole catalogue, and a house for sale at
+  // 48,500,000 turned up in "newly added" between two nightly rates, priced
+  // per night by every card that drew it. The price rows were worse than
+  // wrong: sorting a sale price against a nightly rate put every stay in
+  // "most affordable" and every sale in "luxury", so neither row meant
+  // anything. Rentals and sales have their own rows above, where their prices
+  // are comparable with each other.
+  const stays = listings.filter((l) => l.kind !== "RENT" && l.kind !== "SALE");
+
   // 7. Newly published, the row that rewards coming back. Capped, so it stays
   // "the newest ones" rather than the whole catalogue in a different order.
-  push("newest", "✨", [...listings].sort((a, b) => published(b) - published(a)).slice(0, 8));
+  push("newest", "✨", [...stays].sort((a, b) => published(b) - published(a)).slice(0, 8));
 
   // Price bands only mean something once there is a spread to band.
-  const priced = listings.filter((l) => l.price > 0);
+  const priced = stays.filter((l) => l.price > 0);
   if (priced.length >= floor * 2) {
     const asc = [...priced].sort((a, b) => a.price - b.price);
     push("affordable", "💰", asc.slice(0, 8));
@@ -329,18 +340,18 @@ export function buildDiscoveryRows(
 
   // What a visitor actually filters on, each backed by something the host
   // stated rather than something we assumed.
-  push("family", "👨‍👩‍👧", listings.filter((l) => l.maxGuests >= 4));
-  push("hotels", "🏨", listings.filter((l) => (l.roomTypes?.length ?? 0) > 0));
-  push("coast", "🏖️", listings.filter((l) => has(l, "sea view") || has(l, "beach access")));
-  push("work", "💼", listings.filter((l) => has(l, "workspace")));
-  push("connected", "📶", listings.filter((l) => has(l, "wifi")));
-  push("power", "🔌", listings.filter((l) => has(l, "backup power")));
-  push("secure", "🛡️", listings.filter((l) => has(l, "24h security")));
-  push("parking", "🚗", listings.filter((l) => has(l, "parking")));
+  push("family", "👨‍👩‍👧", stays.filter((l) => l.maxGuests >= 4));
+  push("hotels", "🏨", stays.filter((l) => (l.roomTypes?.length ?? 0) > 0));
+  push("coast", "🏖️", stays.filter((l) => has(l, "sea view") || has(l, "beach access")));
+  push("work", "💼", stays.filter((l) => has(l, "workspace")));
+  push("connected", "📶", stays.filter((l) => has(l, "wifi")));
+  push("power", "🔌", stays.filter((l) => has(l, "backup power")));
+  push("secure", "🛡️", stays.filter((l) => has(l, "24h security")));
+  push("parking", "🚗", stays.filter((l) => has(l, "parking")));
 
   // Reviews are the one thing here we cannot manufacture: a catalogue nobody
   // has stayed in yet simply does not get this row.
-  push("popular", "⭐", [...listings].filter((l) => l.reviewCount > 0).sort(rated));
+  push("popular", "⭐", [...stays].filter((l) => l.reviewCount > 0).sort(rated));
 
   // Inventory exists but nothing themed cleared the bar: show it all in one row
   // rather than claiming the catalogue is empty.

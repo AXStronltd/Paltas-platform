@@ -155,7 +155,6 @@
   "cancellation.p2": "Os reembolsos voltam para o cartão usado. Se o anfitrião já recebeu a parte dele, nós a recuperamos em vez de absorvê-la em silêncio: o dinheiro volta de onde foi.",
   "cancellation.p3": "A política de cancelamento do anfitrião, quando ele define uma, aparece no anúncio antes da reserva. Se o imóvel não for o anunciado, avise antes do fim da estadia: seu dinheiro fica retido até lá, e é isso que nos permite resolver.",
   "cancellation.title": "Cancelar uma reserva",
-  "card.allInPerNight": "{amount} no total / noite",
   "card.instant": "⚡ Imediato",
   "card.instantConfirmation": "⚡ Confirmação imediata",
   "card.perMonth": "/ mês",

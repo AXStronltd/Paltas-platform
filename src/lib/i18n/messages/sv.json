@@ -151,7 +151,6 @@
   "cancellation.p2": "Återbetalningar går tillbaka till kortet du betalade med. Har värden redan fått sin del hämtar vi tillbaka den i stället för att tyst bära den själva — pengarna kommer tillbaka dit de gick.",
   "cancellation.p3": "Värdens egen avbokningspolicy, när en sådan finns, visas i annonsen före bokning. Om objektet inte är som beskrivet: säg till innan vistelsen är slut. Dina pengar hålls kvar till dess, och det är just det som gör att vi kan rätta till något.",
   "cancellation.title": "Avboka en bokning",
-  "card.allInPerNight": "{amount} totalt / natt",
   "card.instant": "⚡ Direkt",
   "card.instantConfirmation": "⚡ Direkt bekräftelse",
   "card.perMonth": "/ månad",

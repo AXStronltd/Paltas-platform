@@ -153,7 +153,6 @@
   "cancellation.p2": "Les remboursements retournent sur la carte utilisée. Si l'hôte a déjà été payé, nous récupérons sa part plutôt que de l'absorber en silence : l'argent revient d'où il est parti.",
   "cancellation.p3": "La politique d'annulation de l'hôte, lorsqu'il en fixe une, figure sur l'annonce avant la réservation. Si le bien ne correspond pas à l'annonce, dites-le-nous avant la fin du séjour : votre argent est retenu jusque-là, et c'est ce qui nous permet d'agir.",
   "cancellation.title": "Annuler une réservation",
-  "card.allInPerNight": "{amount} au total / nuit",
   "card.instant": "⚡ Immédiat",
   "card.instantConfirmation": "⚡ Confirmation immédiate",
   "card.perMonth": "/ mois",

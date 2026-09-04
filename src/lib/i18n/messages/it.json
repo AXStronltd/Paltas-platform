@@ -154,7 +154,6 @@
   "cancellation.p2": "I rimborsi tornano sulla carta usata. Se l'host è già stato pagato, recuperiamo la sua parte invece di assorbirla in silenzio: il denaro torna da dove è andato.",
   "cancellation.p3": "La politica di cancellazione dell'host, quando ne fissa una, è sull'annuncio prima della prenotazione. Se l'immobile non è come descritto, diccelo prima della fine del soggiorno: il tuo denaro è trattenuto fino ad allora, ed è ciò che ci permette di rimediare.",
   "cancellation.title": "Annullare una prenotazione",
-  "card.allInPerNight": "{amount} totali / notte",
   "card.instant": "⚡ Immediato",
   "card.instantConfirmation": "⚡ Conferma immediata",
   "card.perMonth": "/ mese",

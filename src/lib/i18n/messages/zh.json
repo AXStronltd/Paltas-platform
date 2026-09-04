@@ -143,7 +143,6 @@
   "cancellation.p2": "退款退回您付款所用的卡。若房东已收到其份额，我们会向其追回，而不是默默承担——钱从哪里去，就从哪里回。",
   "cancellation.p3": "房东自行设定的取消政策（如有）会在预订前显示在房源上。若房产与描述不符，请在入住结束前告知我们：您的款项在此之前一直被保留，这正是我们能够补救的原因。",
   "cancellation.title": "取消预订",
-  "card.allInPerNight": "每晚合计 {amount}",
   "card.instant": "⚡ 即时确认",
   "card.instantConfirmation": "⚡ 即时确认",
   "card.perMonth": "/ 月",

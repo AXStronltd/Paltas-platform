@@ -146,7 +146,6 @@
   "cancellation.p2": "İadeler ödediğiniz karta döner. Ev sahibine payı çoktan ödendiyse, sessizce üstlenmek yerine onu geri alırız — para gittiği yerden geri gelir.",
   "cancellation.p3": "Ev sahibinin kendi iptal koşulları, belirlemişse, rezervasyondan önce ilanda görünür. Mülk ilan edildiği gibi değilse, konaklama bitmeden bize söyleyin: paranız o ana kadar tutulur ve düzeltme imkânımız budur.",
   "cancellation.title": "Rezervasyon iptali",
-  "card.allInPerNight": "gecelik toplam {amount}",
   "card.instant": "⚡ Anında",
   "card.instantConfirmation": "⚡ Anında onay",
   "card.perMonth": "/ ay",
