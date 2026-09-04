@@ -56,6 +56,7 @@ export async function loadActor(userId: string): Promise<Actor | null> {
     isPlatformAdmin: user.isPlatformAdmin,
     status: user.status,
     onboardingCompletedAt: user.onboardingCompletedAt,
+    onboardingRole: user.onboardingRole,
     roles: user.roleAssignments.map((a) => ({
       key: a.role.key,
       name: a.role.name,

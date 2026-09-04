@@ -77,6 +77,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       roles: actor?.roles ?? [],
       permissions: actor ? effectivePermissionKeys(actor, ALL_PERMISSIONS) : [],
       onboardingRequired: !user.onboardingCompletedAt || user.status === "PENDING",
+      dashboardRole: user.onboardingRole ?? (user.isOwner ? "landlord" : null),
     });
   });
 }

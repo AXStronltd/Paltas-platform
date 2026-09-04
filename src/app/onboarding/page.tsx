@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const roles = [
-  ["property_owner", "Property Owner"],
-  ["property_manager", "Property Manager"],
-  ["staff", "Staff"],
+  ["developer", "Developer"],
+  ["landlord", "Landlord"],
+  ["agent", "Agent"],
+  ["hotel", "Hotel"],
+  ["seller", "Seller"],
   ["resident", "Tenant / Resident"],
 ] as const;
 
@@ -56,10 +58,10 @@ export default function OnboardingPage() {
     <label className="auth-field">Full name<input value={name} onChange={(event) => setName(event.target.value)} required /></label>
     <label className="auth-field">Phone<input value={phone} onChange={(event) => setPhone(event.target.value)} required /></label>
     <label className="auth-field">Country<input value={country} onChange={(event) => setCountry(event.target.value)} maxLength={2} placeholder="KE" required /></label>
-    {role && <label className="auth-field">{role === "resident" ? "Property and unit" : role === "staff" ? "Employer and position" : role === "property_manager" ? "Management company and properties" : "Property ownership and portfolio"}<textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={3} /></label>}
+    {role && <label className="auth-field">{role === "resident" ? "Property and unit" : role === "agent" ? "Agency and service area" : role === "hotel" ? "Hotel and room portfolio" : role === "developer" ? "Projects and unit portfolio" : role === "seller" ? "Property you are selling" : "Property ownership and portfolio"}<textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={3} /></label>}
     {role && role !== "resident" && <>
       <label className="auth-field">Identity document (PDF, JPG or PNG, max 10 MB)<input type="file" accept="application/pdf,image/jpeg,image/png" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload("IDENTITY", file); event.currentTarget.value = ""; }} /></label>
-      {role === "property_owner" && <label className="auth-field">Ownership / title deed (PDF, JPG or PNG, max 10 MB)<input type="file" accept="application/pdf,image/jpeg,image/png" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload("OWNERSHIP", file); event.currentTarget.value = ""; }} /></label>}
+      {role === "landlord" && <label className="auth-field">Ownership / title deed (PDF, JPG or PNG, max 10 MB)<input type="file" accept="application/pdf,image/jpeg,image/png" disabled={uploading} onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload("OWNERSHIP", file); event.currentTarget.value = ""; }} /></label>}
       <p className="muted small">{documents.length ? `${documents.length} document${documents.length === 1 ? "" : "s"} uploaded and awaiting review.` : "Documents are private and visible only to authorized reviewers."}</p>
     </>}
     {error && <p className="auth-error">{error}</p>}

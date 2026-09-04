@@ -33,6 +33,7 @@ const ROLE_FOR: Record<string, string> = {
   agent: "property_manager",
   hotel: "property_manager",
   developer: "property_manager",
+  seller: "property_manager",
 };
 
 export async function POST(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
@@ -84,7 +85,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const definition = SYSTEM_ROLES.find((r) => r.key === roleKey);
     if (!definition) return badRequest(`Unknown role "${roleKey}".`);
 
-    const requiredTypes = account.onboardingRole === "property_owner"
+    const requiredTypes = account.onboardingRole === "landlord"
       ? ["IDENTITY", "OWNERSHIP"]
       : account.onboardingRole === "resident" ? [] : ["IDENTITY"];
     const approvedDocuments = await prisma.verificationDocument.findMany({ where: { userId: account.id, status: "APPROVED" }, select: { type: true } });
@@ -127,7 +128,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           status: "ACTIVE",
           // Owner of their own organisation, which is what signing up as a
           // business means. Never platform staff — that is ours to grant.
-          isOwner: body.isOwner ?? true,
+          isOwner: account.onboardingRole === "landlord" && (body.isOwner ?? true),
           approvedById: g.actor.id,
           approvedAt: new Date(),
         },

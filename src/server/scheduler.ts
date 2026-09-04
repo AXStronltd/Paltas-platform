@@ -21,6 +21,7 @@ export const SCHEDULER: Actor = {
   isPlatformAdmin: false,
   status: "SUSPENDED",
   onboardingCompletedAt: null,
+  onboardingRole: null,
   roles: [],
   grants: [],
 };

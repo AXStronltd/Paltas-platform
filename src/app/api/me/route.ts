@@ -37,6 +37,7 @@ export async function GET(): Promise<NextResponse> {
         isPlatformAdmin: actor.isPlatformAdmin,
         status: actor.status,
         onboardingCompleted: Boolean(actor.onboardingCompletedAt),
+        dashboardRole: actor.onboardingRole ?? (actor.isOwner ? "landlord" : actor.roles[0]?.key ?? null),
       },
       orgId: actor.orgId,
       roles: actor.roles,

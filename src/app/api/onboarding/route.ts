@@ -5,7 +5,7 @@ import { badRequest, handle, ok, unauthorized } from "@/server/http";
 
 export const dynamic = "force-dynamic";
 
-const ROLES = ["property_owner", "property_manager", "staff", "resident"] as const;
+const ROLES = ["developer", "landlord", "agent", "hotel", "seller", "resident"] as const;
 type OnboardingRole = (typeof ROLES)[number];
 
 export async function GET(): Promise<NextResponse> {
@@ -35,7 +35,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const documents = await prisma.verificationDocument.findMany({ where: { userId: actor.id, status: "PENDING" }, select: { type: true } });
     const documentTypes = new Set(documents.map((document) => document.type));
     if (body.role !== "resident" && !documentTypes.has("IDENTITY")) return badRequest("Upload an identity document before submitting onboarding.");
-    if (body.role === "property_owner" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
+    if (body.role === "landlord" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
     const user = await prisma.user.update({ where: { id: actor.id }, data: { name, phone, onboardingRole: body.role, onboardingData: { country, ...details }, onboardingCompletedAt: new Date() }, select: { id: true, name: true, email: true, onboardingRole: true, onboardingCompletedAt: true, status: true } });
     return ok({ onboardingCompleted: true, pendingApproval: user.status !== "ACTIVE", user });
   });

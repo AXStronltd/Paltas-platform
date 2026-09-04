@@ -27,12 +27,15 @@ export default function AuthCallbackPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accessToken: data.session.access_token, audience }),
         });
+        const payload = await response.json().catch(() => null);
         if (!response.ok) {
-          const payload = await response.json().catch(() => null);
           if (active) setMessage(payload?.error?.message ?? "Your account is not ready for PALTAS yet.");
           return;
         }
-        window.location.assign(audience === "staff" ? "/manage" : "/");
+        const destination = audience === "staff"
+          ? ({ developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/sell" } as Record<string, string>)[payload?.dashboardRole ?? ""] ?? "/manage"
+          : "/";
+        window.location.assign(destination);
       } catch (reason) {
         if (active) setMessage(reason instanceof Error ? reason.message : "The sign-in session could not be completed.");
       }

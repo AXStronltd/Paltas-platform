@@ -33,6 +33,7 @@ export interface SessionUser {
   isPlatformAdmin: boolean;
   status: string;
   onboardingCompleted: boolean;
+  dashboardRole: string | null;
 }
 
 export interface SessionRole {
