@@ -3,10 +3,18 @@ import { mockDelay } from "./apiClient";
 
 /**
  * Escrow service — the two-sided money-protection engine.
+ *
  * Funds are HELD until BOTH the buyer and the host confirm; only then are they
- * released. This is PALTAS's trust moat. In mock mode the state lives in memory;
- * with the API it lives in the backend + a real settlement provider. The rules
- * (release only when both confirm) live here and never change.
+ * released. That rule is the point of the module and does not change.
+ *
+ * The state lives in memory, in this process. It used to read as though a
+ * config switch would move it to "the backend + a real settlement provider",
+ * but the branch that claimed to do that posted to `/escrow`, which this
+ * application does not serve, and it was unreachable anyway. Money that has
+ * actually moved is Stripe's business and is recorded in Postgres — see
+ * src/server/stripe.ts and src/server/payouts.ts. This module backs the
+ * marketplace checkout demo path only, and being in memory means it is
+ * per-process and does not survive a restart.
  */
 
 const store: EscrowTransaction[] = [];
@@ -26,26 +34,24 @@ interface CreateEscrowInput {
 }
 
 export async function createEscrow(input: CreateEscrowInput): Promise<Result<EscrowTransaction>> {
-  {
-    const tx: EscrowTransaction = {
-      id: "esc_" + Date.now(), ...input,
-      status: "held", buyerConfirmed: false, hostConfirmed: false, createdAt: Date.now(),
-    };
-    store.unshift(tx);
-    return mockDelay({ data: tx, error: null });
-  }
+  const tx: EscrowTransaction = {
+    id: "esc_" + Date.now(), ...input,
+    status: "held", buyerConfirmed: false, hostConfirmed: false, createdAt: Date.now(),
+  };
+  store.unshift(tx);
+  return mockDelay({ data: tx, error: null });
 }
 
 export async function confirmAsBuyer(id: string): Promise<Result<EscrowTransaction>> {
-  return transition(id, (tx) => { tx.buyerConfirmed = true; settle(tx); }, `/escrow/${id}/confirm-buyer`);
+  return transition(id, (tx) => { tx.buyerConfirmed = true; settle(tx); });
 }
 
 export async function confirmAsHost(id: string): Promise<Result<EscrowTransaction>> {
-  return transition(id, (tx) => { tx.hostConfirmed = true; settle(tx); }, `/escrow/${id}/confirm-host`);
+  return transition(id, (tx) => { tx.hostConfirmed = true; settle(tx); });
 }
 
 export async function raiseDispute(id: string): Promise<Result<EscrowTransaction>> {
-  return transition(id, (tx) => { tx.status = "disputed"; }, `/escrow/${id}/dispute`);
+  return transition(id, (tx) => { tx.status = "disputed"; });
 }
 
 export async function getMyEscrows(buyerId: string): Promise<Result<EscrowTransaction[]>> {
@@ -60,12 +66,9 @@ function settle(tx: EscrowTransaction) {
 async function transition(
   id: string,
   mutate: (tx: EscrowTransaction) => void,
-  apiPath: string
 ): Promise<Result<EscrowTransaction>> {
-  {
-    const tx = store.find((t) => t.id === id);
-    if (!tx) return { data: null as unknown as EscrowTransaction, error: { code: "not_found", message: "Escrow not found" } };
-    mutate(tx);
-    return mockDelay({ data: tx, error: null });
-  }
+  const tx = store.find((t) => t.id === id);
+  if (!tx) return { data: null as unknown as EscrowTransaction, error: { code: "not_found", message: "Escrow not found" } };
+  mutate(tx);
+  return mockDelay({ data: tx, error: null });
 }
