@@ -86,6 +86,34 @@ services:
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
 
+      # Private document storage. Without these, storageEnabled() is false and
+      # /api/verification/documents answers 503 — which means no identity or
+      # ownership document can be uploaded, which means onboarding cannot be
+      # submitted by anyone except a resident, which means nobody reaches a
+      # dashboard. They were documented in .env.example and never declared
+      # here, so the deployment had no way to be told about them.
+      #
+      # S3_PUBLIC_URL must be a different host from the application; see the
+      # note in .env.example for why.
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_URL
+        sync: false
+
+      # The origin the platform believes it is served from. Password-reset and
+      # notification emails build their links from it, so an unset value sends
+      # people to whatever the fallback happens to be.
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+
 
       # NEXT_PUBLIC_DATA_SOURCE is gone. It read "mock" on a live deployment
       # serving real listings from the database, which was alarming and untrue:
