@@ -38,7 +38,7 @@ export function SignIn({ subtitle }: { subtitle?: string } = {}) {
       window.location.assign("/onboarding");
       return;
     }
-    const dashboard = { developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/sell" }[res.data?.dashboardRole as "developer" | "landlord" | "agent" | "hotel" | "seller"];
+    const dashboard = { developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/portal/seller" }[res.data?.dashboardRole as "developer" | "landlord" | "agent" | "hotel" | "seller"];
     if (dashboard) { window.location.assign(dashboard); return; }
     await refresh();
   }

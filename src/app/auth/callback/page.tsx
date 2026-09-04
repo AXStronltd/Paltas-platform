@@ -33,7 +33,7 @@ export default function AuthCallbackPage() {
           return;
         }
         const destination = audience === "staff"
-          ? ({ developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/sell" } as Record<string, string>)[payload?.dashboardRole ?? ""] ?? "/manage"
+          ? ({ developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/portal/seller" } as Record<string, string>)[payload?.dashboardRole ?? ""] ?? "/manage"
           : "/";
         window.location.assign(destination);
       } catch (reason) {
