@@ -27,6 +27,7 @@ export default function OnboardingPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(false);
+  const [uploadsAvailable, setUploadsAvailable] = useState(true);
 
   // Signed out, or already through — either way this form is not the place to
   // be. The endpoint is the one that knows; asking it avoids a second opinion.
@@ -37,6 +38,7 @@ export default function OnboardingPage() {
       if (payload?.role) setRole(payload.role as RoleKey);
       if (payload?.profile?.name) setData((d) => ({ name: payload.profile.name, phone: payload.profile.phone ?? "", ...d }));
       if (payload?.onboardingCompleted) setPending(true);
+      if (payload && payload.uploadsAvailable === false) setUploadsAvailable(false);
     });
   }, [router]);
 
@@ -137,7 +139,7 @@ export default function OnboardingPage() {
     const gap = incomplete(current.f);
     if (gap) return setError(`${gap.l || "This"} is required.`);
     if (isLast) {
-      if (missing.length) return setError(`Upload your ${missing.map((m) => m === "IDENTITY" ? "identity document" : "proof of ownership").join(" and ")} before submitting.`);
+      if (uploadsAvailable && missing.length) return setError(`Upload your ${missing.map((m) => m === "IDENTITY" ? "identity document" : "proof of ownership").join(" and ")} before submitting.`);
       return void submit();
     }
     setStep((s) => s + 1); setError("");
@@ -168,7 +170,13 @@ export default function OnboardingPage() {
       </label>
     ))}
 
-    {isLast && needed.map((type) => (
+    {isLast && needed.length > 0 && !uploadsAvailable && (
+      <p className="auth-notice">
+        Document upload is temporarily unavailable. Submit your details now — PALTAS will
+        contact you to collect your {needed.includes("OWNERSHIP") ? "identity and ownership documents" : "identity document"} before your account is approved.
+      </p>
+    )}
+    {isLast && uploadsAvailable && needed.map((type) => (
       <label className="auth-field" key={type}>
         {type === "IDENTITY" ? "Identity document" : "Ownership / title deed"} (PDF, JPG or PNG, max 10 MB)
         <input type="file" accept="application/pdf,image/jpeg,image/png" disabled={uploading}
@@ -176,7 +184,7 @@ export default function OnboardingPage() {
         {held.has(type) && <span className="muted small">✓ {documents.find((d) => d.type === type)!.fileName} — awaiting review</span>}
       </label>
     ))}
-    {isLast && needed.length > 0 && (
+    {isLast && uploadsAvailable && needed.length > 0 && (
       <p className="muted small">Documents are private and visible only to authorized reviewers.</p>
     )}
 

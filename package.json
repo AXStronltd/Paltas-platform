@@ -40,7 +40,8 @@
     "test:photos": "npm run db:seed --silent && node tests/photos.e2e.mjs",
     "test:mail": "npm run db:seed --silent && node tests/mail.e2e.mjs",
     "test:support": "npm run db:seed --silent && node tests/support.e2e.mjs",
-    "test:messages": "npm run db:seed --silent && node tests/messages.e2e.mjs"
+    "test:messages": "npm run db:seed --silent && node tests/messages.e2e.mjs",
+    "check:production": "node scripts/check-production.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

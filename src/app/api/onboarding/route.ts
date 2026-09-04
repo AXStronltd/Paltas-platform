@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { currentActor } from "@/server/actor";
 import { badRequest, handle, ok, unauthorized } from "@/server/http";
 import { staffDestination } from "@/lib/auth/destination";
+import { storageEnabled } from "@/server/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,15 @@ export async function GET(): Promise<NextResponse> {
     if (!actor) return unauthorized();
     const user = await prisma.user.findUnique({ where: { id: actor.id }, select: { name: true, phone: true, onboardingRole: true, onboardingData: true, onboardingCompletedAt: true, requestedRole: true } });
     if (!user) return unauthorized();
-    return ok({ onboardingCompleted: Boolean(user.onboardingCompletedAt), role: user.onboardingRole ?? user.requestedRole ?? null, profile: user });
+    // Whether documents can be uploaded at all. Without object storage the
+    // upload endpoint answers 503, and a form that keeps insisting on a file
+    // the platform cannot accept is a dead end with no way out of it.
+    return ok({
+      onboardingCompleted: Boolean(user.onboardingCompletedAt),
+      role: user.onboardingRole ?? user.requestedRole ?? null,
+      uploadsAvailable: storageEnabled(),
+      profile: user,
+    });
   });
 }
 
@@ -37,10 +46,22 @@ export async function POST(req: Request): Promise<NextResponse> {
     // statement the approver relies on, so it is checked here rather than only
     // in the browser, where a disabled button is not a promise.
     if (details.consent !== "yes") return badRequest("Please confirm the declaration before submitting.");
-    const documents = await prisma.verificationDocument.findMany({ where: { userId: actor.id, status: "PENDING" }, select: { type: true } });
-    const documentTypes = new Set(documents.map((document) => document.type));
-    if (body.role !== "resident" && !documentTypes.has("IDENTITY")) return badRequest("Upload an identity document before submitting onboarding.");
-    if (body.role === "landlord" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
+    // Documents are demanded only when the platform can actually take one.
+    // Where storage is unconfigured this used to refuse every submission for
+    // every role but resident, so an applicant filled the form, was told to
+    // upload an identity document, found the upload answering 503, and had no
+    // route forward at all — their name and role were never recorded.
+    //
+    // Nothing is loosened by accepting them: the approval queue still refuses
+    // to activate an account whose required documents are not APPROVED, so the
+    // evidence is still demanded, just at the point where somebody can act on
+    // the absence rather than at the point where nobody can.
+    if (storageEnabled()) {
+      const documents = await prisma.verificationDocument.findMany({ where: { userId: actor.id, status: "PENDING" }, select: { type: true } });
+      const documentTypes = new Set(documents.map((document) => document.type));
+      if (body.role !== "resident" && !documentTypes.has("IDENTITY")) return badRequest("Upload an identity document before submitting onboarding.");
+      if (body.role === "landlord" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
+    }
     const user = await prisma.user.update({ where: { id: actor.id }, data: { name, phone, onboardingRole: body.role, onboardingData: { country, ...details }, onboardingCompletedAt: new Date() }, select: { id: true, name: true, email: true, onboardingRole: true, onboardingCompletedAt: true, status: true } });
     // Where they go next, decided by the same helper the sign-in forms use so
     // the answer cannot drift between the two places that ask it.
