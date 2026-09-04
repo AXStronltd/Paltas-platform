@@ -32,7 +32,26 @@ export function model(): string {
 }
 
 export function anthropicEnabled(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+  // Trimmed: a value pasted into a dashboard field frequently arrives with a
+  // trailing newline, which is truthy and then fails at the API as a malformed
+  // header — a confusing failure a long way from its cause.
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+}
+
+/**
+ * Why the assistant is off, when it is off.
+ *
+ * Names of environment variables, never values. A key set under a slightly
+ * wrong name and a key not set at all look identical from outside and need
+ * completely different fixes, and "check the dashboard again" is not a
+ * diagnosis. Only ever returned while the assistant is unavailable, so it
+ * disappears the moment it stops being useful.
+ */
+export function configurationHint(): { sawNames: string[]; exactKeySet: boolean } {
+  return {
+    sawNames: Object.keys(process.env).filter((n) => /anthropic|claude/i.test(n)).sort(),
+    exactKeySet: typeof process.env.ANTHROPIC_API_KEY === "string",
+  };
 }
 
 /**

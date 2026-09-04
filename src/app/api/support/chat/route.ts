@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { fail, handle, ok, readJson } from "@/server/http";
-import { anthropicEnabled, assertKeyNotPublic, model, streamChat, textOnly } from "@/server/anthropic";
+import { anthropicEnabled, assertKeyNotPublic, configurationHint, model, streamChat, textOnly } from "@/server/anthropic";
 import { systemPrompt } from "@/lib/support/knowledge";
 import {
   RATE_LIMIT, callerKey, sanitiseHistory, sendable, windowStart,
@@ -72,7 +72,15 @@ async function overLimit(hash: string, now: Date): Promise<false | { retryAfterM
 
 /** Whether the assistant can answer at all, for the widget to check before opening. */
 export async function GET(): Promise<NextResponse> {
-  return handle(async () => ok({ available: anthropicEnabled(), model: anthropicEnabled() ? model() : null }));
+  return handle(async () => {
+    const available = anthropicEnabled();
+    return ok({
+      available,
+      model: available ? model() : null,
+      // Only while it is off, and only variable names — never a value.
+      ...(available ? {} : { configuration: configurationHint() }),
+    });
+  });
 }
 
 export async function POST(req: Request): Promise<Response> {
