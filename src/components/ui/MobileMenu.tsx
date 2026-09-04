@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Portal } from "./Portal";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/components/i18n/LocaleProvider";
+import { openHelp } from "@/components/support/HelpLauncher";
 
 /**
  * Mobile navigation. On phones the header links are hidden; this provides a
@@ -75,6 +76,18 @@ export function MobileMenu() {
               </Link>
             ))}
 
+            {/* The header's "?" is hidden on a phone, and the panel has to be
+                reachable from somewhere. Closing the menu first, or the panel
+                opens underneath it. */}
+            <div className="mm-section">{t("menu.help")}</div>
+            <button
+              type="button"
+              className="mm-link"
+              onClick={() => { setOpen(false); openHelp(); }}
+            >
+              <Icon name="help" /> {t("chat.open")}
+            </button>
+
             <div className="mm-foot">
               <Link href="/" className="btn btn-primary" style={{ width: "100%" }}>{t("menu.findStay")}</Link>
             </div>
@@ -89,6 +102,7 @@ export function MobileMenu() {
 function Icon({ name }: { name: string }) {
   const common = { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, width: 20, height: 20 } as const;
   switch (name) {
+    case "help": return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M9.5 9.4a2.6 2.6 0 1 1 3.3 2.5c-.6.2-.9.7-.9 1.3v.4" strokeLinecap="round" /><path d="M12 17h.01" strokeLinecap="round" strokeWidth={2.6} /></svg>;
     case "home": return <svg {...common}><path d="M3 11l9-8 9 8M5 10v10h14V10" /></svg>;
     case "calendar": return <svg {...common}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>;
     case "hotel": return <svg {...common}><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h6" /></svg>;

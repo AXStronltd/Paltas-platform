@@ -1892,3 +1892,144 @@ body:has(.scrim) .tabbar { display: none; }
   .info-head h1 { font-size: 27px; }
   .info-lead { font-size: 15.5px; }
 }
+
+/* ============================================================
+   HELP CHAT
+   Navy head, teal accents, and quiet: the panel is a place to
+   get an answer, not another thing competing for attention.
+   Sized so it never covers the page on a desktop and never
+   fights the tab bar on a phone.
+   ============================================================ */
+.header-help {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--line-2); background: #fff; color: var(--ink-2);
+  cursor: pointer; transition: border-color .15s, color .15s, background .15s;
+}
+.header-help:hover { border-color: var(--teal); color: var(--teal-ink); background: #eafaf7; }
+.header-help:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+.chat-scrim {
+  position: fixed; inset: 0; background: rgba(6, 22, 38, .34);
+  z-index: var(--z-overlay); animation: chatFade .18s ease;
+}
+@keyframes chatFade { from { opacity: 0; } to { opacity: 1; } }
+
+.chat-panel {
+  position: fixed; z-index: calc(var(--z-overlay) + 1);
+  inset-block-end: 24px; inset-inline-end: 24px;
+  width: min(400px, calc(100vw - 32px)); height: min(620px, calc(100vh - 48px));
+  display: flex; flex-direction: column; overflow: hidden;
+  background: #fff; border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(6, 22, 38, .3);
+  animation: chatRise .26s cubic-bezier(.22, 1, .3, 1);
+}
+@keyframes chatRise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+
+.chat-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 15px 18px; background: var(--navy); color: #fff; flex: 0 0 auto;
+}
+.chat-head strong { display: block; font-size: 15px; font-weight: 800; }
+.chat-head span { display: block; font-size: 12px; color: #9fb3c8; margin-top: 2px; }
+.chat-close {
+  border: 0; background: rgba(255,255,255,.1); color: #fff; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 13px; flex: 0 0 auto;
+}
+.chat-close:hover { background: rgba(255,255,255,.2); }
+
+.chat-body { flex: 1 1 auto; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+.chat-intro p { margin: 0 0 14px; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
+.chat-starters { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.chat-starters button {
+  border: 1.5px solid var(--line-2); background: #fff; color: var(--ink);
+  border-radius: 999px; padding: 9px 15px; font-family: inherit; font-size: 13.5px;
+  font-weight: 600; cursor: pointer; text-align: start;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.chat-starters button:hover { border-color: var(--teal); background: #eafaf7; transform: translateY(-1px); }
+
+.chat-msg {
+  max-width: 86%; padding: 11px 14px; border-radius: 16px;
+  font-size: 14.5px; line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+}
+.chat-you { align-self: flex-end; background: var(--navy); color: #fff; border-end-end-radius: 5px; }
+.chat-ai  { align-self: flex-start; background: var(--bg-2); color: var(--ink); border-end-start-radius: 5px; }
+.chat-path { color: var(--teal-ink); font-weight: 700; text-decoration: underline; }
+
+/* Three dots, so the wait reads as thinking rather than as nothing happening. */
+.chat-typing { display: inline-flex; gap: 4px; align-items: center; height: 14px; }
+.chat-typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: chatDot 1.1s infinite ease-in-out; }
+.chat-typing i:nth-child(2) { animation-delay: .16s; }
+.chat-typing i:nth-child(3) { animation-delay: .32s; }
+@keyframes chatDot { 0%, 60%, 100% { opacity: .25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+.chat-error {
+  margin: 0; font-size: 13.5px; color: #b0402f; background: #fdf1ef;
+  border: 1px solid #f3d5cf; border-radius: 10px; padding: 10px 12px;
+}
+
+.chat-escalate { margin-top: 4px; }
+.chat-escalate-link {
+  border: 0; background: transparent; color: var(--muted); font-family: inherit;
+  font-size: 13px; cursor: pointer; text-decoration: underline; padding: 4px 0;
+}
+.chat-escalate-link:hover { color: var(--teal-ink); }
+.chat-escalate-open {
+  border: 1px solid var(--line-2); border-radius: 12px; padding: 13px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.chat-escalate-open p { margin: 0 0 2px; font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
+.chat-escalate-btn {
+  display: block; text-align: center; text-decoration: none;
+  background: var(--teal); color: var(--navy); font-weight: 700; font-size: 14px;
+  padding: 10px 14px; border-radius: 10px;
+}
+.chat-escalate-btn:hover { filter: brightness(1.05); }
+.chat-escalate-alt { background: #fff; color: var(--teal-ink); border: 1.5px solid var(--line-2); }
+.chat-escalate-alt:hover { border-color: var(--teal); background: var(--bg-2); filter: none; }
+
+.chat-compose {
+  flex: 0 0 auto; display: flex; align-items: flex-end; gap: 8px;
+  padding: 12px 14px; border-top: 1px solid var(--line);
+}
+.chat-compose textarea {
+  flex: 1 1 auto; resize: none; max-height: 120px;
+  border: 1.5px solid var(--line-2); border-radius: 14px; padding: 10px 13px;
+  font-family: inherit; font-size: 14.5px; line-height: 1.5; color: var(--ink);
+  /* 16px on iOS or Safari zooms the whole page when the field is focused. */
+  field-sizing: content;
+}
+.chat-compose textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,196,172,.12); }
+.chat-compose button {
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: 0;
+  background: var(--teal); color: var(--navy); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; transition: .15s;
+}
+.chat-compose button:disabled { background: var(--line-2); color: var(--muted); cursor: default; }
+.chat-compose button:not(:disabled):hover { transform: scale(1.06); }
+/* The glyph points along the reading direction, so it mirrors in Arabic. */
+[dir="rtl"] .chat-compose button svg { transform: scaleX(-1); }
+
+.chat-foot {
+  margin: 0; padding: 0 14px 12px; font-size: 11.5px; color: var(--muted);
+  text-align: center; line-height: 1.5;
+}
+
+@media (max-width: 620px) {
+  /* Full height, minus the tab bar it would otherwise sit under. */
+  .chat-panel {
+    inset: 0; width: 100%; height: auto; border-radius: 0;
+    padding-block-end: calc(70px + env(safe-area-inset-bottom));
+    padding-block-start: env(safe-area-inset-top);
+  }
+  .chat-msg { max-width: 90%; }
+  .chat-compose textarea { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel, .chat-scrim { animation: none; }
+  .chat-typing i { animation: none; opacity: .5; }
+  .chat-starters button:hover, .chat-compose button:not(:disabled):hover { transform: none; }
+}

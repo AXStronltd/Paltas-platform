@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { TabBar } from "./TabBar";
 import { BuildStamp } from "./BuildStamp";
 import { Footer } from "./Footer";
+import { HelpMount } from "@/components/support/HelpLauncher";
 
 /**
  * The marketplace's header and bottom tab bar.
@@ -25,6 +26,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       {children}
       {/* Below the content and above the phone tab bar, which floats. */}
       <Footer />
+      <HelpMount />
       <BuildStamp />
       <TabBar />
     </>

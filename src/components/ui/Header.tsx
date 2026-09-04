@@ -7,6 +7,7 @@ import { AuthModal } from "./AuthModal";
 import { useGuest } from "@/components/booking/GuestProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { useI18n } from "@/components/i18n/LocaleProvider";
+import { HelpButton } from "@/components/support/HelpLauncher";
 
 export function Header() {
   const { t } = useI18n();
@@ -45,6 +46,7 @@ export function Header() {
         </nav>
 
         <div className="header-right">
+          <HelpButton />
           <LocaleSwitcher />
           <Link href="/bookings" className="header-heart" aria-label="Saved">♡</Link>
           {guest ? (
