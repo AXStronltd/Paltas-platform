@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import { currentActor } from "@/server/actor";
 import { badRequest, fail, handle, ok, unauthorized } from "@/server/http";
 import { objectSize, presignPut, readHead, storageEnabled } from "@/server/storage";
+import { writeAudit } from "@/server/audit";
 
 export const dynamic = "force-dynamic";
 const TYPES = ["IDENTITY", "OWNERSHIP", "SUPPORTING"] as const;
@@ -53,6 +54,19 @@ export async function PUT(req: Request): Promise<NextResponse> {
       data: { userId: actor.id, type: body.type as (typeof TYPES)[number], storageKey: body.key, fileName: body.fileName.trim().slice(0, 180), contentType, size },
       select: { id: true, type: true, status: true, fileName: true, size: true },
     });
+    // The document itself is the evidence; this records that it arrived and
+    // when, so a reviewer approving one can be placed in a sequence afterwards.
+    // Deliberately no storage key and no file contents — an audit trail that
+    // points at somebody's passport is a second way to reach it.
+    await writeAudit({
+      actor,
+      action: "verification.document.submit",
+      entityType: "VerificationDocument",
+      entityId: document.id,
+      summary: `${actor.name} uploaded a ${document.type.toLowerCase()} document for verification.`,
+      after: { type: document.type, status: document.status },
+    });
+
     return ok({ document }, 201);
   });
 }

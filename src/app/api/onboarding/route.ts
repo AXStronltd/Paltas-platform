@@ -4,6 +4,7 @@ import { currentActor } from "@/server/actor";
 import { badRequest, handle, ok, unauthorized } from "@/server/http";
 import { staffDestination } from "@/lib/auth/destination";
 import { storageEnabled } from "@/server/storage";
+import { writeAudit } from "@/server/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,21 @@ export async function POST(req: Request): Promise<NextResponse> {
       if (body.role === "landlord" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
     }
     const user = await prisma.user.update({ where: { id: actor.id }, data: { name, phone, onboardingRole: body.role, onboardingData: { country, ...details }, onboardingCompletedAt: new Date() }, select: { id: true, name: true, email: true, onboardingRole: true, onboardingCompletedAt: true, status: true } });
+    // The role recorded here is what the approver is handed, so a change to it
+    // is worth being able to see afterwards — the same reasoning that makes
+    // /api/me audit a self-edit. The declared role and country are recorded;
+    // the free-text answers and document numbers are not, since an audit trail
+    // that duplicates identity documents is a second place to leak them from.
+    await writeAudit({
+      actor,
+      action: "user.onboarding.submit",
+      entityType: "User",
+      entityId: actor.id,
+      summary: `${name} completed onboarding as ${body.role} (${country}).`,
+      before: { onboardingRole: null },
+      after: { onboardingRole: body.role, status: user.status },
+    });
+
     // Where they go next, decided by the same helper the sign-in forms use so
     // the answer cannot drift between the two places that ask it.
     const destination = staffDestination({

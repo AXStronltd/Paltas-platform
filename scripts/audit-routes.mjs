@@ -44,6 +44,8 @@ const UNGUARDED_BY_DESIGN = {
   "/guest/login/route.ts": "authenticates a guest — verifies the password itself",
   "/guest/logout/route.ts": "destroys only the caller's own guest session",
   "/payments/webhook/route.ts": "Stripe webhook — authorised by HMAC signature, not by session",
+  "/auth/supabase/exchange/route.ts": "turns a verified Supabase identity into a PALTAS session — unauthenticated by definition, in the same way /auth/login is. The credential is the access token, and it is verified against Supabase itself rather than trusted; an unconfirmed email is refused outright. It grants nothing a session did not already imply: a caller with no PALTAS account gets a PENDING one with no role, no approved organisation and no assignment, and the authorization engine refuses every status that is not ACTIVE. The User or Guest row is the record; there is no prior actor to attribute an audit entry to.",
+  "/auth/supabase/provision/route.ts": "creates the local principal after Supabase has created the identity — unauthenticated by definition, and it verifies the claim rather than believing it: the supplied id is fetched from Supabase and its email must match the one presented. Creates only a PENDING business account or a guest, never a role, an approval or platform authority. The created row is the record.",
 };
 
 /** Mutating endpoints that record to the access history rather than the audit log. */
@@ -95,7 +97,13 @@ for (const file of files) {
     // guardPlatform is stricter than any permission check: it requires the
     // account to be Paltas staff, which no grant can confer.
     + (src.match(/await guardPlatform\(/g) ?? []).length;
-  const usesActor = src.includes("currentActor()");
+  const usesActor = src.includes("currentActor()")
+    // Messaging spans both halves of the platform, so it resolves the caller to
+    // one side or the other through currentParticipant(), which refuses anyone
+    // holding neither session and any staff account that is not ACTIVE. It is
+    // an authorisation check by another name, and every messages route is
+    // membership-filtered on top of it.
+    || src.includes("currentParticipant()");
   const guestGuards = (src.match(/await requireGuest\(/g) ?? []).length;
 
   // A guest route must actually call requireGuest — being listed is a statement
@@ -108,7 +116,11 @@ for (const file of files) {
 
   const mutates = methods.some((m) => m !== "GET");
   const logs = src.includes("writeAudit(") || src.includes("accessEvent.create") ||
-    src.includes("bookingEvent.create") || src.includes("createBooking(") || src.includes("cancelBooking(");
+    src.includes("bookingEvent.create") || src.includes("createBooking(") || src.includes("cancelBooking(") ||
+    // A message is its own record, in the same way a booking event is. An audit
+    // entry beside it would duplicate the row it describes, and a log of who
+    // said what to whom is a privacy cost rather than an operational one.
+    src.includes("message.create(");
   if (mutates && !logs && !exempt) unlogged.push(route);
 
   rows.push({
