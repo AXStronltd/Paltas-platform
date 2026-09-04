@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { supabaseEnterStaff } from "@/lib/supabase/auth";
+import { staffDestination } from "@/lib/auth/destination";
 
 export default function AuthCallbackPage() {
   const params = useSearchParams();
@@ -32,9 +34,21 @@ export default function AuthCallbackPage() {
           if (active) setMessage(payload?.error?.message ?? "Your account is not ready for PALTAS yet.");
           return;
         }
-        const destination = audience === "staff"
-          ? ({ developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/portal/seller" } as Record<string, string>)[payload?.dashboardRole ?? ""] ?? "/manage"
-          : "/";
+        // Onboarding first, exactly as the password form does. Without this the
+        // Google half of sign-in sent people at a dashboard that would only
+        // bounce them back here, and a brand-new account — which has no role
+        // and no approval — landed on /manage with nothing on it.
+        let destination = "/";
+        if (audience === "staff") {
+          destination = staffDestination(payload);
+        } else if (payload?.staff) {
+          // "Continue with Google" from the marketplace header, by someone who
+          // also holds a PALTAS account. Same treatment as the password form:
+          // establish the staff session too, then send them to the onboarding
+          // form or their dashboard rather than back to the shopfront.
+          const staff = await supabaseEnterStaff();
+          if (!("error" in staff && staff.error)) destination = staffDestination(staff.data);
+        }
         window.location.assign(destination);
       } catch (reason) {
         if (active) setMessage(reason instanceof Error ? reason.message : "The sign-in session could not be completed.");

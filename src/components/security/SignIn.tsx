@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "@/components/security/SessionProvider";
 import { supabaseGoogleSignIn, supabaseSignIn } from "@/lib/supabase/auth";
 import { AuthCard, AuthField, AuthError, AuthSubmit } from "@/components/auth/AuthUI";
+import { staffDestination } from "@/lib/auth/destination";
 
 /**
  * One sign-in form, shared by the management portal and the landlord, hotel,
@@ -34,12 +35,11 @@ export function SignIn({ subtitle }: { subtitle?: string } = {}) {
       setError(res.error);
       return;
     }
-    if (res.data?.onboardingRequired) {
-      window.location.assign("/onboarding");
-      return;
-    }
-    const dashboard = { developer: "/portal/developer", landlord: "/portal/landlord", agent: "/portal/agent", hotel: "/portal/hotel", seller: "/portal/seller" }[res.data?.dashboardRole as "developer" | "landlord" | "agent" | "hotel" | "seller"];
-    if (dashboard) { window.location.assign(dashboard); return; }
+    const destination = staffDestination(res.data);
+    // "/manage" is where this form already lives for most of its callers, so
+    // refreshing the session in place is less jarring than reloading onto the
+    // page they are looking at.
+    if (destination !== "/manage") { window.location.assign(destination); return; }
     await refresh();
   }
 

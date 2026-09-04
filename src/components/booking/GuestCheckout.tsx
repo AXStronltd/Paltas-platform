@@ -155,7 +155,7 @@ function AccountStep({
   onDone, signIn, register,
 }: {
   onDone: () => void;
-  signIn: (email: string, password: string) => Promise<string | null>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null; staff: boolean }>;
   register: (i: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
 }) {
   const { t } = useI18n();
@@ -170,8 +170,11 @@ function AccountStep({
     e.preventDefault();
     setBusy(true);
     setError(null);
+    // Any staff account this person also holds is deliberately ignored here:
+    // they are three fields from finishing a booking, and sending them to a
+    // dashboard would throw it away.
     const msg = mode === "signin"
-      ? await signIn(email.trim(), password)
+      ? (await signIn(email.trim(), password)).error
       : await register({ email: email.trim(), name: name.trim(), password });
     setBusy(false);
     if (msg) { setError(msg); return; }

@@ -50,21 +50,48 @@ export async function POST(req: Request): Promise<NextResponse> {
         await prisma.guest.update({ where: { id: guest.id }, data: { supabaseUserId: identity.id } });
       }
       await createGuestSession(guest.id, meta);
-      return ok({ guest: { id: guest.id, name: guest.name, email: guest.email } });
+      // The same person may also hold a PALTAS staff account. The marketplace
+      // header is the front door most people use, and until now signing in
+      // through it made a landlord into a shopper: no onboarding prompt, no
+      // dashboard, and no hint that the other half of the platform existed.
+      //
+      // This only *reports* that the account is there. It deliberately does not
+      // mint a staff session — the caller exchanges the same verified token
+      // again with audience "staff", so the suspended, rejected and onboarding
+      // checks below are the only way a staff cookie is ever issued.
+      const staffAccount = await prisma.user.findFirst({
+        where: { OR: [{ supabaseUserId: identity.id }, { email }] },
+        select: { status: true, isOwner: true, onboardingRole: true, onboardingCompletedAt: true },
+      });
+      const staff = staffAccount && staffAccount.status !== "SUSPENDED" && staffAccount.status !== "REJECTED"
+        ? {
+            onboardingRequired: !staffAccount.onboardingCompletedAt || staffAccount.status === "PENDING",
+            dashboardRole: staffAccount.onboardingRole ?? (staffAccount.isOwner ? "landlord" : null),
+          }
+        : null;
+      return ok({ guest: { id: guest.id, name: guest.name, email: guest.email }, staff });
     }
 
     let user = await prisma.user.findFirst({ where: { OR: [{ supabaseUserId: identity.id }, { email }] } });
     if (!user) {
-      const requestedRole = identity.user_metadata?.role;
-      if (!["landlord", "agent", "hotel", "developer"].includes(requestedRole)) {
-        return fail(403, { code: "account_not_found", message: "Your account is not registered with PALTAS." });
-      }
+      // A verified identity with no PALTAS account yet — the ordinary case for
+      // "Continue with Google", where nothing ever asked the person what they
+      // are. Refusing here used to be a dead end: they could authenticate and
+      // then had no route to the onboarding form that would have told us.
+      //
+      // So the principal is created, and created with nothing: PENDING status,
+      // no organisation approval, no role assignment, and requestedRole left
+      // null when the identity did not carry one. The role is chosen on the
+      // onboarding form and still only granted by an approver, so this creates
+      // an applicant rather than a user with any authority.
+      const requestedRole = ["landlord", "agent", "hotel", "developer"].includes(identity.user_metadata?.role)
+        ? String(identity.user_metadata!.role)
+        : null;
       const org = await prisma.organization.create({ data: { name: String(identity.user_metadata?.businessName || identity.user_metadata?.name || email).slice(0, 120), country: String(identity.user_metadata?.country || "KE").slice(0, 2).toUpperCase(), approved: false }, select: { id: true } });
       user = await prisma.user.create({
-        data: { orgId: org.id, email, name: String(identity.user_metadata?.name || email.split("@")[0]).slice(0, 120), passwordHash: await hashPassword(randomBytes(32).toString("hex")), supabaseUserId: identity.id, status: "PENDING", requestedRole },
+        data: { orgId: org.id, email, name: String(identity.user_metadata?.full_name || identity.user_metadata?.name || email.split("@")[0]).slice(0, 120), passwordHash: await hashPassword(randomBytes(32).toString("hex")), supabaseUserId: identity.id, status: "PENDING", requestedRole },
       });
     }
-    if (!user) return fail(403, { code: "account_not_found", message: "Your account is not registered with PALTAS." });
     if (user.status === "SUSPENDED") return fail(403, { code: "account_suspended", message: "This account has been suspended." });
     if (user.status === "REJECTED") return fail(403, { code: "account_rejected", message: "This account was not approved." });
     if (user.supabaseUserId !== identity.id) {

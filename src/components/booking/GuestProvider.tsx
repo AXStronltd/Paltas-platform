@@ -20,7 +20,13 @@ interface GuestState {
   guest: Guest | null;
   loading: boolean;
   refresh: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<string | null>;
+  /**
+   * Returns the error message, or null on success — plus whether this identity
+   * also holds a PALTAS staff account. The screens differ on what to do with
+   * that: the header offers to take them there, the checkout ignores it and
+   * finishes the booking they were in the middle of.
+   */
+  signIn: (email: string, password: string) => Promise<{ error: string | null; staff: boolean }>;
   register: (input: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
   registerBusiness: (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string }) => Promise<string | null>;
   signOut: () => Promise<void>;
@@ -43,12 +49,11 @@ export function GuestProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  /** Returns an error message, or null on success. */
   const signIn = useCallback(async (email: string, password: string) => {
     const res = await supabaseSignIn(email, password, "guest");
-    if ("error" in res && res.error) return res.error;
+    if ("error" in res && res.error) return { error: res.error, staff: false };
     setGuest(res.data.guest);
-    return null;
+    return { error: null, staff: Boolean(res.data.staff) };
   }, []);
 
   const register = useCallback(async (input: { email: string; name: string; password: string; phone?: string }) => {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { currentActor } from "@/server/actor";
 import { badRequest, handle, ok, unauthorized } from "@/server/http";
+import { staffDestination } from "@/lib/auth/destination";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,22 @@ export async function POST(req: Request): Promise<NextResponse> {
     const country = typeof body.country === "string" ? body.country.trim().slice(0, 2).toUpperCase() : "";
     if (!country) return badRequest("Please provide your country.");
 
-    const details = body.details && typeof body.details === "object" ? body.details : {};
+    const details = (body.details && typeof body.details === "object" ? body.details : {}) as Record<string, unknown>;
+    // The attestation at the end of every role's verification step. It is a
+    // statement the approver relies on, so it is checked here rather than only
+    // in the browser, where a disabled button is not a promise.
+    if (details.consent !== "yes") return badRequest("Please confirm the declaration before submitting.");
     const documents = await prisma.verificationDocument.findMany({ where: { userId: actor.id, status: "PENDING" }, select: { type: true } });
     const documentTypes = new Set(documents.map((document) => document.type));
     if (body.role !== "resident" && !documentTypes.has("IDENTITY")) return badRequest("Upload an identity document before submitting onboarding.");
     if (body.role === "landlord" && !documentTypes.has("OWNERSHIP")) return badRequest("Upload ownership or title-deed evidence before submitting onboarding.");
     const user = await prisma.user.update({ where: { id: actor.id }, data: { name, phone, onboardingRole: body.role, onboardingData: { country, ...details }, onboardingCompletedAt: new Date() }, select: { id: true, name: true, email: true, onboardingRole: true, onboardingCompletedAt: true, status: true } });
-    return ok({ onboardingCompleted: true, pendingApproval: user.status !== "ACTIVE", user });
+    // Where they go next, decided by the same helper the sign-in forms use so
+    // the answer cannot drift between the two places that ask it.
+    const destination = staffDestination({
+      onboardingRequired: user.status !== "ACTIVE",
+      dashboardRole: user.onboardingRole,
+    });
+    return ok({ onboardingCompleted: true, pendingApproval: user.status !== "ACTIVE", destination, user });
   });
 }

@@ -34,6 +34,10 @@ const ROLE_FOR: Record<string, string> = {
   hotel: "property_manager",
   developer: "property_manager",
   seller: "property_manager",
+  // A tenant is not a manager of the building they live in. This was missing,
+  // and the fallback below meant approving one handed over the 59-permission
+  // property_manager role.
+  resident: "resident",
 };
 
 export async function POST(req: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
@@ -81,7 +85,17 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return ok({ rejected: true });
     }
 
-    const roleKey = body.roleKey ?? ROLE_FOR[account.requestedRole ?? ""] ?? "property_manager";
+    // The role the person chose on the onboarding form, falling back to the one
+    // the signup form carried. Onboarding is the later and more considered of
+    // the two, and until now it was ignored here entirely — someone who signed
+    // up as a landlord and then onboarded as a resident was approved as a
+    // landlord. The approver's own `roleKey` still overrides both.
+    const declaredRole = account.onboardingRole ?? account.requestedRole ?? "";
+    const roleKey = body.roleKey ?? ROLE_FOR[declaredRole];
+    // No stated role and no chosen one. Defaulting to property_manager here was
+    // a way to grant the widest role in the system to an account nobody had
+    // asked a single question of.
+    if (!roleKey) return badRequest("This account has not chosen a role yet. Name the role to grant with \"roleKey\".");
     const definition = SYSTEM_ROLES.find((r) => r.key === roleKey);
     if (!definition) return badRequest(`Unknown role "${roleKey}".`);
 

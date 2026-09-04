@@ -6,7 +6,8 @@ import { useToast, personalWelcome } from "@/components/ui/Toast";
 import { Portal } from "./Portal";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { AuthCard, AuthTabs, AuthField, AuthError, AuthSubmit, AuthAlt } from "@/components/auth/AuthUI";
-import { supabaseGoogleSignIn, supabaseResetPassword } from "@/lib/supabase/auth";
+import { supabaseEnterStaff, supabaseGoogleSignIn, supabaseResetPassword } from "@/lib/supabase/auth";
+import { staffDestination } from "@/lib/auth/destination";
 
 /**
  * Create an account, or sign in.
@@ -56,18 +57,46 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     }
 
     setBusy(true);
-    const message = tab === "up"
-      ? accountType === "business"
-        ? await registerBusiness({ email: email.trim(), name: name.trim(), password, role, businessName: businessName.trim() })
-        : await register({ email: email.trim(), name: name.trim(), password })
-      : await signIn(email.trim(), password);
+
+    if (tab === "in") {
+      const result = await signIn(email.trim(), password);
+      if (result.error) { setBusy(false); return setErr(result.error); }
+
+      // This is the front door for the whole platform, not just the shop. If
+      // the address that just signed in also has a PALTAS account, take them to
+      // it — to the existing onboarding form when it is unfinished, and to the
+      // dashboard their approved role names when it is not. Before this, a
+      // landlord signing in here became a shopper and was never told otherwise.
+      if (result.staff) {
+        const staff = await supabaseEnterStaff();
+        if (!("error" in staff && staff.error)) {
+          window.location.assign(staffDestination(staff.data));
+          return;
+        }
+        // Their marketplace session is real and already established. Falling
+        // through leaves them signed in as a guest rather than stranded.
+      }
+
+      setBusy(false);
+      toast.success(
+        personalWelcome(t, name.trim() || email.trim()),
+        "Good to see you again.",
+      );
+      onDone?.();
+      onClose();
+      return;
+    }
+
+    const message = accountType === "business"
+      ? await registerBusiness({ email: email.trim(), name: name.trim(), password, role, businessName: businessName.trim() })
+      : await register({ email: email.trim(), name: name.trim(), password });
     setBusy(false);
 
     if (message) return setErr(message);
 
     toast.success(
       personalWelcome(t, name.trim() || email.trim()),
-      tab === "up" ? "Your account is ready." : "Good to see you again.",
+      "Your account is ready.",
     );
     onDone?.();
     onClose();

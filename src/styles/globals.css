@@ -2033,3 +2033,28 @@ body:has(.scrim) .tabbar { display: none; }
   .chat-typing i { animation: none; opacity: .5; }
   .chat-starters button:hover, .chat-compose button:not(:disabled):hover { transform: none; }
 }
+
+/* ── Onboarding ──────────────────────────────────────────────────────────────
+   The role picker and the step wizard at /onboarding. Deliberately built from
+   the same auth-card the sign-in forms use: onboarding is the second half of
+   signing up, and it should not look like a different product. */
+.ob-roles { display: grid; gap: 8px; margin: 4px 0 8px; }
+.ob-role {
+  display: flex; flex-direction: column; gap: 2px; text-align: left;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg-1); font-family: inherit; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.ob-role:hover { border-color: var(--brand); background: var(--bg-2); transform: translateY(-1px); }
+.ob-role b { font-size: 15px; color: var(--ink); }
+.ob-role span { font-size: 13px; color: var(--muted); }
+
+.ob-dots { display: flex; gap: 6px; margin: 0 0 16px; }
+.ob-dots span { height: 4px; flex: 1; border-radius: 999px; background: var(--line); }
+.ob-dots span.on { background: var(--brand); }
+
+.ob-check { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 14px; font-size: 13px; color: var(--muted); }
+.ob-check input { margin-top: 2px; flex: 0 0 auto; }
+
+.ob-actions { display: flex; gap: 8px; }
+.ob-actions .btn { flex: 1; }
