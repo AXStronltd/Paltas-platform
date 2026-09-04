@@ -1,4 +1,5 @@
 import { InfoPage } from "@/components/pages/InfoPage";
+import { whatsappHref } from "@/lib/contact";
 
 export const metadata = {
   title: "Help — PALTAS",
@@ -14,7 +15,7 @@ export default function HelpPage() {
         { id: "faq", paragraphs: 4 },
         { id: "cancellation", paragraphs: 3 },
         { id: "safety", paragraphs: 3 },
-        { id: "contact", paragraphs: 2 },
+        { id: "contact", paragraphs: 2, action: { key: "contact.action", href: whatsappHref } },
       ]}
     />
   );

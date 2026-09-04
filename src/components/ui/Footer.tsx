@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { cityName } from "@/lib/i18n/places";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
+import { whatsappHref } from "@/lib/contact";
 
 /**
  * The footer.
@@ -244,7 +245,7 @@ const ACCOUNTS: { key: string; label: string; href: string | null; icon: string 
   { key: "linkedin", label: "LinkedIn", href: null, icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9h4v12H3V9Zm6.5 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C21 8.75 22 11 22 14.1V21h-4v-6.1c0-1.5 0-3.4-2.1-3.4s-2.4 1.6-2.4 3.3V21h-4V9Z"/></svg>' },
   { key: "tiktok", label: "TikTok", href: null, icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M16.6 5.8a4.8 4.8 0 0 1-1-2.8h-3.3v11.6a2.5 2.5 0 1 1-1.8-2.4V8.8a5.8 5.8 0 1 0 5.1 5.8V9.4c1 .7 2.3 1.1 3.6 1.1V7.2a4.8 4.8 0 0 1-2.6-1.4Z"/></svg>' },
   { key: "youtube", label: "YouTube", href: null, icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.6 7.2s-.2-1.4-.8-2c-.75-.8-1.6-.8-2-.85C16 4.2 12 4.2 12 4.2h-.02s-4 0-6.8.2c-.4.05-1.25.05-2 .85-.6.6-.8 2-.8 2S2.2 8.8 2.2 10.5v1.6c0 1.6.2 3.3.2 3.3s.2 1.4.8 2c.75.8 1.75.78 2.2.86 1.6.15 6.8.2 6.8.2s4 0 6.8-.21c.4-.05 1.25-.05 2-.85.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.6c0-1.6-.2-3.3-.2-3.3ZM9.9 14.3V8.6l5.15 2.86-5.15 2.84Z"/></svg>' },
-  { key: "whatsapp", label: "WhatsApp", href: null, icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A9.9 9.9 0 1 0 12 2Zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9Zm4.5-6.1c-.25-.13-1.45-.72-1.68-.8-.22-.08-.38-.12-.55.13-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06a6.7 6.7 0 0 1-3.3-2.9c-.25-.43.25-.4.71-1.32.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.8-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64 1.53.66 2.13.72 2.9.6.46-.06 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>' },
+  { key: "whatsapp", label: "WhatsApp", href: whatsappHref, icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A9.9 9.9 0 1 0 12 2Zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 3.9Zm4.5-6.1c-.25-.13-1.45-.72-1.68-.8-.22-.08-.38-.12-.55.13-.16.24-.62.79-.76.95-.14.16-.28.18-.52.06a6.7 6.7 0 0 1-3.3-2.9c-.25-.43.25-.4.71-1.32.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.8-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.64 1.53.66 2.13.72 2.9.6.46-.06 1.45-.59 1.65-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>' },
 ];
 
 const SOCIAL = ACCOUNTS.filter((a): a is typeof a & { href: string } => Boolean(a.href));

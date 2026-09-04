@@ -16,6 +16,8 @@ import { useI18n } from "@/components/i18n/LocaleProvider";
  * each section carries the id those links expect.
  */
 
+const isExternal = (href: string) => /^(https?:|mailto:|tel:)/.test(href);
+
 export interface InfoSection {
   /** Anchor id, and the suffix of its message keys. */
   id: string;
@@ -65,9 +67,21 @@ export function InfoPage({
             <p key={i}>{t(`${s.id}.p${i + 1}`)}</p>
           ))}
           {s.action && (
-            <Link href={s.action.href} className="btn btn-primary info-cta">
-              {t(s.action.key)}
-            </Link>
+            /* An external destination is not a route. next/link would try to
+               prefetch it, and a link that leaves the site should say so to
+               the browser it is handing the visitor to. */
+            isExternal(s.action.href) ? (
+              <a
+                href={s.action.href} className="btn btn-primary info-cta"
+                target="_blank" rel="noopener noreferrer"
+              >
+                {t(s.action.key)}
+              </a>
+            ) : (
+              <Link href={s.action.href} className="btn btn-primary info-cta">
+                {t(s.action.key)}
+              </Link>
+            )
           )}
         </section>
       ))}
