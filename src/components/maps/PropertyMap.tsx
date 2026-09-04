@@ -26,7 +26,18 @@ export function PropertyMap({ listings }: { listings: Listing[] }) {
             marker.addListener("click", () => info.open({ map, anchor: marker }));
           }
           pending -= 1;
-          if (pending === 0 && !bounds.isEmpty()) map.fitBounds(bounds, 48);
+          if (pending === 0 && !bounds.isEmpty()) {
+            map.fitBounds(bounds, 48);
+            // A single marker has no extent, so fitBounds zooms to the maximum
+            // and shows a rooftop with no context. One property wants its
+            // neighbourhood, which is also all the precision a guest who has
+            // not booked yet should be given.
+            if (listings.length === 1) {
+              google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+                if ((map.getZoom() ?? 0) > 15) map.setZoom(15);
+              });
+            }
+          }
         });
       }
     }).catch((reason: Error) => { if (active) setError(reason.message); });

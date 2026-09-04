@@ -7,6 +7,7 @@ import type { Host, Listing, Review } from "@/lib/models";
 import { PricePanel } from "./PricePanel";
 import { HostTrust, TrustBadges } from "./TrustBadges";
 import { MessageHostButton } from "@/components/messages/MessageHostButton";
+import { PropertyMap } from "@/components/maps/PropertyMap";
 import { CheckoutModal } from "@/components/booking/CheckoutModal";
 import { BookingPanel } from "@/components/booking/BookingPanel";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -95,6 +96,14 @@ export function ListingDetail({
               <div key={a} className="a">✓ {a}</div>
             ))}
           </div>
+
+          {/* The same map component the search results use, given one listing
+              instead of fifty. A second one built for this page would be a
+              second thing to keep working. Geocoded from the location the
+              listing already carries — there are no coordinates on a property
+              to read, and inventing a column for them is not this change. */}
+          <h3>{listing.location ? `${listing.location}, ${listing.city}` : listing.city}</h3>
+          <PropertyMap listings={[listing]} />
 
           <h3>
             {rated
