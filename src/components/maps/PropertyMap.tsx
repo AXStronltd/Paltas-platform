@@ -19,7 +19,15 @@ export function PropertyMap({ listings }: { listings: Listing[] }) {
       let placed = 0;
       let refused = "";
       for (const listing of listings.slice(0, 50)) {
-        geocoder.geocode({ address: [listing.location, listing.city, listing.country].filter(Boolean).join(", ") }, (results, status) => {
+        // The country goes in componentRestrictions rather than into the address
+        // string. Concatenated, a two-letter ISO code is just more text to
+        // interpret, and Google reads several of them as US states: "Medina,
+        // Marrakesh, MA" resolved to Massachusetts, putting a Moroccan riad in
+        // New England. As a restriction it is unambiguous.
+        geocoder.geocode({
+          address: [listing.location, listing.city].filter(Boolean).join(", "),
+          ...(listing.country ? { componentRestrictions: { country: listing.country } } : {}),
+        }, (results, status) => {
           if (status !== "OK" && !refused) refused = status;
           if (status === "OK" && results?.[0]) {
             placed += 1;
