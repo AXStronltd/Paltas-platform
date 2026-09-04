@@ -142,7 +142,10 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           status: "ACTIVE",
           // Owner of their own organisation, which is what signing up as a
           // business means. Never platform staff — that is ours to grant.
-          isOwner: account.onboardingRole === "landlord" && (body.isOwner ?? true),
+          // Keyed on the same declared role the granted role came from. Reading
+          // onboardingRole alone meant a landlord who signed up through the API
+          // and was approved before onboarding became an owner of nothing.
+          isOwner: declaredRole === "landlord" && (body.isOwner ?? true),
           approvedById: g.actor.id,
           approvedAt: new Date(),
         },

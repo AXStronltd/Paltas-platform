@@ -54,10 +54,33 @@ export type GuardResult =
  * the request body, parse the body first and pass the ids in — the check still
  * happens before any write.
  */
+/**
+ * Whether this account is allowed to act at all yet, and why not if it is not.
+ *
+ * Onboarding gates *applicants* — someone who signed themselves up and has not
+ * yet said who they are. It was gating everybody, which locked out every
+ * account that legitimately never sees the form: PALTAS platform staff, the
+ * seeded administrators, and every guard, cleaner or accountant an owner adds
+ * from the Staff screen. They could hold every permission in the system and
+ * still be refused the audit trail.
+ *
+ * Status is the real check, and the only one that ever was — the authorization
+ * engine refuses every non-ACTIVE actor no matter what this returns. So the
+ * rule is simply "are you active", and the onboarding message survives as the
+ * more useful of the two explanations for why you are not.
+ */
+function notReadyFor(actor: { status: string; onboardingCompletedAt: Date | null }): NextResponse | null {
+  if (actor.status === "ACTIVE") return null;
+  return actor.onboardingCompletedAt
+    ? fail(403, { code: "approval_required", message: "Your account is awaiting approval." })
+    : fail(403, { code: "onboarding_required", message: "Complete onboarding before accessing the management platform." });
+}
+
 export async function guard(permission: string, scopeInput: ScopeInput = {}): Promise<GuardResult> {
   const actor = await currentActor();
   if (!actor) return { ok: false, response: unauthorized() };
-  if (!actor.onboardingCompletedAt) return { ok: false, response: fail(403, { code: "onboarding_required", message: "Complete onboarding before accessing the management platform." }) };
+  const notReady = notReadyFor(actor);
+  if (notReady) return { ok: false, response: notReady };
 
   // Platform staff are not confined to one organisation, so their scope is
   // resolved without that restriction. Everyone else stays inside their own.
@@ -104,7 +127,8 @@ export type ListGuardResult =
 export async function guardList(permission: string): Promise<ListGuardResult> {
   const actor = await currentActor();
   if (!actor) return { ok: false, response: unauthorized() };
-  if (!actor.onboardingCompletedAt) return { ok: false, response: fail(403, { code: "onboarding_required", message: "Complete onboarding before accessing the management platform." }) };
+  const notReady = notReadyFor(actor);
+  if (notReady) return { ok: false, response: notReady };
 
   const filter = scopeFilterFor(actor, permission);
   if (filter.kind === "none") {

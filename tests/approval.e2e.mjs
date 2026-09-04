@@ -7,7 +7,10 @@
  * all. If that ever stops being true, someone can sign themselves up and start
  * working before anybody has looked at them.
  */
+import { PrismaClient } from "@prisma/client";
+
 const BASE = `${process.env.PALTAS_URL ?? "http://localhost:3010"}/api`;
+const db = new PrismaClient();
 const P = process.env.SEED_PASSWORD || "paltas-demo-2026";
 let pass = 0, fail = 0;
 const check = (ok, l, d = "") => { ok ? (pass++, console.log(`  ✓ ${l}`)) : (fail++, console.log(`  ✗ ${l}  → ${d}`)); };
@@ -54,11 +57,17 @@ check(dup.status === 409, "the same address cannot sign up twice");
 check(!/already|exists|registered/i.test(dup.json?.error?.message ?? ""),
   "and the refusal does not confirm the address is registered", dup.json?.error?.message);
 
-console.log("\nA PENDING ACCOUNT CANNOT SIGN IN, AND IS TOLD WHY");
+console.log("\nA PENDING ACCOUNT SIGNS IN, AND IS SENT TO ONBOARDING");
+// It used to be refused outright. It cannot be any more: onboarding is the
+// thing that collects the role and the documents, and you have to be signed in
+// to reach it. Signing in is therefore allowed and grants nothing — the
+// authorization engine still refuses every non-ACTIVE status, which the rest
+// of this file goes on to prove.
 const login = await anon.post("/auth/login", { email: em, password: "a-long-password-1" });
-check(login.status === 403, "sign-in is refused", `${login.status}`);
-check(login.json?.error?.code === "account_pending", "with a reason it can act on", login.json?.error?.code);
-check(!login.cookies.includes("paltas_session"), "and no session is issued");
+check(login.status === 200, "sign-in is allowed", `${login.status}`);
+check(login.json?.onboardingRequired === true, "and says onboarding is required", JSON.stringify(login.json?.onboardingRequired));
+const pendingSession = client(login.cookies);
+check((await pendingSession.get("/platform/approvals")).status === 404, "the session it issues has no authority");
 
 console.log("\nTHE QUEUE IS PALTAS STAFF ONLY");
 const owner = await staff("owner@paltas.co.ke");
@@ -81,8 +90,24 @@ check((await owner.post(`/platform/approvals/${mine.id}`, { action: "approve" })
 check((await admin.post(`/platform/approvals/${mine.id}`, { action: "reject" })).status === 400,
   "and a rejection requires a reason");
 
+// Verification comes first. A role that requires an identity document cannot be
+// activated before somebody has looked at one, so the queue refuses until then.
+const premature = await admin.post(`/platform/approvals/${mine.id}`, { action: "approve" });
+check(premature.status === 409, "approval is refused before documents are verified", `${premature.status}`);
+check(premature.json?.error?.code === "verification_required", "and says which gate stopped it", premature.json?.error?.code);
+
+// Document upload needs object storage, which a test run has no business
+// requiring. The document is written and approved directly so the rest of the
+// approval path can still be proved end to end.
+await db.verificationDocument.create({
+  data: {
+    userId: mine.id, type: "IDENTITY", storageKey: `private/verification/${mine.id}/test`,
+    fileName: "id.pdf", contentType: "application/pdf", size: 1024, status: "APPROVED",
+  },
+});
+
 const approved = await admin.post(`/platform/approvals/${mine.id}`, { action: "approve" });
-check(approved.status === 200, "Paltas approves it", JSON.stringify(approved.json?.error));
+check(approved.status === 200, "Paltas approves it once they are", JSON.stringify(approved.json?.error));
 check(approved.json.role === "property_manager", "granting a real role", approved.json?.role);
 check((await admin.post(`/platform/approvals/${mine.id}`, { action: "approve" })).status === 409,
   "and it cannot be approved twice");
@@ -116,4 +141,5 @@ check(actions.includes("account.approve"), "approving is recorded");
 check(actions.includes("account.reject"), "and so is rejecting");
 
 console.log(`\n${pass} passed, ${fail} failed`);
+await db.$disconnect();
 process.exit(fail === 0 ? 0 : 1);
