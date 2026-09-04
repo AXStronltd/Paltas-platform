@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { badRequest, fail, guardPlatform, handle, ok, readJson } from "@/server/http";
 import { writeAudit } from "@/server/audit";
+import { presignGet } from "@/server/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -30,5 +31,19 @@ export async function PATCH(req: Request): Promise<NextResponse> {
     const updated = await prisma.verificationDocument.update({ where: { id }, data: { status: body.status, reviewNote: body.reviewNote?.trim().slice(0, 400) || null, reviewedById: gate.actor.id, reviewedAt: new Date() }, select: { id: true, status: true } });
     await writeAudit({ actor: gate.actor, action: `verification.document.${body.status.toLowerCase()}`, entityType: "VerificationDocument", entityId: id, summary: `${body.status === "APPROVED" ? "Approved" : "Rejected"} a verification document`, before: { status: document.status }, after: { status: updated.status } });
     return ok({ document: updated });
+  });
+}
+
+export async function POST(req: Request): Promise<NextResponse> {
+  return handle(async () => {
+    const gate = await guardPlatform("platform.verification");
+    if (!gate.ok) return gate.response;
+    const body = await readJson<{ id?: string }>(req);
+    if (!body?.id) return badRequest("Document id is required.");
+    const document = await prisma.verificationDocument.findUnique({ where: { id: body.id }, select: { id: true, storageKey: true } });
+    if (!document) return fail(404, { code: "not_found", message: "Document not found." });
+    const signed = presignGet(document.storageKey);
+    if (!signed.url) return fail(503, { code: "unavailable", message: signed.error ?? "Could not prepare document access." });
+    return ok({ url: signed.url, expiresInSeconds: 300 });
   });
 }

@@ -157,6 +157,27 @@ export function presignPut(input: {
   };
 }
 
+/** A short-lived read capability for private review documents. */
+export function presignGet(key: string, expiresInSeconds = 300): { url: string; error: null } | { url: null; error: string } {
+  const c = config();
+  if (!storageEnabled()) return { url: null, error: "Object storage is not configured." };
+  const expires = Math.min(Math.max(expiresInSeconds, 30), 3600);
+  const { amzDate, dateStamp } = stamps(new Date());
+  const host = new URL(c.endpoint).host;
+  const canonicalUri = `/${c.bucket}/${uriEncode(key, false)}`;
+  const credential = `${c.accessKeyId}/${dateStamp}/${c.region}/s3/aws4_request`;
+  const query: [string, string][] = [
+    ["X-Amz-Algorithm", ALGORITHM], ["X-Amz-Credential", credential],
+    ["X-Amz-Date", amzDate], ["X-Amz-Expires", String(expires)], ["X-Amz-SignedHeaders", "host"],
+  ];
+  const canonicalQuery = query.map(([k, v]) => [uriEncode(k), uriEncode(v)] as [string, string])
+    .sort((a, b) => a[0].localeCompare(b[0])).map(([k, v]) => `${k}=${v}`).join("&");
+  const canonicalRequest = ["GET", canonicalUri, canonicalQuery, `host:${host}\n`, "host", UNSIGNED].join("\n");
+  const stringToSign = [ALGORITHM, amzDate, `${dateStamp}/${c.region}/s3/aws4_request`, sha256(canonicalRequest)].join("\n");
+  const signature = createHmac("sha256", signingKey(c.secretAccessKey, dateStamp, c.region)).update(stringToSign).digest("hex");
+  return { url: `${c.endpoint}${canonicalUri}?${canonicalQuery}&X-Amz-Signature=${signature}`, error: null };
+}
+
 /** A signed request this process makes itself, for reading back or deleting. */
 async function signedRequest(
   method: "GET" | "DELETE" | "HEAD",
