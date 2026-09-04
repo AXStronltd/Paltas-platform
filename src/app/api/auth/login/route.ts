@@ -44,12 +44,6 @@ export async function POST(req: Request): Promise<NextResponse> {
      * and they would conclude the platform is broken rather than that they are
      * waiting on us.
      */
-    if (user.status === "PENDING") {
-      return fail(403, {
-        code: "account_pending",
-        message: "Your account is still with PALTAS for approval. We will email you when it is ready.",
-      });
-    }
     if (user.status === "REJECTED") {
       return fail(403, {
         code: "account_rejected",
@@ -68,6 +62,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       user: { id: user.id, name: user.name, email: user.email, isOwner: user.isOwner, title: user.title },
       roles: actor?.roles ?? [],
       permissions: actor ? effectivePermissionKeys(actor, ALL_PERMISSIONS) : [],
+      onboardingRequired: !user.onboardingCompletedAt || user.status === "PENDING",
     });
   });
 }

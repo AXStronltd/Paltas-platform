@@ -32,6 +32,7 @@ export interface SessionUser {
   /** Paltas staff — their session spans every organisation. */
   isPlatformAdmin: boolean;
   status: string;
+  onboardingCompleted: boolean;
 }
 
 export interface SessionRole {
@@ -62,6 +63,7 @@ interface MeResponse {
   roles: SessionRole[];
   permissions: string[];
   properties: SessionProperty[];
+  onboardingCompleted: boolean;
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
@@ -70,6 +72,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     roles: [],
     permissions: [],
     properties: [],
+    onboardingCompleted: false,
   });
   const [loading, setLoading] = useState(true);
 
@@ -79,7 +82,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     if (res.data) {
       setState(res.data);
     } else {
-      setState({ user: null, roles: [], permissions: [], properties: [] });
+      setState({ user: null, roles: [], permissions: [], properties: [], onboardingCompleted: false });
     }
     setLoading(false);
   }, []);
@@ -88,7 +91,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = useCallback(async () => {
     await Promise.allSettled([api.post("/auth/logout"), supabaseBrowser().auth.signOut()]);
-    setState({ user: null, roles: [], permissions: [], properties: [] });
+    setState({ user: null, roles: [], permissions: [], properties: [], onboardingCompleted: false });
   }, []);
 
   const value = useMemo<SessionState>(() => {

@@ -57,6 +57,7 @@ export type GuardResult =
 export async function guard(permission: string, scopeInput: ScopeInput = {}): Promise<GuardResult> {
   const actor = await currentActor();
   if (!actor) return { ok: false, response: unauthorized() };
+  if (!actor.onboardingCompletedAt) return { ok: false, response: fail(403, { code: "onboarding_required", message: "Complete onboarding before accessing the management platform." }) };
 
   // Platform staff are not confined to one organisation, so their scope is
   // resolved without that restriction. Everyone else stays inside their own.
@@ -103,6 +104,7 @@ export type ListGuardResult =
 export async function guardList(permission: string): Promise<ListGuardResult> {
   const actor = await currentActor();
   if (!actor) return { ok: false, response: unauthorized() };
+  if (!actor.onboardingCompletedAt) return { ok: false, response: fail(403, { code: "onboarding_required", message: "Complete onboarding before accessing the management platform." }) };
 
   const filter = scopeFilterFor(actor, permission);
   if (filter.kind === "none") {

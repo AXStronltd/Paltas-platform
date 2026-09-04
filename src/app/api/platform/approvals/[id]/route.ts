@@ -47,7 +47,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
     const account = await prisma.user.findUnique({
       where: { id: params.id },
-      select: { id: true, name: true, email: true, status: true, orgId: true, requestedRole: true },
+      select: { id: true, name: true, email: true, status: true, orgId: true, requestedRole: true, onboardingRole: true },
     });
     if (!account) return fail(404, { code: "not_found", message: "Account not found." });
     if (account.status !== "PENDING") {
@@ -83,6 +83,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const roleKey = body.roleKey ?? ROLE_FOR[account.requestedRole ?? ""] ?? "property_manager";
     const definition = SYSTEM_ROLES.find((r) => r.key === roleKey);
     if (!definition) return badRequest(`Unknown role "${roleKey}".`);
+
+    const requiredTypes = account.onboardingRole === "property_owner"
+      ? ["IDENTITY", "OWNERSHIP"]
+      : account.onboardingRole === "resident" ? [] : ["IDENTITY"];
+    const approvedDocuments = await prisma.verificationDocument.findMany({ where: { userId: account.id, status: "APPROVED" }, select: { type: true } });
+    const approvedTypes = new Set(approvedDocuments.map((document) => document.type));
+    if (requiredTypes.some((type) => !approvedTypes.has(type as "IDENTITY" | "OWNERSHIP" | "SUPPORTING"))) {
+      return fail(409, { code: "verification_required", message: "Required identity or ownership documents must be approved before this account can be activated." });
+    }
 
     await prisma.$transaction(async (tx) => {
       // The organisation becomes real at the same moment its owner does.

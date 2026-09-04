@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "@/components/security/SessionProvider";
 import { SignIn } from "@/components/security/SignIn";
@@ -49,6 +49,7 @@ const NAV: NavItem[] = [
 export function ManageShell({ children }: { children: React.ReactNode }) {
   const { user, roles, loading, can, signOut } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -60,6 +61,10 @@ export function ManageShell({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <SignIn />;
+  if (!user.onboardingCompleted || user.status === "PENDING") {
+    router.replace("/onboarding");
+    return null;
+  }
 
   const visible = NAV.filter((item) =>
     item.platformOnly ? user.isPlatformAdmin : can(item.permission),

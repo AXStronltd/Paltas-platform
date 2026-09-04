@@ -122,6 +122,9 @@ model User {
   approvedById    String?
   approvedAt      DateTime?
   rejectedReason  String?
+  onboardingCompletedAt DateTime?
+  onboardingRole String?
+  onboardingData Json?
   createdAt       DateTime   @default(now())
   createdById     String?
 
@@ -135,8 +138,41 @@ model User {
   resident        Resident?
   salaryProfiles  SalaryProfile[]
   payslips        Payslip[]
+  verificationDocuments VerificationDocument[]
 
   @@index([orgId])
+}
+
+enum VerificationDocumentType {
+  IDENTITY
+  OWNERSHIP
+  SUPPORTING
+}
+
+enum VerificationDocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model VerificationDocument {
+  id           String                     @id @default(cuid())
+  userId       String
+  type         VerificationDocumentType
+  storageKey   String                     @unique
+  fileName     String
+  contentType  String
+  size         Int
+  status       VerificationDocumentStatus @default(PENDING)
+  reviewNote   String?
+  reviewedById String?
+  reviewedAt   DateTime?
+  createdAt    DateTime                   @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([status, createdAt])
 }
 
 model Session {

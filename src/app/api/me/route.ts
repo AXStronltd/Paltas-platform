@@ -36,6 +36,7 @@ export async function GET(): Promise<NextResponse> {
         isOwner: actor.isOwner,
         isPlatformAdmin: actor.isPlatformAdmin,
         status: actor.status,
+        onboardingCompleted: Boolean(actor.onboardingCompletedAt),
       },
       orgId: actor.orgId,
       roles: actor.roles,

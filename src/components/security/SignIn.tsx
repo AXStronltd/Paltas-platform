@@ -34,6 +34,10 @@ export function SignIn({ subtitle }: { subtitle?: string } = {}) {
       setError(res.error);
       return;
     }
+    if (res.data?.onboardingRequired) {
+      window.location.assign("/onboarding");
+      return;
+    }
     await refresh();
   }
 

@@ -66,7 +66,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
     if (!user) return fail(403, { code: "account_not_found", message: "Your account is not registered with PALTAS." });
     if (user.status === "SUSPENDED") return fail(403, { code: "account_suspended", message: "This account has been suspended." });
-    if (user.status === "PENDING") return fail(403, { code: "account_pending", message: "Your account is still with PALTAS for approval." });
     if (user.status === "REJECTED") return fail(403, { code: "account_rejected", message: "This account was not approved." });
     if (user.supabaseUserId !== identity.id) {
       await prisma.user.update({ where: { id: user.id }, data: { supabaseUserId: identity.id } });
@@ -77,6 +76,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       user: { id: user.id, name: user.name, email: user.email, isOwner: user.isOwner },
       roles: actor?.roles ?? [],
       permissions: actor ? effectivePermissionKeys(actor, ALL_PERMISSIONS) : [],
+      onboardingRequired: !user.onboardingCompletedAt || user.status === "PENDING",
     });
   });
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getPlatformOverview, type PlatformOverview } from "@/lib/services/managementService";
 import { useSession } from "@/components/security/SessionProvider";
+import { VerificationQueue } from "@/components/manage/VerificationQueue";
 
 /**
  * Operations — the whole platform on one screen.
@@ -148,6 +149,10 @@ export function OperationsConsole() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div>
+          <VerificationQueue />
         </div>
 
         <div>

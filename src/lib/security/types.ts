@@ -52,6 +52,7 @@ export interface Actor {
    */
   isPlatformAdmin: boolean;
   status: "ACTIVE" | "SUSPENDED" | "INVITED" | "PENDING" | "REJECTED";
+  onboardingCompletedAt: Date | null;
   roles: ActorRole[];
   grants: Grant[];
 }
