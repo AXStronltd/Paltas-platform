@@ -16,9 +16,13 @@ export function PropertyMap({ listings }: { listings: Listing[] }) {
       const bounds = new google.maps.LatLngBounds();
       const geocoder = new google.maps.Geocoder();
       let pending = listings.length;
+      let placed = 0;
+      let refused = "";
       for (const listing of listings.slice(0, 50)) {
         geocoder.geocode({ address: [listing.location, listing.city, listing.country].filter(Boolean).join(", ") }, (results, status) => {
+          if (status !== "OK" && !refused) refused = status;
           if (status === "OK" && results?.[0]) {
+            placed += 1;
             const position = results[0].geometry.location;
             bounds.extend(position);
             const marker = new google.maps.Marker({ map, position, title: `${listing.name} · ${listing.currency} ${listing.price.toLocaleString()}` });
@@ -26,6 +30,18 @@ export function PropertyMap({ listings }: { listings: Listing[] }) {
             marker.addListener("click", () => info.open({ map, anchor: marker }));
           }
           pending -= 1;
+          if (pending === 0 && placed === 0) {
+            // Every lookup failed. The map object exists, so without this it
+            // sits at its starting view — the middle of the Atlantic, with no
+            // markers and no explanation, which reads as a broken page rather
+            // than a missing one. The usual cause is the Geocoding API not
+            // being enabled on the key, which is invisible from here.
+            if (active) {
+              console.warn(`[paltas] Google Maps geocoding returned ${refused || "no results"}. If this is REQUEST_DENIED, enable the Geocoding API on the Maps key.`);
+              setError("Map unavailable for this location.");
+            }
+            return;
+          }
           if (pending === 0 && !bounds.isEmpty()) {
             map.fitBounds(bounds, 48);
             // A single marker has no extent, so fitBounds zooms to the maximum
