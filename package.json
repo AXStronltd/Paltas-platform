@@ -18,7 +18,7 @@
     "test:e2e": "npm run db:seed --silent && node tests/permissions.e2e.mjs",
     "verify": "npm run typecheck && npm run test:auth && npm run audit:routes && npm run audit:layers && npm run audit:external && npm run audit:i18n",
     "test:platform": "npm run db:seed --silent && node tests/platform.e2e.mjs",
-    "test:all": "npm run test:auth && npm run test:e2e && npm run test:platform && npm run test:commerce && npm run test:finance && npm run test:publishing && npm run test:booking && npm run test:external && npm run test:pipeline && npm run test:enquiry && npm run test:trip && npm run test:approval && npm run test:payouts && npm run test:photos",
+    "test:all": "npm run test:auth && npm run test:e2e && npm run test:platform && npm run test:commerce && npm run test:finance && npm run test:publishing && npm run test:booking && npm run test:external && npm run test:pipeline && npm run test:enquiry && npm run test:trip && npm run test:approval && npm run test:payouts && npm run test:photos && npm run test:mail",
     "test:commerce": "npm run db:seed --silent && node tests/commerce.e2e.mjs",
     "test:finance": "npm run db:seed --silent && node tests/finance.e2e.mjs",
     "test:publishing": "npm run db:seed --silent && node tests/publishing.e2e.mjs",
@@ -37,7 +37,8 @@
     "payouts:run": "node scripts/run-payouts.mjs",
     "stripe:roundtrip": "node scripts/stripe-roundtrip.mjs",
     "db:fix-photos": "node prisma/fix-listing-photos.mjs",
-    "test:photos": "npm run db:seed --silent && node tests/photos.e2e.mjs"
+    "test:photos": "npm run db:seed --silent && node tests/photos.e2e.mjs",
+    "test:mail": "npm run db:seed --silent && node tests/mail.e2e.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

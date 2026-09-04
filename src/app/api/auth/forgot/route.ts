@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createHash, randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { prisma } from "@/server/db";
+import { mailEnabled } from "@/server/mail";
+import { notifyPasswordReset } from "@/server/notifications";
 import { handle, ok, readJson } from "@/server/http";
 
 export const dynamic = "force-dynamic";
@@ -38,9 +40,20 @@ export async function POST(req: Request): Promise<NextResponse> {
     };
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return ok(sameAnswer);
 
+    /*
+     * Name and, for a guest, language and market — so the email is addressed to
+     * a person and written in the language they chose. Staff carry no locale of
+     * their own, so their message falls back to English rather than guessing.
+     */
     const account = audience === "staff"
-      ? await prisma.user.findFirst({ where: { email, status: "ACTIVE" }, select: { id: true } })
-      : await prisma.guest.findFirst({ where: { email, active: true }, select: { id: true } });
+      ? await prisma.user.findFirst({
+          where: { email, status: "ACTIVE" },
+          select: { id: true, name: true },
+        }).then((u) => (u ? { ...u, locale: null as string | null, country: null as string | null } : null))
+      : await prisma.guest.findFirst({
+          where: { email, active: true },
+          select: { id: true, name: true, locale: true, country: true },
+        });
 
     if (!account) return ok(sameAnswer);
 
@@ -52,20 +65,27 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
 
     const token = randomBytes(32).toString("base64url");
-    await prisma.passwordReset.create({
+    const reset = await prisma.passwordReset.create({
       data: {
         tokenHash: digest(token),
         ...(audience === "staff" ? { userId: account.id } : { guestId: account.id }),
         expiresAt: new Date(Date.now() + TOKEN_TTL_MINUTES * 60_000),
         requestIp: headers().get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
       },
+      select: { id: true },
     });
 
-    // No mail service is wired yet. Rather than pretend a link was sent, say so
-    // and hand it back — on a platform with no email, that is the difference
-    // between a working reset and a dead end. Remove this the day mail exists.
-    const mailConfigured = Boolean(process.env.SMTP_URL || process.env.RESEND_API_KEY);
-    if (!mailConfigured) {
+    /*
+     * On a deployment with no mail provider the link is handed back instead.
+     *
+     * It reads like a hole and it is the opposite of one: without it, a
+     * deployment that cannot send email would mint a token nobody can ever
+     * receive and answer "a link is on its way", which locks people out with
+     * no error anywhere. `mailEnabled` deliberately does not count SMTP_URL,
+     * so setting a variable this code cannot act on will not silently switch
+     * this branch off.
+     */
+    if (!mailEnabled()) {
       return ok({
         ...sameAnswer,
         deliveryPending: true,
@@ -75,7 +95,24 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
-    // TODO: send the link by email once a provider is configured.
+    /*
+     * The one place the plain token is allowed to go.
+     *
+     * Awaited, but its failures are swallowed inside: the answer to this
+     * request must not vary with whether the mail provider was reachable,
+     * because a caller who can tell the difference has learned that the
+     * address exists.
+     */
+    await notifyPasswordReset({
+      resetId: reset.id,
+      to: email,
+      name: account.name,
+      locale: account.locale,
+      country: account.country,
+      token,
+      expiresInMinutes: TOKEN_TTL_MINUTES,
+    });
+
     return ok(sameAnswer);
   });
 }

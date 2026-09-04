@@ -1,6 +1,7 @@
 import { Prisma, type BookingStatus } from "@prisma/client";
 import { prisma } from "@/server/db";
 import { checkAvailability, isValidRange, nightsBetween, quote, type AddonSelection, type Occupancy } from "@/lib/booking/availability";
+import { notifyBookingCancelled } from "@/server/notifications";
 
 /**
  * Booking, server side.
@@ -383,5 +384,9 @@ export async function cancelBooking(
       },
     }),
   ]);
+
+  // After the transaction, never inside it: a mail provider must not be able
+  // to roll back a cancellation the guest has already been told succeeded.
+  await notifyBookingCancelled(bookingId);
   return { ok: true };
 }

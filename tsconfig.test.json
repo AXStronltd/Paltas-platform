@@ -30,6 +30,7 @@
     "src/lib/marketplace/**/*.ts",
     "src/lib/payouts/**/*.ts",
     "src/lib/media/**/*.ts",
+    "src/lib/mail/**/*.ts",
     "src/server/storage.ts"
   ]
 }

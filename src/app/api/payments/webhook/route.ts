@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { notifyBookingConfirmed } from "@/server/notifications";
 import { recordEarning, reverseEarning } from "@/server/payouts";
 import { handle } from "@/server/http";
 import { mapStatus, verifyWebhookSignature } from "@/server/stripe";
@@ -168,6 +169,11 @@ export async function POST(req: Request): Promise<NextResponse> {
          * advertised.
          */
         await recordEarning(bookingId);
+
+        // Outside the `confirmed.count` guard for the same reason as the line
+        // above: one event, however many times Stripe describes it, must
+        // produce one email. The unique dedupe key is what enforces that.
+        await notifyBookingConfirmed(bookingId);
       }
     }
 

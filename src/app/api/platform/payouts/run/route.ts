@@ -4,7 +4,7 @@ import { guardPlatform, handle, ok, fail } from "@/server/http";
 import { runPayouts, policy } from "@/server/payouts";
 import { writeAudit } from "@/server/audit";
 import { stripeEnabled } from "@/server/stripe";
-import type { Actor } from "@/lib/security/types";
+import { SCHEDULER } from "@/server/scheduler";
 
 export const dynamic = "force-dynamic";
 
@@ -19,25 +19,6 @@ export const dynamic = "force-dynamic";
  * idempotency key from the earnings it pays, so a retry after a crash is
  * recognised by Stripe as the same transfer rather than a second one.
  */
-/**
- * Who the audit trail names when the scheduler runs.
- *
- * Not a user, and deliberately not able to be one: no roles, no grants, and a
- * status that would fail every guard in the platform. It exists so an entry can
- * say a machine did this, rather than borrowing the name of whichever member of
- * staff last touched the settings.
- */
-const SCHEDULER: Actor = {
-  id: "system:scheduler",
-  orgId: "",
-  name: "Scheduler",
-  email: "",
-  isOwner: false,
-  isPlatformAdmin: false,
-  status: "SUSPENDED",
-  roles: [],
-  grants: [],
-};
 
 /**
  * Whether this request carries the scheduler's own credential.

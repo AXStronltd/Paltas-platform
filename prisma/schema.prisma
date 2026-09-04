@@ -73,24 +73,24 @@ model Organization {
   platformFeeBasisPoints Int      @default(0)
   createdAt              DateTime @default(now())
 
-  users         User[]
-  roles         Role[]
-  properties    Property[]
-  auditLogs     AuditLog[]
-  campaigns     Campaign[]
-  discounts     Discount[]
-  groups        GroupBooking[]
-  loyalty       LoyaltyMember[]
-  listings      PropertyListing[]
-  feeCategories FeeCategory[]
-  earnings      HostEarning[]
-  payouts       Payout[]
-  charges       Charge[]
-  salaries      SalaryProfile[]
-  payRuns       PayRun[]
-  leads    Lead[]
-  viewings Viewing[]
-  projects Project[]
+  users            User[]
+  roles            Role[]
+  properties       Property[]
+  auditLogs        AuditLog[]
+  campaigns        Campaign[]
+  discounts        Discount[]
+  groups           GroupBooking[]
+  loyalty          LoyaltyMember[]
+  listings         PropertyListing[]
+  feeCategories    FeeCategory[]
+  earnings         HostEarning[]
+  payouts          Payout[]
+  charges          Charge[]
+  salaries         SalaryProfile[]
+  payRuns          PayRun[]
+  leads            Lead[]
+  viewings         Viewing[]
+  projects         Project[]
   serviceOfferings ServiceOffering[]
 }
 
@@ -242,41 +242,41 @@ model Property {
   kind      String   @default("residential")
   createdAt DateTime @default(now())
 
-  org           Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  buildings     Building[]
-  units         Unit[]
-  residents     Resident[]
-  visitors      Visitor[]
-  invitations   VisitorInvitation[]
-  visits        VisitorVisit[]
-  cards         AccessCard[]
-  vehicles      Vehicle[]
-  gates         Gate[]
-  guards        Guard[]
-  shifts        GuardShift[]
-  incidents     SecurityIncident[]
-  alerts        EmergencyAlert[]
-  accessEvents  AccessEvent[]
-  maintenance   MaintenanceRequest[]
-  payments      Payment[]
-  expenses      Expense[]
-  campaigns     Campaign[]
-  discounts     Discount[]
-  groups        GroupBooking[]
-  feeCategories FeeCategory[]
-  charges       Charge[]
-  salaries      SalaryProfile[]
-  payRuns       PayRun[]
-  listings      PropertyListing[]
-  bookings      Booking[]
-  roomTypes     HotelRoomType[]
-  blocks        AvailabilityBlock[]
+  org              Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  buildings        Building[]
+  units            Unit[]
+  residents        Resident[]
+  visitors         Visitor[]
+  invitations      VisitorInvitation[]
+  visits           VisitorVisit[]
+  cards            AccessCard[]
+  vehicles         Vehicle[]
+  gates            Gate[]
+  guards           Guard[]
+  shifts           GuardShift[]
+  incidents        SecurityIncident[]
+  alerts           EmergencyAlert[]
+  accessEvents     AccessEvent[]
+  maintenance      MaintenanceRequest[]
+  payments         Payment[]
+  expenses         Expense[]
+  campaigns        Campaign[]
+  discounts        Discount[]
+  groups           GroupBooking[]
+  feeCategories    FeeCategory[]
+  charges          Charge[]
+  salaries         SalaryProfile[]
+  payRuns          PayRun[]
+  listings         PropertyListing[]
+  bookings         Booking[]
+  roomTypes        HotelRoomType[]
+  blocks           AvailabilityBlock[]
+  leads            Lead[]
+  viewings         Viewing[]
+  projects         Project[]
+  serviceOfferings ServiceOffering[]
 
   @@index([orgId])
-  leads    Lead[]
-  viewings Viewing[]
-  projects Project[]
-  serviceOfferings ServiceOffering[]
 }
 
 model Building {
@@ -323,11 +323,11 @@ model Unit {
   charges      Charge[]
   listings     PropertyListing[]
   bookings     Booking[]
+  leads        Lead[]
+  viewings     Viewing[]
 
   @@index([propertyId])
   @@index([buildingId])
-  leads    Lead[]
-  viewings Viewing[]
 }
 
 enum ResidentType {
@@ -779,19 +779,19 @@ enum MaintenanceStatus {
 }
 
 model MaintenanceRequest {
-  id           String              @id @default(cuid())
-  propertyId   String
-  buildingId   String?
-  unitId       String?
-  residentId   String?
-  title        String
-  description  String
-  priority     MaintenancePriority @default(MEDIUM)
-  status       MaintenanceStatus   @default(OPEN)
-  assignedToId String?
-  raisedByName String?
-  createdAt    DateTime            @default(now())
-  resolvedAt   DateTime?
+  id             String              @id @default(cuid())
+  propertyId     String
+  buildingId     String?
+  unitId         String?
+  residentId     String?
+  title          String
+  description    String
+  priority       MaintenancePriority @default(MEDIUM)
+  status         MaintenanceStatus   @default(OPEN)
+  assignedToId   String?
+  raisedByName   String?
+  createdAt      DateTime            @default(now())
+  resolvedAt     DateTime?
   /// What was actually done. Without it the same fault gets raised three times.
   resolutionNote String?
 
@@ -1361,22 +1361,22 @@ model PropertyListing {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  org       Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  property  Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit      Unit?               @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  bookings  Booking[]
-  roomTypes HotelRoomType[]
-  blocks    AvailabilityBlock[]
-  reviews   Review[]
+  org              Organization        @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  property         Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit             Unit?               @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  bookings         Booking[]
+  roomTypes        HotelRoomType[]
+  blocks           AvailabilityBlock[]
+  reviews          Review[]
+  leads            Lead[]
+  viewings         Viewing[]
+  serviceOfferings ServiceOffering[]
 
   @@index([status, kind])
   @@index([status, country])
   @@index([status, city])
   @@index([orgId])
   @@index([propertyId])
-  leads    Lead[]
-  viewings Viewing[]
-  serviceOfferings ServiceOffering[]
 }
 
 // ============================================================
@@ -1523,20 +1523,20 @@ model Booking {
   confirmedAt    DateTime?
   cancelledAt    DateTime?
 
-  guest    Guest           @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  listing  PropertyListing @relation(fields: [listingId], references: [id], onDelete: Restrict)
-  property Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  unit     Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  roomType HotelRoomType?  @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
-  events   BookingEvent[]
-  review   Review?
+  guest       Guest           @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  listing     PropertyListing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  property    Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unit        Unit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  roomType    HotelRoomType?  @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+  events      BookingEvent[]
+  review      Review?
+  addons      BookingAddon[]
+  /// Add-ons, summed. Part of `total`.
+  addonsTotal Int             @default(0)
 
   @@index([guestId, createdAt])
   @@index([propertyId, status])
   @@index([listingId, checkIn, checkOut])
-  addons BookingAddon[]
-  /// Add-ons, summed. Part of `total`.
-  addonsTotal Int @default(0)
 }
 
 /// Every state transition, with who caused it. A booking that changed state for
@@ -1670,9 +1670,9 @@ model ExternalSource {
   /// Each right is granted separately because they genuinely are.
   /// Facts (price, beds, area) are the least protected; photographs are the
   /// most, and agent contact details are personal data under GDPR.
-  displayRights     Boolean @default(false)
-  imageRights       Boolean @default(false)
-  contactDataRights Boolean @default(false)
+  displayRights     Boolean  @default(false)
+  imageRights       Boolean  @default(false)
+  contactDataRights Boolean  @default(false)
   /// ISO country codes the licence covers. Empty means unrestricted.
   territories       String[] @default([])
   /// Attribution the licence obliges us to show.
@@ -1689,8 +1689,8 @@ model ExternalSource {
 }
 
 model ExternalListing {
-  id       String @id @default(cuid())
-  sourceId String
+  id         String  @id @default(cuid())
+  sourceId   String
   /// The provider's own id. Unique per source, not globally.
   externalId String
   /// Where it came from, shown to the visitor and used for takedowns.
@@ -1720,10 +1720,10 @@ model ExternalListing {
   images    String[] @default([])
 
   /// Personal data. Withheld unless the licence covers it.
-  agentName    String?
-  agentPhone   String?
-  agentEmail   String?
-  agencyName   String?
+  agentName  String?
+  agentPhone String?
+  agentEmail String?
+  agencyName String?
 
   /// The untouched payload, so a mapping bug can be diagnosed without re-fetching.
   raw Json?
@@ -1755,19 +1755,19 @@ model ExternalListing {
 
 /// One ingestion run. Kept so "where did this row come from" always has an answer.
 model ExternalSyncRun {
-  id        String    @id @default(cuid())
-  sourceId  String
-  startedAt DateTime  @default(now())
-  finishedAt DateTime?
-  status    String    @default("RUNNING")
-  fetched   Int       @default(0)
-  created   Int       @default(0)
-  updated   Int       @default(0)
-  skipped   Int       @default(0)
-  displayableCount Int @default(0)
-  error     String?
+  id               String    @id @default(cuid())
+  sourceId         String
+  startedAt        DateTime  @default(now())
+  finishedAt       DateTime?
+  status           String    @default("RUNNING")
+  fetched          Int       @default(0)
+  created          Int       @default(0)
+  updated          Int       @default(0)
+  skipped          Int       @default(0)
+  displayableCount Int       @default(0)
+  error            String?
   /// Who or what started it — a user id, or "cron".
-  triggeredBy String?
+  triggeredBy      String?
 
   source ExternalSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 
@@ -1798,22 +1798,22 @@ enum LeadStage {
 }
 
 model Lead {
-  id     String @id @default(cuid())
-  orgId  String
+  id         String  @id @default(cuid())
+  orgId      String
   /// The property this lead is about. Null while they are still only browsing.
   propertyId String?
   unitId     String?
   listingId  String?
   projectId  String?
 
-  name  String
-  email String?
-  phone String?
+  name         String
+  email        String?
+  phone        String?
   /// What they said they want, in their words.
   interestedIn String?
   /// Minor units, in the currency below. Null when they have not said.
-  budget   Int?
-  currency String  @default("KES")
+  budget       Int?
+  currency     String  @default("KES")
 
   stage  LeadStage @default(NEW)
   source String?
@@ -1821,11 +1821,11 @@ model Lead {
 
   /// The staff member responsible. Null means unassigned, which is a state
   /// worth being able to see and filter on.
-  assignedToId String?
+  assignedToId  String?
   lastContactAt DateTime?
   createdById   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   closedAt      DateTime?
   /// Why it was lost. The most useful field on the whole model at review time.
   lostReason    String?
@@ -1850,21 +1850,21 @@ enum ViewingStatus {
 }
 
 model Viewing {
-  id     String @id @default(cuid())
-  orgId  String
-  leadId String?
+  id         String  @id @default(cuid())
+  orgId      String
+  leadId     String?
   propertyId String?
   unitId     String?
   listingId  String?
 
   /// Denormalised so a viewing still reads sensibly after a lead is deleted.
-  clientName String
-  scheduledAt DateTime
-  durationMins Int @default(30)
-  status ViewingStatus @default(SCHEDULED)
-  notes  String?
+  clientName   String
+  scheduledAt  DateTime
+  durationMins Int           @default(30)
+  status       ViewingStatus @default(SCHEDULED)
+  notes        String?
   /// Recorded after the fact — did they like it, what put them off.
-  outcome String?
+  outcome      String?
 
   agentId     String?
   createdById String?
@@ -1891,22 +1891,22 @@ enum ProjectStatus {
 /// unit and may not exist yet, whereas a Property is somewhere people already
 /// live and which the security and maintenance modules act on.
 model Project {
-  id    String @id @default(cuid())
-  orgId String
+  id         String  @id @default(cuid())
+  orgId      String
   /// Set once built, so a completed development can be managed like any other.
   propertyId String?
 
-  name     String
-  location String?
-  city     String?
-  country  String  @default("KE")
+  name        String
+  location    String?
+  city        String?
+  country     String  @default("KE")
   description String?
-  currency String @default("KES")
+  currency    String  @default("KES")
 
-  status     ProjectStatus @default(PLANNING)
+  status               ProjectStatus @default(PLANNING)
   /// Percent complete, 0-100. Stated by the developer, not computed.
-  completion Int           @default(0)
-  startedAt  DateTime?
+  completion           Int           @default(0)
+  startedAt            DateTime?
   expectedCompletionAt DateTime?
 
   createdById String?
@@ -1943,12 +1943,12 @@ model ProjectUnit {
 
   /// Who bought or reserved it, and for how much. `price` is the asking figure;
   /// this is what was actually agreed, which is frequently not the same.
-  buyerName    String?
-  agreedPrice  Int?
-  reservedAt   DateTime?
-  soldAt       DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  buyerName   String?
+  agreedPrice Int?
+  reservedAt  DateTime?
+  soldAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -1997,7 +1997,7 @@ enum ServicePricing {
 }
 
 model ServiceOffering {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   orgId      String
   /// Offered at one property, or across the organisation when null.
   propertyId String?
@@ -2007,13 +2007,13 @@ model ServiceOffering {
   name        String
   description String?
   /// Minor units, in the currency below.
-  price    Int
-  currency String         @default("KES")
-  pricing  ServicePricing @default(FLAT)
+  price       Int
+  currency    String         @default("KES")
+  pricing     ServicePricing @default(FLAT)
 
   /// Some services cannot be arranged same-day. Stated so a guest is not sold
   /// a 6am transfer at midnight.
-  noticeHours Int @default(0)
+  noticeHours   Int  @default(0)
   /// A cap where the host can only serve so many at once. Null means no limit.
   dailyCapacity Int?
 
@@ -2021,10 +2021,10 @@ model ServiceOffering {
   /// the guest, because "who is picking me up" is a fair question.
   providerName String?
 
-  active    Boolean  @default(true)
+  active      Boolean  @default(true)
   createdById String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   org      Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
   property Property?        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -2045,8 +2045,8 @@ enum AddonStatus {
 
 /// One service attached to one booking, priced when it was added.
 model BookingAddon {
-  id        String @id @default(cuid())
-  bookingId String
+  id         String  @id @default(cuid())
+  bookingId  String
   /// Nullable on purpose. Everything the guest agreed to is copied below, so a
   /// retired offering must not hold a booking hostage — nor, as `Restrict`
   /// did, make its whole organisation undeletable.
@@ -2054,23 +2054,23 @@ model BookingAddon {
 
   /// Copied, not referenced. A host raising their transfer price next month
   /// must not change what a guest already agreed to pay.
-  name     String
-  kind     ServiceKind
+  name      String
+  kind      ServiceKind
   unitPrice Int
-  quantity  Int    @default(1)
+  quantity  Int         @default(1)
   amount    Int
   currency  String
 
   /// When the guest wants it, for things that happen at a time.
   scheduledFor DateTime?
   /// Flight number, pickup address, allergies — whatever the service needs.
-  note   String?
-  status AddonStatus @default(REQUESTED)
+  note         String?
+  status       AddonStatus @default(REQUESTED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  booking  Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  booking  Booking          @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   offering ServiceOffering? @relation(fields: [offeringId], references: [id], onDelete: SetNull)
 
   @@index([bookingId])
@@ -2083,16 +2083,16 @@ model BookingAddon {
 /// sessions are handled. A database that leaks reset rows must not hand
 /// somebody a working link to every account in it.
 model PasswordReset {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   /// Digest of the token, never the token.
-  tokenHash String   @unique
+  tokenHash String    @unique
   /// Exactly one of these is set; a guest and a staff member are separate
   /// identities and a reset must not cross between them.
   userId    String?
   guestId   String?
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   requestIp String?
 
   @@index([expiresAt])
@@ -2135,7 +2135,7 @@ model HostEarning {
   /// rate cannot silently rewrite what a host was already owed.
   platformFee Int
 
-  status EarningStatus @default(HELD)
+  status   EarningStatus @default(HELD)
   /// The hold runs from here.
   checkOut DateTime
 
@@ -2143,7 +2143,7 @@ model HostEarning {
   paidAt     DateTime?
   reversedAt DateTime?
   /// Set when money had already reached the host and had to be recovered.
-  clawedBack Boolean @default(false)
+  clawedBack Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2181,4 +2181,53 @@ model Payout {
   earnings HostEarning[]
 
   @@index([orgId, createdAt])
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  /// Given up on. Either the address is not deliverable or the provider
+  /// refused it enough times that retrying is just noise.
+  FAILED
+}
+
+/// One row per thing that happened and deserved an email.
+///
+/// An outbox rather than a direct send, for the same reason payouts claim their
+/// earnings before calling Stripe: the event and the notification must not be
+/// able to disagree. The row is written in the same breath as the booking is
+/// confirmed, so a process that dies before the provider answers leaves a
+/// message to retry rather than a guest who was never told.
+///
+/// `dedupeKey` is derived from what happened — not from the time — so a Stripe
+/// webhook delivered three times produces one confirmation email, and the
+/// unique constraint is what guarantees it rather than a hopeful branch.
+model EmailMessage {
+  id        String @id @default(cuid())
+  dedupeKey String @unique
+  /// What kind of message this is: "booking.confirmed", "auth.reset", …
+  kind      String
+  to        String
+  subject   String
+  /// Both parts are rendered at enqueue time and stored. A template changed
+  /// next month must not silently rewrite what a guest was sent last month,
+  /// and a retry has to send the same message the first attempt would have.
+  text      String
+  html      String
+  locale    String @default("en")
+
+  status        EmailStatus @default(PENDING)
+  attempts      Int         @default(0)
+  /// Backoff: a transient failure waits before it is tried again.
+  nextAttemptAt DateTime    @default(now())
+  lastError     String?
+  sentAt        DateTime?
+  /// The provider's own id, so a delivery can be traced without guessing.
+  providerId    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([kind, createdAt])
 }
