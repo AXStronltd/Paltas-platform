@@ -139,6 +139,7 @@ model User {
   salaryProfiles  SalaryProfile[]
   payslips        Payslip[]
   verificationDocuments VerificationDocument[]
+  messageThreads        MessageThread[]
 
   @@index([orgId])
 }
@@ -1414,6 +1415,7 @@ model PropertyListing {
   @@index([status, city])
   @@index([orgId])
   @@index([propertyId])
+  messageThreads MessageThread[]
 }
 
 // ============================================================
@@ -1490,6 +1492,7 @@ model Guest {
   sessions GuestSession[]
   bookings Booking[]
   reviews  Review[]
+  threads  MessageThread[]
 
   @@index([email])
 }
@@ -2289,4 +2292,60 @@ model SupportUsage {
 
   @@unique([callerHash, windowStart])
   @@index([windowStart])
+}
+
+/// A conversation between one marketplace guest and one host, or between a
+/// guest and PALTAS itself.
+///
+/// Both sides of the platform can write to it, which is the whole point and
+/// also the thing that makes it delicate: a Guest and a User are different
+/// tables with different sessions, so a thread names one of each rather than
+/// a single polymorphic "participant". `userId` is null on an official thread,
+/// where the other side is PALTAS staff collectively rather than one person.
+model MessageThread {
+  id        String   @id @default(cuid())
+  guestId   String
+  /// The host. Null when this is a thread with PALTAS itself.
+  userId    String?
+  /// Which organisation the host side belongs to, so platform staff can answer
+  /// an official thread without being a participant in it.
+  orgId     String?
+  /// What the conversation is about, when it started from a listing.
+  listingId String?
+  /// A PALTAS Support thread rather than a host one.
+  official  Boolean  @default(false)
+  subject   String?
+  createdAt DateTime @default(now())
+  /// Denormalised so the inbox can order threads without reading every message.
+  lastMessageAt DateTime @default(now())
+
+  guest    Guest     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  listing  PropertyListing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@index([guestId, lastMessageAt])
+  @@index([userId, lastMessageAt])
+  @@index([official, lastMessageAt])
+}
+
+model Message {
+  id       String   @id @default(cuid())
+  threadId String
+  body     String
+
+  /// Exactly one of these is set — whichever side wrote it.
+  senderGuestId String?
+  senderUserId  String?
+
+  /// Read receipts per side, rather than one flag, because "unread" means a
+  /// different thing to each of them.
+  readByGuestAt DateTime?
+  readByUserAt  DateTime?
+
+  createdAt DateTime @default(now())
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
 }

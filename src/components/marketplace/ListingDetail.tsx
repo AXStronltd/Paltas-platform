@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Host, Listing, Review } from "@/lib/models";
 import { PricePanel } from "./PricePanel";
 import { HostTrust, TrustBadges } from "./TrustBadges";
+import { MessageHostButton } from "@/components/messages/MessageHostButton";
 import { CheckoutModal } from "@/components/booking/CheckoutModal";
 import { BookingPanel } from "@/components/booking/BookingPanel";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -71,6 +72,7 @@ export function ListingDetail({
                 {host.responseTime && ` · ${t("listing.respondsIn", { time: host.responseTime })}`}
               </span>
             </div>
+            <MessageHostButton listingId={listing.id} />
           </div>
           {/* What was actually checked, on this host and on this property. */}
           <HostTrust host={host} />

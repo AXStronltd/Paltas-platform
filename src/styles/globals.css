@@ -2058,3 +2058,60 @@ body:has(.scrim) .tabbar { display: none; }
 
 .ob-actions { display: flex; gap: 8px; }
 .ob-actions .btn { flex: 1; }
+
+/* ── Messages ────────────────────────────────────────────────────────────────
+   A list beside a thread on a wide screen; on a phone the thread slides over
+   the list, because two panels side by side at 380px is neither. */
+.msg-layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; min-height: 60vh; }
+.msg-list { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg-1); }
+.msg-list-title { font-size: 18px; padding: 16px; margin: 0; border-bottom: 1px solid var(--line); }
+.msg-empty { padding: 24px; color: var(--muted); font-size: 14px; }
+
+.msg-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 12px 14px; border-bottom: 1px solid var(--line); background: none;
+  font-family: inherit; cursor: pointer;
+}
+.msg-item:hover, .msg-item.on { background: var(--bg-2); }
+.msg-item-av {
+  flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 800; font-size: 13px;
+  background: var(--bg-2); color: var(--ink);
+}
+.msg-item-av.official { background: linear-gradient(135deg, #00c4ac, #2ea6ff); color: #fff; }
+.msg-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.msg-item-body b { font-size: 14px; display: flex; align-items: center; gap: 4px; }
+.msg-item-body span { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg-verified { color: #00c4ac; font-size: 12px; }
+.msg-unread {
+  flex: 0 0 auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  background: var(--brand); color: #fff; font-size: 12px; font-weight: 700;
+  display: grid; place-items: center;
+}
+
+.msg-thread { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; background: var(--bg-1); overflow: hidden; }
+.msg-thread-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.msg-back { display: none; font-size: 20px; background: none; cursor: pointer; }
+.msg-thread-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; max-height: 55vh; }
+
+.mt-msg { display: flex; flex-direction: column; gap: 3px; max-width: 78%; }
+.mt-msg.me { align-self: flex-end; align-items: flex-end; }
+.mt-msg.them { align-self: flex-start; align-items: flex-start; }
+.mt-bubble { padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+.mt-msg.me .mt-bubble { background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
+.mt-msg.them .mt-bubble { background: var(--bg-2); color: var(--ink); border-bottom-left-radius: 4px; }
+.mt-time { font-size: 11px; color: var(--muted); }
+
+.msg-compose { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+.msg-compose input { flex: 1; padding: 11px 14px; border: 1px solid var(--line); border-radius: 999px; font-family: inherit; font-size: 14px; background: var(--bg-2); color: var(--ink); }
+.msg-compose .btn { flex: 0 0 auto; }
+
+@media (max-width: 760px) {
+  .msg-layout { grid-template-columns: 1fr; }
+  .msg-list.has-open { display: none; }
+  .msg-thread:not(.on) { display: none; }
+  .msg-back { display: block; }
+}
+.header-msgs { position: relative; }
+.header-msg-badge { position: absolute; top: -4px; right: -6px; font-size: 10px; min-width: 16px; height: 16px; }
+.host-card .host-message { margin-left: auto; flex: 0 0 auto; font-size: 13px; padding: 8px 14px; }

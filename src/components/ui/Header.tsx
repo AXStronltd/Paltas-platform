@@ -8,6 +8,7 @@ import { useGuest } from "@/components/booking/GuestProvider";
 import { LocaleSwitcher } from "@/components/i18n/LocaleSwitcher";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { HelpButton } from "@/components/support/HelpLauncher";
+import { MessagesLink } from "@/components/messages/MessagesLink";
 
 export function Header() {
   const { t } = useI18n();
@@ -49,6 +50,7 @@ export function Header() {
           <HelpButton />
           <LocaleSwitcher />
           <Link href="/bookings" className="header-heart" aria-label="Saved">♡</Link>
+          {guest && <MessagesLink />}
           {guest ? (
             <div className="header-account" onClick={() => setMenuOpen((v) => !v)} style={{ cursor: "pointer", position: "relative" }}>
               <span className="header-avatar">{guest.name.charAt(0).toUpperCase()}</span>
