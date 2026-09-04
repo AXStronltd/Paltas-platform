@@ -605,5 +605,7 @@
   "trust.whatChecked": "{label} — ce qui a été vérifié",
   "verification.p1": "La vérification est un contrôle que nous effectuons, pas un statut qu'un hôte peut revendiquer. Chaque type est consigné séparément avec la méthode employée et le mois où il a eu lieu, et l'annonce les montre pour que vous jugiez vous-même.",
   "verification.p2": "Elle se déploie ; elle n'est pas achevée. Aujourd'hui la plupart des annonces ne portent aucun badge, et c'est ce que veut dire son absence : pas encore de contrôle, pas un contrôle raté.",
-  "verification.title": "Comment fonctionne la vérification"
+  "verification.title": "Comment fonctionne la vérification",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

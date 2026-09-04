@@ -599,5 +599,7 @@
   "trust.whatChecked": "{label} — kilichokaguliwa",
   "verification.p1": "Uthibitisho ni ukaguzi tunaoufanya, si hadhi anayoidai mwenyeji. Kila aina inarekodiwa peke yake pamoja na njia iliyotumika na mwezi uliofanyika, na tangazo linaonyesha vyote ili uhukumu mwenyewe.",
   "verification.p2": "Unaendelea kusambazwa, haujakamilika. Matangazo mengi leo hayana alama kabisa, na ndivyo kutokuwepo kwa alama kunamaanisha — hakuna ukaguzi bado, si uliofeli.",
-  "verification.title": "Jinsi uthibitisho unavyofanyika"
+  "verification.title": "Jinsi uthibitisho unavyofanyika",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

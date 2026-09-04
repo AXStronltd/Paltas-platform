@@ -615,8 +615,8 @@ img { display: block; max-width: 100%; }
 
 /* ===== HERO (beach) — matches prototype ===== */
 .hero {
-  position: relative; min-height: 600px; display: flex; align-items: center;
-  overflow: hidden; margin-bottom: 40px;
+  position: relative; min-height: 420px; display: flex; align-items: center;
+  overflow: hidden; margin-bottom: 28px;
 }
 .hero-photo {
   position: absolute; inset: 0; z-index: 0;
@@ -697,7 +697,7 @@ p.hero-sub {
 @media (max-width: 900px) {
   .header-nav, .header-right { display: none; }
   .hero-title { font-size: 44px; }
-  .hero { min-height: 480px; }
+  .hero { min-height: 360px; }
   .hero-search { flex-wrap: wrap; }
   .hs-field { flex: 1 1 40%; }
   .hs-divider { display: none; }
@@ -712,7 +712,7 @@ p.hero-sub {
 .hero-search { border-radius: 22px; padding: 10px 10px 10px 6px; }
 .hs-search-btn { border-radius: 16px; padding: 17px 32px; }
 /* make hero taller like prototype and ensure text readable on real photo */
-.hero { min-height: 620px; }
+.hero { min-height: 440px; }
 .hero-title { font-size: 72px; }
 /* filter chips: rounded pill w/ arrow scroller feel */
 .chips { gap: 10px; align-items: center; }
@@ -783,6 +783,11 @@ p.hero-sub {
   grid-auto-columns: calc((100% - 6 * 16px) / 7);   /* 7 across on large desktop */
   gap: 16px; overflow-x: auto; scroll-snap-type: x proximity;
   padding-bottom: 8px; scrollbar-width: thin;
+  /* Momentum on iOS, and a rest position that lines the card up with the row's
+     left edge rather than under it. */
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-inline-start: 2px;
+  overscroll-behavior-x: contain;
 }
 .d-track::-webkit-scrollbar { height: 6px; }
 .d-track::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 6px; }
@@ -823,8 +828,8 @@ p.hero-sub {
 @media (max-width: 1200px) { .d-track { grid-auto-columns: calc((100% - 4 * 16px) / 5); } }
 @media (max-width: 992px)  { .d-track { grid-auto-columns: calc((100% - 3 * 14px) / 4); gap: 14px; } }
 @media (max-width: 768px)  { .d-track { grid-auto-columns: calc((100% - 2 * 12px) / 3); gap: 12px; } .container-wide { padding: 0 20px; } }
-@media (max-width: 560px)  { .d-track { grid-auto-columns: calc((100% - 1 * 12px) / 2); } .d-row-head h2 { font-size: 19px; } }
-@media (max-width: 400px)  { .d-track { grid-auto-columns: 78%; } }
+@media (max-width: 560px)  { .d-track { grid-auto-columns: 62%; } .d-row-head h2 { font-size: 19px; } }
+@media (max-width: 400px)  { .d-track { grid-auto-columns: 72%; } }
 
 /* ===== world-class entrance animations ===== */
 .d-row { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s cubic-bezier(.22,1,.3,1); }
@@ -2143,4 +2148,71 @@ body:has(.scrim) .tabbar { display: none; }
 
 @media (max-width: 760px) {
   .property-map { height: 240px; }
+}
+
+/* A touch device has no arrows to press, so the row has to snap firmly enough
+   that a flick lands on a card rather than between two. Pointer devices keep
+   proximity, where a mouse wheel fighting a snap point is worse than no snap. */
+@media (hover: none) and (pointer: coarse) {
+  .d-track { scroll-snap-type: x mandatory; }
+  .d-track::-webkit-scrollbar { display: none; }
+  .d-track { scrollbar-width: none; }
+}
+
+/* "See all" — the row shows seven of something; this is where the rest live. */
+.d-row-see {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 14px; font-weight: 700; color: var(--brand);
+  padding: 6px 10px; border-radius: 999px; white-space: nowrap;
+  transition: background .15s ease, gap .15s ease;
+}
+.d-row-see:hover { background: var(--bg-2); gap: 8px; }
+.d-row-actions { display: flex; align-items: center; gap: 6px; }
+
+@media (max-width: 560px) {
+  /* The arrows are useless without a pointer; the link is not. */
+  .d-row-nav { display: none; }
+}
+
+/* ── Sticky search ───────────────────────────────────────────────────────────
+   The hero's search, kept reachable after the hero has gone. Collapsed to a
+   pill by default: a five-field form pinned to the top of a phone costs a
+   third of the screen for something most visitors use once. */
+.sticky-sentinel { height: 1px; margin-top: -1px; }
+
+.sticky-search {
+  position: sticky; top: 0; z-index: 40;
+  padding: 8px 0;
+  background: color-mix(in srgb, var(--bg-1) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid transparent;
+  /* Off-screen and inert until the hero's own bar has scrolled away, so it
+     never sits on top of the one it is a copy of. */
+  opacity: 0; transform: translateY(-8px); pointer-events: none;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.22,1,.3,1), border-color .22s ease;
+}
+.sticky-search.on { opacity: 1; transform: none; pointer-events: auto; border-bottom-color: var(--line); }
+
+.sticky-search-pill {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line-2);
+  background: #fff; box-shadow: 0 2px 10px rgba(8,20,34,.06);
+  font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink);
+  cursor: pointer; text-align: start;
+  transition: box-shadow .18s ease, border-color .18s ease;
+}
+.sticky-search-pill:hover { box-shadow: 0 6px 18px rgba(8,20,34,.10); border-color: var(--brand); }
+.ssp-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.ssp-ico, .ssp-cta { flex: 0 0 auto; color: var(--muted); font-size: 13px; }
+
+.sticky-search-full { position: relative; animation: ss-expand .2s cubic-bezier(.22,1,.3,1); }
+.sticky-search-close {
+  position: absolute; top: -2px; inset-inline-end: -2px;
+  width: 30px; height: 30px; border-radius: 50%; background: var(--bg-2);
+  color: var(--muted); font-size: 14px; cursor: pointer; z-index: 2;
+}
+@keyframes ss-expand { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-search, .sticky-search-full { transition: none; animation: none; }
 }

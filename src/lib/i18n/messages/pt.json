@@ -607,5 +607,7 @@
   "trust.whatChecked": "{label} — o que foi verificado",
   "verification.p1": "Verificação é uma checagem que nós fazemos, não um status que o anfitrião reivindica. Cada tipo é registrado separadamente com o método usado e o mês em que ocorreu, e o anúncio mostra todos para você julgar.",
   "verification.p2": "Está sendo implantada, não concluída. Hoje a maioria dos anúncios não tem selo algum, e é isso que a ausência significa — ainda sem checagem, não uma que falhou.",
-  "verification.title": "Como funciona a verificação"
+  "verification.title": "Como funciona a verificação",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

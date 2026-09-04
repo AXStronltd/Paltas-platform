@@ -110,9 +110,29 @@ export function DiscoveryRows() {
             title={t(r.titleKey, values)}
             subtitle={t(r.subtitleKey, values)}
             items={r.items}
+            seeAllHref={seeAllFor(r)}
           />
         );
       })}
     </div>
   );
+}
+
+/**
+ * Where "see all" goes for a given row.
+ *
+ * Built from the same query parameters the homepage already reads, so the link
+ * lands on a real filtered view rather than a page invented for it. Rows whose
+ * membership is not expressible as a filter — the amenity and date ones — get
+ * no link at all, because sending someone to an unfiltered catalogue and
+ * calling it "all of them" is worse than not offering.
+ */
+function seeAllFor(row: { key: string; values?: Record<string, string> }): string | undefined {
+  if (row.values?.place) return `/?city=${encodeURIComponent(row.values.place)}`;
+  const [base] = row.key.split(":");
+  if (base === "rentals") return "/?kind=RENT";
+  if (base === "sale") return "/?kind=SALE";
+  if (base === "stays") return "/?kind=STAY";
+  if (base === "nearYou") return "/?mode=stays";
+  return undefined;
 }

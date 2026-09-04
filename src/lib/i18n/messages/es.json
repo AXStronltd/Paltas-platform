@@ -600,5 +600,7 @@
   "trust.whatChecked": "{label} — qué se comprobó",
   "verification.p1": "Verificar es una comprobación que hacemos nosotros, no un estado que un anfitrión pueda declararse. Cada tipo se registra por separado con el método usado y el mes en que se hizo, y el anuncio los muestra para que juzgues tú.",
   "verification.p2": "Se está implantando, no está terminada. Hoy la mayoría de los anuncios no llevan ninguna insignia, y eso es lo que significa su ausencia: aún no se ha comprobado, no que haya fallado.",
-  "verification.title": "Cómo funciona la verificación"
+  "verification.title": "Cómo funciona la verificación",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

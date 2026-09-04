@@ -606,5 +606,7 @@
   "trust.whatChecked": "{label} — che cosa è stato verificato",
   "verification.p1": "La verifica è un controllo che facciamo noi, non uno stato che un host può dichiarare. Ogni tipo è registrato a parte con il metodo usato e il mese in cui è avvenuto, e l'annuncio li mostra perché tu possa giudicare.",
   "verification.p2": "È in corso di attivazione, non conclusa. Oggi la maggior parte degli annunci non ha alcun badge, ed è questo che la sua assenza vuol dire: nessun controllo ancora, non uno fallito.",
-  "verification.title": "Come funziona la verifica"
+  "verification.title": "Come funziona la verifica",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

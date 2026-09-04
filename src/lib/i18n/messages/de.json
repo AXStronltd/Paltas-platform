@@ -609,5 +609,7 @@
   "trust.whatChecked": "{label} — was geprüft wurde",
   "verification.p1": "Prüfung ist etwas, das wir tun, kein Status, den ein Gastgeber für sich beansprucht. Jede Art wird einzeln festgehalten, mit Methode und Monat, und das Inserat zeigt alle, damit Sie selbst urteilen.",
   "verification.p2": "Sie wird ausgerollt, nicht abgeschlossen. Die meisten Inserate tragen heute gar kein Siegel, und genau das bedeutet sein Fehlen — noch keine Prüfung, keine gescheiterte.",
-  "verification.title": "Wie die Prüfung funktioniert"
+  "verification.title": "Wie die Prüfung funktioniert",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

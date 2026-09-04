@@ -1,4 +1,5 @@
 import { Hero } from "@/components/marketplace/Hero";
+import { StickySearch } from "@/components/marketplace/StickySearch";
 import { PromoCarousel } from "@/components/marketplace/PromoCarousel";
 import { MarketPanel } from "@/components/i18n/LocaleSwitcher";
 import { Marketplace } from "@/components/marketplace/Marketplace";
@@ -9,6 +10,8 @@ export default function HomePage() {
   return (
     <main>
       <Hero />
+      {/* Same search, same event, kept in reach once the hero has scrolled by. */}
+      <StickySearch />
       <div className="container-wide">
         {/* Meets the visitor with a question about the trip they already have in
             mind, before the generic listing grid. */}

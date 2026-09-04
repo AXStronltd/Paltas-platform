@@ -598,5 +598,7 @@
   "trust.whatChecked": "{label} — neyin kontrol edildiği",
   "verification.p1": "Doğrulama bizim yaptığımız bir kontroldür, ev sahibinin öne sürebileceği bir sıfat değil. Her tür ayrı ayrı, kullanılan yöntem ve yapıldığı ayla birlikte kaydedilir; ilan hepsini gösterir ki kendiniz karar verin.",
   "verification.p2": "Yayılıyor, tamamlanmış değil. Bugün ilanların çoğunda hiç rozet yok ve rozetin yokluğu tam da bunu anlatır — henüz kontrol edilmedi, başarısız olmadı.",
-  "verification.title": "Doğrulama nasıl işler"
+  "verification.title": "Doğrulama nasıl işler",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

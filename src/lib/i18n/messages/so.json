@@ -599,5 +599,7 @@
   "trust.whatChecked": "{label} — waxa la hubiyay",
   "verification.p1": "Xaqiijintu waa hubin aan annagu sameyno, ma aha heer uu martigeliyuhu iska sheegi karo. Nooc kastaa gaar ayaa loo diiwaangeliyaa oo ay la socdaan habka la isticmaalay iyo bisha la sameeyay, liiskuna dhammaan wuu muujiyaa si aad adigu u xukuntid.",
   "verification.p2": "Waa la fidinayaa, ma dhammaanin. Maanta liisaska badankood calaamad gabi ahaanba ma laha, taasina waa waxa maqnaanshaheedu ka dhigan yahay — weli hubin lama samayn, ma aha mid guuldarraysatay.",
-  "verification.title": "Sida xaqiijintu u shaqeyso"
+  "verification.title": "Sida xaqiijintu u shaqeyso",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

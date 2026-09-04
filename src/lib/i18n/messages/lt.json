@@ -599,5 +599,7 @@
   "trust.whatChecked": "{label} — kas buvo patikrinta",
   "verification.p1": "Patikra yra mūsų atliekamas veiksmas, o ne statusas, kurį šeimininkas gali pats sau priskirti. Kiekviena rūšis fiksuojama atskirai, nurodant metodą ir mėnesį, o skelbimas rodo jas visas, kad spręstumėte patys.",
   "verification.p2": "Ji diegiama, o ne baigta. Šiandien daugumoje skelbimų ženklų iš viso nėra, ir būtent tai jų nebuvimas reiškia — patikros dar nebuvo, o ne kad ji nepavyko.",
-  "verification.title": "Kaip vyksta patikra"
+  "verification.title": "Kaip vyksta patikra",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

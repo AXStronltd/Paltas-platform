@@ -603,5 +603,7 @@
   "trust.whatChecked": "{label} — vad som kontrollerades",
   "verification.p1": "Verifiering är en kontroll vi gör, inte en status en värd kan hävda. Varje slag noteras för sig med metod och månad, och annonsen visar dem så att du kan bedöma själv.",
   "verification.p2": "Den rullas ut, den är inte klar. De flesta annonser bär i dag inga märken alls, och det är just vad frånvaron betyder — ingen kontroll än, inte en misslyckad.",
-  "verification.title": "Så fungerar verifieringen"
+  "verification.title": "Så fungerar verifieringen",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

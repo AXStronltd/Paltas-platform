@@ -587,5 +587,7 @@
   "trust.whatChecked": "{label} — what was checked",
   "verification.p1": "Verification is a check we perform, not a status a host can claim. Each kind is recorded separately with the method used and the month it was done, and the listing shows all three so you can judge it yourself.",
   "verification.p2": "It is being rolled out rather than finished. Most listings today carry no badges at all, and that is what the absence of a badge means — no check yet, not a failed one.",
-  "verification.title": "How verification works"
+  "verification.title": "How verification works",
+  "row.seeAll": "See all",
+  "search.collapse": "Close search"
 }

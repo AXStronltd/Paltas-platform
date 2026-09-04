@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Listing } from "@/lib/models";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -20,9 +21,11 @@ import { useI18n } from "@/components/i18n/LocaleProvider";
  * system for reduced motion.
  */
 export function DiscoveryRow({
-  title, subtitle, icon, items, index = 0,
+  title, subtitle, icon, items, index = 0, seeAllHref,
 }: {
   title: string; subtitle?: string; icon?: string; items: Listing[]; index?: number;
+  /** Where the rest of this row lives. Omitted when the row is already all of it. */
+  seeAllHref?: string;
 }) {
   const router = useRouter();
   const { t, money } = useI18n();
@@ -94,15 +97,22 @@ export function DiscoveryRow({
           <h2>{icon && <span className="d-row-ico" aria-hidden="true">{icon}</span>}{title}</h2>
           {subtitle && <p>{subtitle}</p>}
         </div>
-        <div className="d-row-nav">
-          <button
-            aria-label={t("row.previous")} onClick={() => slide(-1)}
-            disabled={atStart} tabIndex={atStart ? -1 : 0}
-          >‹</button>
-          <button
-            aria-label={t("row.next")} onClick={() => slide(1)}
-            disabled={atEnd} tabIndex={atEnd ? -1 : 0}
-          >›</button>
+        <div className="d-row-actions">
+          {/* Only where there is more than the row is showing. A "see all" that
+              leads to the same seven cards is a promise the next page breaks. */}
+          {seeAllHref && (
+            <Link href={seeAllHref} className="d-row-see">{t("row.seeAll")} →</Link>
+          )}
+          <div className="d-row-nav">
+            <button
+              aria-label={t("row.previous")} onClick={() => slide(-1)}
+              disabled={atStart} tabIndex={atStart ? -1 : 0}
+            >‹</button>
+            <button
+              aria-label={t("row.next")} onClick={() => slide(1)}
+              disabled={atEnd} tabIndex={atEnd ? -1 : 0}
+            >›</button>
+          </div>
         </div>
       </div>
 
