@@ -7,6 +7,7 @@ import type { Listing, SearchFilters } from "@/lib/models";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { searchListings } from "@/lib/services/listingService";
 import { ListingCard } from "./ListingCard";
+import { PropertyMap } from "@/components/maps/PropertyMap";
 
 /**
  * The categories a visitor can filter by.
@@ -127,15 +128,18 @@ export function Marketplace() {
           <p>{t("search.noResults")}</p>
         </div>
       ) : (
-        <div className="grid">
-          {listings.map((l) => (
-            <ListingCard
-              key={l.id}
-              listing={l}
-              onClick={() => router.push(`/listing/${l.id}`)}
-            />
-          ))}
-        </div>
+        <>
+          <PropertyMap listings={listings} />
+          <div className="grid">
+            {listings.map((l) => (
+              <ListingCard
+                key={l.id}
+                listing={l}
+                onClick={() => router.push(`/listing/${l.id}`)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

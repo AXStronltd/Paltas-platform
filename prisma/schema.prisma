@@ -107,6 +107,7 @@ model User {
   id              String     @id @default(cuid())
   orgId           String
   email           String     @unique
+  supabaseUserId  String?    @unique
   name            String
   phone           String?
   passwordHash    String
@@ -1440,6 +1441,7 @@ model PaymentIntentRecord {
 model Guest {
   id           String   @id @default(cuid())
   email        String   @unique
+  supabaseUserId String? @unique
   name         String
   phone        String?
   passwordHash String

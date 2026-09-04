@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { AuthCard, AuthError, AuthField, AuthSubmit } from "@/components/auth/AuthUI";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 /** Matches the floor the API enforces. Disagreeing with it is a rejected form. */
 const MIN_PASSWORD = 10;
@@ -32,6 +33,12 @@ export function ResetPassword() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [supabaseRecovery, setSupabaseRecovery] = useState(false);
+
+  useEffect(() => {
+    if (token) return;
+    void supabaseBrowser().auth.getSession().then(({ data }) => setSupabaseRecovery(Boolean(data.session)));
+  }, [token]);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,6 +51,13 @@ export function ResetPassword() {
 
     setBusy(true);
     try {
+      if (!token) {
+        const { error: updateError } = await supabaseBrowser().auth.updateUser({ password });
+        if (updateError) return setError(updateError.message);
+        await supabaseBrowser().auth.signOut();
+        setDone(true);
+        return;
+      }
       const response = await fetch("/api/auth/reset", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -60,7 +74,7 @@ export function ResetPassword() {
 
   // A link with no token at all is a link that was mangled in transit. Say so
   // rather than presenting a form that cannot possibly succeed.
-  if (!token) {
+  if (!token && !supabaseRecovery) {
     return (
       <main className="auth-page">
         <div className="auth-card">

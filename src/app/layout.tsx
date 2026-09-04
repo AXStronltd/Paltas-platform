@@ -46,10 +46,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const h = headers();
   const locale = h.get("x-paltas-locale") ?? "en";
   const market = h.get("x-paltas-market") ?? "KE";
+  const publicConfig = JSON.stringify({
+    supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+    supabaseAnonKey: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
+      || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+    googleMapsKey: process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  }).replace(/</g, "\\u003c");
 
   return (
     <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: `window.__PALTAS_PUBLIC_CONFIG__=${publicConfig}` }}
+        />
         {/* Manrope loads when online; a strong system-font stack (in globals.css)
             guarantees the app looks right offline and never blocks the build. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

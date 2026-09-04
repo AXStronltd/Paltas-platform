@@ -6,6 +6,7 @@ import { useToast, personalWelcome } from "@/components/ui/Toast";
 import { Portal } from "./Portal";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { AuthCard, AuthTabs, AuthField, AuthError, AuthSubmit, AuthAlt } from "@/components/auth/AuthUI";
+import { supabaseGoogleSignIn, supabaseResetPassword } from "@/lib/supabase/auth";
 
 /**
  * Create an account, or sign in.
@@ -18,13 +19,16 @@ const MIN_PASSWORD = 10;
 
 export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: () => void }) {
   const toast = useToast();
-  const { signIn, register } = useGuest();
+  const { signIn, register, registerBusiness } = useGuest();
   const { t } = useI18n();
   const [tab, setTab] = useState<"in" | "up" | "forgot">("up");
   const [notice, setNotice] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accountType, setAccountType] = useState<"guest" | "business">("guest");
+  const [role, setRole] = useState<"landlord" | "agent" | "hotel" | "developer">("landlord");
+  const [businessName, setBusinessName] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
@@ -45,19 +49,17 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
 
     if (tab === "forgot") {
       setBusy(true);
-      const res = await fetch("/api/auth/forgot", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), audience: "guest" }),
-      }).then((r) => r.json()).catch(() => null);
+      const { error } = await supabaseResetPassword(email.trim());
       setBusy(false);
-      // The same words whether or not the address exists — see the endpoint.
-      setNotice(res?.message ?? "If that address has an account, a reset link is on its way.");
+      setNotice(error ?? "If that address has an account, a reset link is on its way.");
       return;
     }
 
     setBusy(true);
     const message = tab === "up"
-      ? await register({ email: email.trim(), name: name.trim(), password })
+      ? accountType === "business"
+        ? await registerBusiness({ email: email.trim(), name: name.trim(), password, role, businessName: businessName.trim() })
+        : await register({ email: email.trim(), name: name.trim(), password })
       : await signIn(email.trim(), password);
     setBusy(false);
 
@@ -69,6 +71,12 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     );
     onDone?.();
     onClose();
+  }
+
+  async function continueWithGoogle() {
+    setErr("");
+    const result = await supabaseGoogleSignIn("guest");
+    if (result.error) setErr(result.error);
   }
 
   return (
@@ -93,6 +101,30 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
                 placeholder="Your name" autoComplete="name" required autoFocus />
             )}
 
+            {tab === "up" && (
+              <>
+                <label className="auth-field">Account type
+                  <select value={accountType} onChange={(e) => setAccountType(e.target.value as "guest" | "business")}>
+                    <option value="guest">Personal account</option>
+                    <option value="business">Property business</option>
+                  </select>
+                </label>
+                {accountType === "business" && (
+                  <>
+                    <AuthField label="Business name" value={businessName} onChange={setBusinessName} placeholder="Your company or trading name" required />
+                    <label className="auth-field">Role
+                      <select value={role} onChange={(e) => setRole(e.target.value as typeof role)}>
+                        <option value="landlord">Landlord</option>
+                        <option value="agent">Agent</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="developer">Developer</option>
+                      </select>
+                    </label>
+                  </>
+                )}
+              </>
+            )}
+
             <AuthField label={t("auth.email")} type="email" value={email} onChange={setEmail}
               placeholder="you@example.com" autoComplete="email" required
               autoFocus={tab === "in"} />
@@ -113,6 +145,12 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
               busyLabel={tab === "up" ? t("auth.creating") : tab === "forgot" ? t("auth.sending") : t("auth.signingIn")}>
               {tab === "up" ? t("auth.createAccount") : tab === "forgot" ? t("auth.sendReset") : t("auth.signIn")}
             </AuthSubmit>
+
+            {(tab === "in" || (tab === "up" && accountType === "guest")) && (
+              <button className="btn secondary" type="button" onClick={() => void continueWithGoogle()}>
+                Continue with Google
+              </button>
+            )}
 
             {/* Somebody locked out has no other way back in. */}
             {tab === "in" && (

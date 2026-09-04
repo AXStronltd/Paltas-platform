@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/services/managementApi";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 /**
  * Who is signed in, and what they may do.
@@ -86,7 +87,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { refresh(); }, [refresh]);
 
   const signOut = useCallback(async () => {
-    await api.post("/auth/logout");
+    await Promise.allSettled([api.post("/auth/logout"), supabaseBrowser().auth.signOut()]);
     setState({ user: null, roles: [], permissions: [], properties: [] });
   }, []);
 

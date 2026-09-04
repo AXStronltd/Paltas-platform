@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import type { SearchFilters } from "@/lib/models";
+import { loadGoogleMaps } from "@/components/maps/googleMaps";
 
 /**
  * Where, when, how many.
@@ -26,11 +27,29 @@ export function SearchBar({ onSearch, busy }: {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
+  const whereInput = useRef<HTMLInputElement>(null);
+  const [selectedCity, setSelectedCity] = useState("");
+
+  useEffect(() => {
+    if (!whereInput.current) return;
+    void loadGoogleMaps().then(() => {
+      if (!whereInput.current || !window.google?.maps?.places) return;
+      const autocomplete = new google.maps.places.Autocomplete(whereInput.current, { fields: ["address_components", "formatted_address", "name"], types: ["(regions)"] });
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        const city = place.address_components?.find((part) => part.types.includes("locality"))?.long_name
+          ?? place.address_components?.find((part) => part.types.includes("administrative_area_level_1"))?.long_name
+          ?? place.name ?? "";
+        setSelectedCity(city);
+        if (place.formatted_address) setWhere(place.formatted_address);
+      });
+    }).catch(() => undefined);
+  }, []);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     onSearch({
-      city: where.trim() || undefined,
+      city: selectedCity || where.trim() || undefined,
       guests: guests > 0 ? guests : undefined,
       checkIn: checkIn || undefined,
       checkOut: checkOut || undefined,
@@ -48,7 +67,8 @@ export function SearchBar({ onSearch, busy }: {
           <input
             id="hs-where"
             value={where}
-            onChange={(e) => setWhere(e.target.value)}
+            ref={whereInput}
+            onChange={(e) => { setWhere(e.target.value); setSelectedCity(""); }}
             placeholder={t("search.wherePlaceholder")}
             autoComplete="off"
           />

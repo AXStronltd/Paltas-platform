@@ -2,7 +2,7 @@
   "name": "paltas-app",
   "version": "0.1.0",
   "private": true,
-  "description": "PALTAS Smart Living \u2014 API-ready product frontend",
+  "description": "PALTAS Smart Living — API-ready product frontend",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -45,6 +45,8 @@
     "@prisma/client": "^5.22.0",
     "@stripe/react-stripe-js": "^2.9.0",
     "@stripe/stripe-js": "^4.10.0",
+    "@supabase/ssr": "^0.12.6",
+    "@supabase/supabase-js": "^2.115.0",
     "next": "^14.2.35",
     "prisma": "^5.22.0",
     "qrcode": "^1.5.4",
@@ -53,10 +55,13 @@
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.7.0",
+    "@types/google.maps": "^3.66.2",
     "@types/node": "20.14.10",
     "@types/qrcode": "^1.5.6",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.35",
     "typescript": "5.5.3"
   },
   "engines": {

@@ -65,6 +65,27 @@ services:
           name: paltas-db
           property: connectionString
 
+      # Supabase Auth: the first two are public browser configuration; the
+      # service role key is read only by the server-side provisioning adapter.
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
 
       # NEXT_PUBLIC_DATA_SOURCE is gone. It read "mock" on a live deployment
       # serving real listings from the database, which was alarming and untrue:

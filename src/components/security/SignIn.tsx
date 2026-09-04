@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "@/components/security/SessionProvider";
-import { signIn } from "@/lib/services/managementService";
+import { supabaseGoogleSignIn, supabaseSignIn } from "@/lib/supabase/auth";
 import { AuthCard, AuthField, AuthError, AuthSubmit } from "@/components/auth/AuthUI";
 
 /**
@@ -28,13 +28,19 @@ export function SignIn({ subtitle }: { subtitle?: string } = {}) {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const res = await signIn(email.trim(), password);
+    const res = await supabaseSignIn(email.trim(), password, "staff");
     setBusy(false);
     if (res.error) {
-      setError(res.error.message);
+      setError(res.error);
       return;
     }
     await refresh();
+  }
+
+  async function continueWithGoogle() {
+    setError(null);
+    const result = await supabaseGoogleSignIn("staff");
+    if (result.error) setError(result.error);
   }
 
   return (
@@ -54,6 +60,9 @@ export function SignIn({ subtitle }: { subtitle?: string } = {}) {
         <AuthError>{error}</AuthError>
 
         <AuthSubmit busy={busy} busyLabel="Signing in…">Sign in</AuthSubmit>
+        <button className="btn secondary" type="button" onClick={() => void continueWithGoogle()}>
+          Continue with Google
+        </button>
       </AuthCard>
     </div>
   );

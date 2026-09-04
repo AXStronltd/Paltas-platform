@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { currentGuest, loginGuest, logoutGuest, registerGuest, type Guest } from "@/lib/services/guestService";
+import { currentGuest, logoutGuest, type Guest } from "@/lib/services/guestService";
+import { supabaseBrowser } from "@/lib/supabase/client";
+import { supabaseSignIn, supabaseSignUp } from "@/lib/supabase/auth";
 
 /**
  * Who is browsing, if anyone.
@@ -20,6 +22,7 @@ interface GuestState {
   refresh: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<string | null>;
   register: (input: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
+  registerBusiness: (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string }) => Promise<string | null>;
   signOut: () => Promise<void>;
 }
 
@@ -42,27 +45,34 @@ export function GuestProvider({ children }: { children: React.ReactNode }) {
 
   /** Returns an error message, or null on success. */
   const signIn = useCallback(async (email: string, password: string) => {
-    const res = await loginGuest({ email, password });
-    if (res.error) return res.error.message;
-    setGuest(res.data!.guest);
+    const res = await supabaseSignIn(email, password, "guest");
+    if ("error" in res && res.error) return res.error;
+    setGuest(res.data.guest);
     return null;
   }, []);
 
   const register = useCallback(async (input: { email: string; name: string; password: string; phone?: string }) => {
-    const res = await registerGuest(input);
-    if (res.error) return res.error.message;
-    setGuest(res.data!.guest);
+    const res = await supabaseSignUp({ ...input, audience: "guest" });
+    if ("error" in res && res.error) return res.error;
+    if ("needsVerification" in res) return "Account created. Please verify your email, then sign in.";
+    setGuest(res.data.guest);
     return null;
   }, []);
 
+  const registerBusiness = useCallback(async (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string }) => {
+    const res = await supabaseSignUp({ ...input, audience: "staff" });
+    if ("error" in res && res.error) return res.error;
+    return "Application received. Please verify your email; PALTAS will review your account before access is granted.";
+  }, []);
+
   const signOut = useCallback(async () => {
-    await logoutGuest();
+    await Promise.allSettled([logoutGuest(), supabaseBrowser().auth.signOut()]);
     setGuest(null);
   }, []);
 
   const value = useMemo<GuestState>(
-    () => ({ guest, loading, refresh, signIn, register, signOut }),
-    [guest, loading, refresh, signIn, register, signOut],
+    () => ({ guest, loading, refresh, signIn, register, registerBusiness, signOut }),
+    [guest, loading, refresh, signIn, register, registerBusiness, signOut],
   );
 
   return <GuestContext.Provider value={value}>{children}</GuestContext.Provider>;
