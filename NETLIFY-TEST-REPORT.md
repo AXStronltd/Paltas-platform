@@ -1,5 +1,10 @@
 # PALTAS — Netlify Readiness & Render Test Report
 
+> **Historical.** This records a Netlify test deploy from before the backend
+> existed. There is no mock mode any more and PALTAS runs on Render against
+> PostgreSQL; nothing here describes the current deployment.
+
+
 Prepared before the final ZIP. The project is **Netlify-ready** and has passed a
 production-build render audit across desktop, tablet, and iPhone.
 

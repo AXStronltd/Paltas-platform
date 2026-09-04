@@ -1,5 +1,9 @@
 # Deploy PALTAS to paltashub.com — Step by Step
 
+> **Partly historical.** `NEXT_PUBLIC_DATA_SOURCE` no longer exists — there is
+> no mock mode. See `render.yaml`, which is the deployment that runs.
+
+
 This gets the PALTAS app (`paltas-app`) live on your domain. No coding needed —
 just clicks and copy-paste. Takes about 20 minutes. Free.
 

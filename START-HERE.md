@@ -31,10 +31,17 @@ The `.md` files are documentation and don't affect the app.
 
 ## ⚠️ Honest status
 
-This is a **complete, runnable, deployable frontend** running on realistic demo
-data. It is **not yet** a live money-moving platform — that needs the backend
-(database, real payments, ledger, auth, compliance) built against `API-CONTRACT.md`.
-When that's ready, you flip one setting (`NEXT_PUBLIC_DATA_SOURCE=api`) and
-redeploy — the site you deployed doesn't change.
+This is a **full-stack application**, not a frontend waiting for a backend. It
+runs on PostgreSQL through Prisma, with its own API routes under `src/app/api/`,
+session-cookie authentication, an approval flow for new organisations, Stripe
+payments, and a payout ledger.
+
+There is **no mock mode**. The switch that used to claim otherwise has been
+deleted; `API-CONTRACT.md` describes a separate-backend plan that was not taken
+and is kept only for reference.
+
+What is genuinely not finished is listed honestly in the README and in the
+commit history — chiefly that no real money has moved yet, and that the fifteen
+translations have not been read by native speakers.
 
 Deploy the **Next.js app in this folder** — not any single `index.html` prototype.

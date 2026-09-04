@@ -66,8 +66,13 @@ services:
           property: connectionString
 
 
-      - key: NEXT_PUBLIC_DATA_SOURCE
-        value: mock
+      # NEXT_PUBLIC_DATA_SOURCE is gone. It read "mock" on a live deployment
+      # serving real listings from the database, which was alarming and untrue:
+      # the switch had stopped meaning anything, and setting it to "api" — the
+      # obvious response to seeing it — would have pointed the marketplace at
+      # an endpoint this app does not serve and broken the homepage. The
+      # machinery it guarded has been deleted rather than reconfigured.
+      #
       # NEXT_PUBLIC_DEMO_CATALOGUE is deliberately absent. Setting it would put
       # properties that do not exist on a live shopfront that takes money.
 

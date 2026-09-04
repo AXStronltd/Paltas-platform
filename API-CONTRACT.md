@@ -1,10 +1,20 @@
-# PALTAS — Backend API Contract (v1)
+# PALTAS — Backend API Contract (v1) — SUPERSEDED
 
-This document is the contract between the **PALTAS frontend** (already built,
-Next.js + TypeScript) and the **backend** (your team's work). The frontend
-already calls these endpoints through its service layer — today they return mock
-data; when the backend implements the endpoints below and you set
-`NEXT_PUBLIC_DATA_SOURCE=api`, the product goes live with **no frontend changes**.
+> **This document describes a plan that was not taken, and it is kept for
+> reference only. Do not build against it.**
+>
+> It proposed a separate backend service at `api.paltas.com`, reached with a
+> bearer token, which the frontend would switch to by setting
+> `NEXT_PUBLIC_DATA_SOURCE=api`.
+>
+> What was built instead: the backend is **in this repository**, as Next.js
+> route handlers under `src/app/api/`, on **PostgreSQL via Prisma**, with
+> session-cookie authentication. There is no separate service, no bearer token,
+> and no data-source switch — that switch has been deleted, along with the mock
+> services it chose between.
+>
+> For what actually exists, read `src/app/api/` (or run `npm run verify`, which
+> prints every route and how it authorises).
 
 PALTAS is a stays / real-estate marketplace. The "money moment" is a **booking
 payment held in escrow and released to the host** — not a payments-transfer app.

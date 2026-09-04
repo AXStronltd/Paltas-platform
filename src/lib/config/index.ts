@@ -1,42 +1,47 @@
 /**
  * Runtime configuration.
  *
- * `DATA_SOURCE` is the single switch that decides whether services return
- * mock data or call the real backend. Today it is "mock". When your APIs are
- * ready, set NEXT_PUBLIC_DATA_SOURCE=api (and API_BASE_URL) — nothing else in
- * the app changes. This is the seam that makes the frontend API-ready.
+ * There used to be a `dataSource` switch here — "mock" or "api" — described as
+ * the seam that would make the frontend API-ready. It was never flipped, and by
+ * the time the real backend existed it had stopped meaning what it said:
  *
- * The demo catalogue is a SEPARATE switch, and defaults to off.
+ *   The marketplace read real listings from the database in BOTH branches. The
+ *   "api" branch pointed at `/listings`, which is not an endpoint this app has;
+ *   the real one is `/api/public/listings`, reached another way entirely. So
+ *   setting NEXT_PUBLIC_DATA_SOURCE=api — the obvious thing to do on seeing a
+ *   variable set to "mock" on a live site — would have broken the homepage,
+ *   not made it real.
+ *
+ *   Two of the services behind it, portals and escrow, were imported by
+ *   nothing at all. The four role portals had long since moved to the real
+ *   management API.
+ *
+ * A switch that does not do what its name says is worse than no switch, and a
+ * live deployment reading `mock` in its own configuration cannot be reasoned
+ * about by anybody. It is gone, along with the code it guarded.
+ *
+ * What is left is one flag, explicit and off by default.
+ */
+
+export const config = {
+  /**
+   * Whether to pad the shopfront with example properties that cannot be booked.
+   *
+   * For local development only. Opt in explicitly: an unset variable must never
+   * show a visitor fiction, and this is deliberately not derived from NODE_ENV,
+   * a hostname, or anything else that could be true by accident in production.
+   */
+  demoCatalogue: process.env.NEXT_PUBLIC_DEMO_CATALOGUE === "true",
+} as const;
+
+/**
+ * Every caller that renders something a visitor can see must ask this.
  *
  * It used to ride on `dataSource === "mock"`, which meant the live site padded
  * its shopfront with six invented properties — "Palm Court Inn", "Beachfront
  * Family Villa" — attributed to hosts marked "✓ Verified" who do not exist,
- * and whose Book button opened a checkout offering to "simulate a failed
- * payment". Those two things were never the same decision: where the catalogue
- * comes from is a wiring question, whether to show visitors properties that
- * cannot be booked is a truthfulness one.
- *
- * Turn it on for local development with NEXT_PUBLIC_DEMO_CATALOGUE=true.
- * Anywhere a member of the public can reach, leave it unset.
- */
-
-export type DataSource = "mock" | "api";
-
-export const config = {
-  dataSource: (process.env.NEXT_PUBLIC_DATA_SOURCE as DataSource) || "mock",
-  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "",
-  /** Opt in explicitly. An unset variable must never show a visitor fiction. */
-  demoCatalogue: process.env.NEXT_PUBLIC_DEMO_CATALOGUE === "true",
-  /** Simulated network latency for mock mode, so the UI's loading states are real. */
-  mockLatencyMs: 250,
-} as const;
-
-export const isMock = () => config.dataSource === "mock";
-
-/**
- * Whether to pad the shopfront with properties that cannot be booked.
- *
- * Every caller that renders something a visitor can see must ask this, not
- * `isMock()`.
+ * and whose Book button offered to "simulate a failed payment". Where the
+ * catalogue comes from was never the same decision as whether to show visitors
+ * properties that cannot be booked.
  */
 export const showDemoCatalogue = () => config.demoCatalogue;

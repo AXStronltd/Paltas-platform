@@ -1,11 +1,10 @@
-import { isMock } from "@/lib/config";
 import type { Booking, BookingEvent, BookingStatus, Listing, Result } from "@/lib/models";
 import { priceBreakdown, paymentModeFor } from "./pricingService";
 import { createEscrow } from "./escrowService";
 import { HOSTS } from "@/lib/data/mock";
 import { providers, providerFor } from "@/lib/providers/registry";
 import type { PaymentMethod } from "@/lib/providers/interfaces";
-import { apiPost, mockDelay } from "./apiClient";
+import { mockDelay } from "./apiClient";
 
 /**
  * Booking service — orchestrates the full PALTAS booking lifecycle through the
@@ -44,10 +43,6 @@ export async function createBooking(input: CreateBookingInput): Promise<Result<B
 
   if (seenKeys.has(idempotencyKey)) {
     return mockDelay({ data: seenKeys.get(idempotencyKey)!, error: null });
-  }
-
-  if (!isMock()) {
-    return apiPost<Booking>(`/bookings`, input);
   }
 
   const breakdown = priceBreakdown(listing, nights);
@@ -122,13 +117,11 @@ export async function reverseBooking(bookingId: string): Promise<Result<Booking>
 }
 
 export async function getBooking(id: string): Promise<Result<Booking | null>> {
-  if (isMock()) return mockDelay({ data: bookings.find((b) => b.id === id) ?? null, error: null });
-  return apiPost<Booking | null>(`/bookings/get`, { id });
+  return mockDelay({ data: bookings.find((b) => b.id === id) ?? null, error: null });
 }
 
 export async function listMyBookings(buyerId: string): Promise<Result<Booking[]>> {
-  if (isMock()) return mockDelay({ data: [...bookings], error: null });
-  return apiPost<Booking[]>(`/bookings/search`, { buyerId });
+  return mockDelay({ data: [...bookings], error: null });
 }
 
 export function makeIdempotencyKey(listingId: string, buyerId: string): string {

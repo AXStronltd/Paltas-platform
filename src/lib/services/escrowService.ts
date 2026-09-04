@@ -1,6 +1,5 @@
-import { isMock } from "@/lib/config";
 import type { EscrowTransaction, Host, Currency, Result } from "@/lib/models";
-import { apiPost, mockDelay } from "./apiClient";
+import { mockDelay } from "./apiClient";
 
 /**
  * Escrow service — the two-sided money-protection engine.
@@ -27,7 +26,7 @@ interface CreateEscrowInput {
 }
 
 export async function createEscrow(input: CreateEscrowInput): Promise<Result<EscrowTransaction>> {
-  if (isMock()) {
+  {
     const tx: EscrowTransaction = {
       id: "esc_" + Date.now(), ...input,
       status: "held", buyerConfirmed: false, hostConfirmed: false, createdAt: Date.now(),
@@ -35,8 +34,6 @@ export async function createEscrow(input: CreateEscrowInput): Promise<Result<Esc
     store.unshift(tx);
     return mockDelay({ data: tx, error: null });
   }
-  // API: return apiPost<EscrowTransaction>(`/escrow`, input);
-  return apiPost<EscrowTransaction>(`/escrow`, input);
 }
 
 export async function confirmAsBuyer(id: string): Promise<Result<EscrowTransaction>> {
@@ -52,8 +49,7 @@ export async function raiseDispute(id: string): Promise<Result<EscrowTransaction
 }
 
 export async function getMyEscrows(buyerId: string): Promise<Result<EscrowTransaction[]>> {
-  if (isMock()) return mockDelay({ data: [...store], error: null });
-  return apiPost<EscrowTransaction[]>(`/escrow/search`, { buyerId });
+  return mockDelay({ data: [...store], error: null });
 }
 
 /** Core rule: release only when both sides have confirmed. */
@@ -66,12 +62,10 @@ async function transition(
   mutate: (tx: EscrowTransaction) => void,
   apiPath: string
 ): Promise<Result<EscrowTransaction>> {
-  if (isMock()) {
+  {
     const tx = store.find((t) => t.id === id);
     if (!tx) return { data: null as unknown as EscrowTransaction, error: { code: "not_found", message: "Escrow not found" } };
     mutate(tx);
     return mockDelay({ data: tx, error: null });
   }
-  // API: return apiPost<EscrowTransaction>(apiPath, {});
-  return apiPost<EscrowTransaction>(apiPath, {});
 }

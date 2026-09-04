@@ -1,5 +1,10 @@
 # PALTAS — Delivery Guide
 
+> **Partly historical.** Instructions mentioning `NEXT_PUBLIC_DATA_SOURCE`
+> describe a separate-backend plan that was not taken. That variable no longer
+> exists; see `render.yaml` for what the deployment actually sets.
+
+
 This package is the **production-grade frontend** for PALTAS Smart Living
 (stays / real-estate marketplace). It runs today with realistic mock data and is
 built so your backend connects later **without any frontend rebuild**.

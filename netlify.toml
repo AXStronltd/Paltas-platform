@@ -5,8 +5,10 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # Keep the app in mock mode for this test deploy (no backend yet).
-  NEXT_PUBLIC_DATA_SOURCE = "mock"
+  # NEXT_PUBLIC_DATA_SOURCE is gone: there is no mock mode any more. The app
+  # reads a real PostgreSQL database through Prisma and its own /api routes.
+  # Note this deployment has no DATABASE_URL, so it is a build check rather
+  # than a working site — Render is where PALTAS actually runs.
 
 # The official Next.js runtime for Netlify — handles SSR routes, image
 # optimization, and per-route rendering. Netlify auto-installs it, and it is

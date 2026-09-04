@@ -6,9 +6,10 @@
 PALTAS is a stays / real-estate marketplace. The money moment is a **booking
 payment held in escrow and released to the host** — not a payments-transfer app.
 
-**Architecture in one line:** the UI only calls the *service layer*; services return
-mock data today and real API data when `NEXT_PUBLIC_DATA_SOURCE=api`, so the backend
-connects without any frontend rebuild. Payment providers (Stripe, Appra Pay, Mobile
+**Architecture in one line:** the UI calls route handlers in this same repository
+under `src/app/api/`, which read and write PostgreSQL through Prisma; the pure
+decision-making (availability, pricing, permissions, the payout ledger) lives in
+`src/lib/` with no database access at all, so it can be tested directly. Payment providers (Stripe, Appra Pay, Mobile
 money) sit behind a `PaymentProvider` interface and swap via one line in the registry.
 
 ---
@@ -478,14 +479,14 @@ export interface DeveloperLead {
  *
  * `DATA_SOURCE` is the single switch that decides whether services return
  * mock data or call the real backend. Today it is "mock". When your APIs are
- * ready, set NEXT_PUBLIC_DATA_SOURCE=api (and API_BASE_URL) — nothing else in
+ * (this quoted block is out of date — the switch has been deleted; see
  * the app changes. This is the seam that makes the frontend API-ready.
  */
 
 export type DataSource = "mock" | "api";
 
 export const config = {
-  dataSource: (process.env.NEXT_PUBLIC_DATA_SOURCE as DataSource) || "mock",
+  demoCatalogue: process.env.NEXT_PUBLIC_DEMO_CATALOGUE === "true",
   apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "",
   /** Simulated network latency for mock mode, so the UI's loading states are real. */
   mockLatencyMs: 250,
