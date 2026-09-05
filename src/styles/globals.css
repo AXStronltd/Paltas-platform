@@ -2352,13 +2352,34 @@ body:has(.scrim) .tabbar { display: none; }
   .grid > * {
     flex: 0 0 46vw;
     scroll-snap-align: start;
+    /* Equal height regardless of how long a title runs, so the photographs
+       across the row line up rather than stepping up and down. */
+    align-self: stretch;
   }
 
-  .card { border-radius: 14px; }
-  /* 4:3 rather than a fixed 200px. At half the screen width a fixed height is
-     a different crop on every phone, and on a small one it is taller than the
-     card is wide. */
-  .card-img { height: auto; aspect-ratio: 4 / 3; }
+  /* A column, so the photograph is always the same height and the text below
+     it takes whatever is left. As plain blocks in a flex row the cards
+     stretched to the tallest one and the images drifted out of line with each
+     other — the same picture appearing taller in one card than the next. */
+  .card { border-radius: 14px; display: flex; flex-direction: column; }
+
+  /* 4:3, fixed by ratio rather than by pixels. A fixed height is a different
+     crop on every phone; on a small one it was taller than the card is wide. */
+  .card-img {
+    flex: 0 0 auto;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    width: 100%;
+  }
+  /* Both the photograph and the "no photograph" panel, so an empty listing
+     occupies exactly the same box as a full one and the row stays level. */
+  .card-img img,
+  .card-img > div {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-body { flex: 1 1 auto; }
   .card-body { padding: 9px 10px 11px; }
   .card-top h3 { font-size: 13.5px; line-height: 1.25; }
   .card-star { font-size: 11.5px; }
@@ -2387,7 +2408,9 @@ body:has(.scrim) .tabbar { display: none; }
   }
   .d-track::-webkit-scrollbar { display: none; }
   .d-card { border-radius: 14px; scroll-snap-align: start; }
-  .d-card-img { aspect-ratio: 4 / 3; }
+  .d-card-img { aspect-ratio: 4 / 3; height: auto; width: 100%; flex: 0 0 auto; }
+  .d-card-img img,
+  .d-card-img > div { width: 100%; height: 100%; object-fit: cover; display: block; }
   .d-card-body { padding: 8px 10px 10px; }
   .d-card-top b { font-size: 13px; line-height: 1.25; }
   .d-card-rating { font-size: 11px; }

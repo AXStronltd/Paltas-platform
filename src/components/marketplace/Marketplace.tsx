@@ -7,7 +7,6 @@ import type { Listing, SearchFilters } from "@/lib/models";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import { searchListings } from "@/lib/services/listingService";
 import { ListingCard } from "./ListingCard";
-import { PropertyMap } from "@/components/maps/PropertyMap";
 
 /**
  * The categories a visitor can filter by.
@@ -129,7 +128,11 @@ export function Marketplace() {
         </div>
       ) : (
         <>
-          <PropertyMap listings={listings} />
+          {/* No map here. A map of fifty-eight pins scattered across four
+              continents answers a question nobody asked on a shopfront, and on
+              a phone it cost most of the first screen before a single property
+              appeared. The map belongs on a listing, where "where is this?" is
+              the actual question — see ListingDetail. */}
           <div className="grid">
             {listings.map((l) => (
               <ListingCard
