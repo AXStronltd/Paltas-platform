@@ -718,6 +718,8 @@
   "ws.switch": "Arbeitsbereich wechseln",
   "ws.manage": "Verwaltungskonsole",
   "ws.manage.sub": "Portfolio, Inserate, Finanzen, Lohn, Personal und Prüfprotokoll",
+  "ws.org": "Organisation",
+  "ws.org.sub": "Zu dieser Organisation wechseln.",
   "ws.landlord": "Immobilienverwaltung",
   "ws.landlord.sub": "Ihre Einheiten, Mieter, Miete und Wartung",
   "ws.developer": "Immobilienverwaltung",

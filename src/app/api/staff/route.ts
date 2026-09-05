@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { ensureMembership } from "@/server/membership";
 import { badRequest, conflict, guard, guardList, handle, ok, readJson } from "@/server/http";
 import { accessiblePropertyIds } from "@/server/scope";
 import { writeAudit } from "@/server/audit";
@@ -153,6 +154,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           createdById: actor.id,
         },
       });
+      await ensureMembership(created.id, actor.orgId);
 
       for (const r of roles) {
         const row = roleRows.find((x) => x.key === r.key)!;

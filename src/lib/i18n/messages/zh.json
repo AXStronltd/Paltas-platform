@@ -704,6 +704,8 @@
   "ws.switch": "切换工作区",
   "ws.manage": "管理控制台",
   "ws.manage.sub": "资产组合、房源、财务、薪资、员工与审计记录",
+  "ws.org": "组织",
+  "ws.org.sub": "切换到此组织。",
   "ws.landlord": "物业管理",
   "ws.landlord.sub": "您的单元、租户、租金与维护",
   "ws.developer": "物业管理",

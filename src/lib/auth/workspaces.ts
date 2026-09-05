@@ -24,6 +24,8 @@ export interface Workspace {
   /** Message key. The catalogues hold the words. */
   labelKey: string;
   descriptionKey: string;
+  /** Set only for organisations, whose names are data, not translations. */
+  name?: string;
 }
 
 export interface WorkspaceInput {
@@ -32,6 +34,15 @@ export interface WorkspaceInput {
   /** Permission keys the account holds anywhere. */
   permissions?: string[];
   isPlatformAdmin?: boolean;
+  /** Organisations this account belongs to. One is the ordinary case. */
+  organizations?: WorkspaceOrg[];
+  /** The organisation currently being acted inside — `User.orgId`. */
+  activeOrgId?: string | null;
+}
+
+export interface WorkspaceOrg {
+  id: string;
+  name: string;
 }
 
 /**
@@ -70,6 +81,27 @@ export function availableWorkspaces(input: WorkspaceInput): Workspace[] {
       labelKey: "ws.manage",
       descriptionKey: "ws.manage.sub",
     });
+  }
+
+  // A second organisation is the one case where the account itself, not the
+  // area of the app, is the thing being chosen. Almost nobody has one today —
+  // every account was backfilled with exactly one membership — so this stays
+  // out of the way entirely until a person genuinely belongs to two, rather
+  // than showing everyone a company picker with their own company in it.
+  const orgs = input.organizations ?? [];
+  if (orgs.length > 1) {
+    for (const org of orgs) {
+      if (org.id === input.activeOrgId) continue;
+      spaces.push({
+        key: `org:${org.id}`,
+        href: `/workspace/switch?org=${encodeURIComponent(org.id)}`,
+        labelKey: "ws.org",
+        descriptionKey: "ws.org.sub",
+        // The only workspace whose name is data rather than a message key:
+        // an organisation is called what its owner called it.
+        name: org.name,
+      });
+    }
   }
 
   return spaces;

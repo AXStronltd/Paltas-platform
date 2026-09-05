@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { ensureMembership } from "@/server/membership";
 import { badRequest, fail, handle, ok, readJson } from "@/server/http";
 import { hashPassword } from "@/server/password";
 
@@ -61,6 +62,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     const businessName = body.businessName?.trim() || `${body.name.trim()}`;
     const passwordHash = await hashPassword(body.password);
 
+    // Captured so the membership can be recorded once the transaction has
+    // committed — a failure to record it must not undo a successful signup.
+    let createdOrgId = "";
+
     const user = await prisma.$transaction(async (tx) => {
       const org = await tx.organization.create({
         data: {
@@ -70,6 +75,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         },
         select: { id: true },
       });
+      createdOrgId = org.id;
 
       return tx.user.create({
         data: {
@@ -88,6 +94,8 @@ export async function POST(req: Request): Promise<NextResponse> {
         select: { id: true, name: true, email: true, requestedRole: true, status: true },
       });
     });
+
+    await ensureMembership(user.id, createdOrgId, { isDefault: true });
 
     return ok({
       account: user,

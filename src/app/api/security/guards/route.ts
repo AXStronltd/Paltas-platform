@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { ensureMembership } from "@/server/membership";
 import { badRequest, conflict, guard, guardList, handle, ok, readJson } from "@/server/http";
 import { whereByProperty } from "@/server/scope";
 import { writeAudit } from "@/server/audit";
@@ -104,6 +105,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           createdById: g.actor.id,
         },
       });
+      await ensureMembership(user.id, g.actor.orgId);
       await tx.roleAssignment.create({
         data: { userId: user.id, roleId: role.id, scopeType: "PROPERTY", scopeId: body.propertyId!, grantedById: g.actor.id },
       });

@@ -716,6 +716,8 @@
   "ws.switch": "Mudar de espaço",
   "ws.manage": "Consola de gestão",
   "ws.manage.sub": "Carteira, anúncios, finanças, salários, pessoal e registo de auditoria",
+  "ws.org": "Organização",
+  "ws.org.sub": "Mudar para esta organização.",
   "ws.landlord": "Gestão de imóveis",
   "ws.landlord.sub": "As suas unidades, inquilinos, renda e manutenção",
   "ws.developer": "Gestão de imóveis",

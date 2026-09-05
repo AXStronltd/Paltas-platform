@@ -84,3 +84,38 @@ try {
   // case — the one that otherwise looks like nothing happening at all.
   console.log("[boot] coordinate backfill did not finish — see the lines above. Continuing to serve.");
 }
+
+/**
+ * Give every account the membership its own orgId already implies.
+ *
+ * The migration backfilled the accounts that existed when it ran, which is all
+ * a migration can do. That is not enough on its own: the seed then created
+ * eleven more users and not one of them had a membership, and nothing
+ * complained — an account with no membership works perfectly right up until the
+ * day it needs a second workspace and has none to offer.
+ *
+ * So it is repaired here, every boot, rather than trusted to six creation paths
+ * all remembering. Once the table is in step this is one indexed anti-join and
+ * zero rows.
+ *
+ * Non-fatal. `User.orgId` remains the account's active organisation either way,
+ * so a failure here costs the workspace list, not the login.
+ */
+try {
+  const { PrismaClient } = await import("@prisma/client");
+  const db = new PrismaClient();
+  const added = await db.$executeRawUnsafe(`
+    INSERT INTO "Membership" ("id", "userId", "orgId", "isDefault", "createdAt")
+    SELECT 'mbr_' || "u"."id", "u"."id", "u"."orgId", true, NOW()
+    FROM "User" AS "u"
+    WHERE NOT EXISTS (
+      SELECT 1 FROM "Membership" AS "m"
+      WHERE "m"."userId" = "u"."id" AND "m"."orgId" = "u"."orgId"
+    )
+    ON CONFLICT ("userId", "orgId") DO NOTHING
+  `);
+  if (added > 0) console.log(`[boot] recorded ${added} missing membership(s).`);
+  await db.$disconnect();
+} catch {
+  console.log("[boot] membership sync did not run. Continuing to serve.");
+}

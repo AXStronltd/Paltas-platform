@@ -707,6 +707,8 @@
   "ws.switch": "Çalışma alanını değiştir",
   "ws.manage": "Yönetim konsolu",
   "ws.manage.sub": "Portföy, ilanlar, finans, bordro, personel ve denetim kaydı",
+  "ws.org": "Kuruluş",
+  "ws.org.sub": "Bu kuruluşa geç.",
   "ws.landlord": "Mülk Yönetimi",
   "ws.landlord.sub": "Birimleriniz, kiracılar, kira ve bakım",
   "ws.developer": "Mülk Yönetimi",

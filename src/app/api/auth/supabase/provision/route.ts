@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+import { ensureMembership } from "@/server/membership";
 import { hashPassword } from "@/server/password";
 import { badRequest, conflict, handle, ok, readJson } from "@/server/http";
 import { supabaseAdmin } from "@/server/supabase";
@@ -47,6 +48,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       data: { orgId: org.id, email, name: body.name.trim().slice(0, 120), passwordHash: unusablePassword, supabaseUserId: body.supabaseUserId, status: "PENDING", requestedRole: body.role },
       select: { id: true, name: true, email: true, status: true, requestedRole: true },
     });
+    await ensureMembership(user.id, org.id);
     return ok({ account: user, pending: true }, 201);
   });
 }

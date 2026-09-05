@@ -1138,7 +1138,27 @@ Seed complete.
 `);
 }
 
+/**
+ * The same repair the container runs at boot, so a seeded database is never a
+ * shape production does not see. Without it every seeded account has an orgId
+ * and no membership — the exact gap that went unnoticed until the count came up
+ * eleven short.
+ */
+async function syncMemberships() {
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO "Membership" ("id", "userId", "orgId", "isDefault", "createdAt")
+    SELECT 'mbr_' || "u"."id", "u"."id", "u"."orgId", true, NOW()
+    FROM "User" AS "u"
+    WHERE NOT EXISTS (
+      SELECT 1 FROM "Membership" AS "m"
+      WHERE "m"."userId" = "u"."id" AND "m"."orgId" = "u"."orgId"
+    )
+    ON CONFLICT ("userId", "orgId") DO NOTHING
+  `);
+}
+
 main()
+  .then(syncMemberships)
   .catch((e) => {
     console.error(e);
     process.exit(1);

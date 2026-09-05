@@ -5,6 +5,7 @@ import { ALL_PERMISSIONS } from "@/lib/security/permissions";
 import { availableWorkspaces } from "@/lib/auth/workspaces";
 import { dashboardRole } from "@/server/dashboard";
 import { WorkspaceChooser } from "@/components/auth/WorkspaceChooser";
+import { membershipsOf } from "@/server/membership";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,14 @@ export default async function WorkspacePage() {
   const actor = await currentActor();
   if (!actor) redirect("/manage");
 
+  const memberships = await membershipsOf(actor.id);
+
   const spaces = availableWorkspaces({
     dashboardRole: dashboardRole(actor),
     permissions: effectivePermissionKeys(actor, ALL_PERMISSIONS),
     isPlatformAdmin: actor.isPlatformAdmin,
+    organizations: memberships.map((m) => ({ id: m.orgId, name: m.org.name })),
+    activeOrgId: actor.orgId,
   });
 
   // Nothing to choose between. Arriving here with one workspace means a link

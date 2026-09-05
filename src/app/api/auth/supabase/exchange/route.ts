@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { prisma } from "@/server/db";
+import { ensureMembership } from "@/server/membership";
 import { createSession } from "@/server/session";
 import { createGuestSession } from "@/server/guest";
 import { effectivePermissionKeys } from "@/lib/security/authorize";
@@ -92,6 +93,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       user = await prisma.user.create({
         data: { orgId: org.id, email, name: String(identity.user_metadata?.full_name || identity.user_metadata?.name || email.split("@")[0]).slice(0, 120), passwordHash: await hashPassword(randomBytes(32).toString("hex")), supabaseUserId: identity.id, status: "PENDING", requestedRole },
       });
+      await ensureMembership(user.id, org.id, { isDefault: true });
     }
     if (user.status === "SUSPENDED") return fail(403, { code: "account_suspended", message: "This account has been suspended." });
     if (user.status === "REJECTED") return fail(403, { code: "account_rejected", message: "This account was not approved." });

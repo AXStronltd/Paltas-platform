@@ -28,7 +28,9 @@ export function WorkspaceChooser({ spaces, name }: { spaces: Workspace[]; name: 
           {spaces.map((s) => (
             <Link key={s.key} href={s.href} className="ws-option">
               <span className="ws-option-body">
-                <b>{t(s.labelKey)}</b>
+                {/* An organisation is called what its owner called it; every
+                    other workspace is a translated label. */}
+                <b>{s.name ?? t(s.labelKey)}</b>
                 <span>{t(s.descriptionKey)}</span>
               </span>
               <span className="ws-option-go" aria-hidden="true">→</span>

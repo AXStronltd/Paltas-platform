@@ -55,3 +55,57 @@ test("every workspace carries message keys, never English", () => {
     assert.match(w.descriptionKey, /^ws\./);
   }
 });
+
+/* Organisations — the case where the account, not the area, is being chosen. */
+
+const TWO_ORGS = [
+  { id: "org_a", name: "Coastal Living" },
+  { id: "org_b", name: "Nairobi Estates" },
+];
+
+test("one organisation is not offered as a choice", () => {
+  // The ordinary account. Every user was backfilled with exactly one
+  // membership, so offering it would show everybody a picker containing only
+  // their own company.
+  const w = availableWorkspaces({
+    dashboardRole: "landlord",
+    organizations: [TWO_ORGS[0]],
+    activeOrgId: "org_a",
+  });
+  assert.equal(w.filter((x) => x.key.startsWith("org:")).length, 0);
+});
+
+test("a second organisation appears, and the active one does not", () => {
+  const w = availableWorkspaces({
+    dashboardRole: "landlord",
+    organizations: TWO_ORGS,
+    activeOrgId: "org_a",
+  });
+  const orgs = w.filter((x) => x.key.startsWith("org:"));
+  assert.deepEqual(orgs.map((o) => o.name), ["Nairobi Estates"]);
+});
+
+test("an organisation is named by its own name, not a translation key", () => {
+  const [org] = availableWorkspaces({
+    organizations: TWO_ORGS,
+    activeOrgId: "org_a",
+  }).filter((x) => x.key.startsWith("org:"));
+  assert.equal(org.name, "Nairobi Estates");
+});
+
+test("organisation ids are escaped into the switch link", () => {
+  const [org] = availableWorkspaces({
+    organizations: [{ id: "org_a", name: "A" }, { id: "a b&c", name: "B" }],
+    activeOrgId: "org_a",
+  }).filter((x) => x.key.startsWith("org:"));
+  assert.equal(org.href, "/workspace/switch?org=a%20b%26c");
+});
+
+test("belonging to two organisations is itself a reason to choose", () => {
+  // A landlord in two companies with no management permissions still has a
+  // decision to make, and must not be sent silently into one of them.
+  assert.equal(
+    landingFor({ dashboardRole: "landlord", organizations: TWO_ORGS, activeOrgId: "org_a" }),
+    "/workspace",
+  );
+});

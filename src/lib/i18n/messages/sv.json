@@ -712,6 +712,8 @@
   "ws.switch": "Byt arbetsyta",
   "ws.manage": "Förvaltningskonsol",
   "ws.manage.sub": "Portfölj, annonser, ekonomi, löner, personal och granskningslogg",
+  "ws.org": "Organisation",
+  "ws.org.sub": "Byt till den här organisationen.",
   "ws.landlord": "Fastighetsförvaltning",
   "ws.landlord.sub": "Dina enheter, hyresgäster, hyra och underhåll",
   "ws.developer": "Fastighetsförvaltning",

@@ -92,6 +92,7 @@ model Organization {
   viewings         Viewing[]
   projects         Project[]
   serviceOfferings ServiceOffering[]
+  memberships Membership[]
 }
 
 /// Every human the system authenticates: the owner, staff, guards and the
@@ -132,6 +133,7 @@ model User {
   createdBy       User?             @relation("UserCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdUsers    User[]            @relation("UserCreatedBy")
   roleAssignments RoleAssignment[]
+  memberships     Membership[]
   grants          PermissionGrant[]
   sessions        Session[]
   guard           Guard?
@@ -2405,4 +2407,34 @@ model Notification {
   @@index([userId, readAt, createdAt])
   @@unique([guestId, kind, entityId])
   @@unique([userId, kind, entityId])
+}
+
+/// Which organisations a person belongs to.
+///
+/// User.orgId still exists and still means what it always did — the
+/// organisation whose data this account is currently acting inside. This table
+/// says which ones it is *allowed* to act inside, which was previously the same
+/// question and is no longer: one person can hold a personal account, a
+/// property business and a hotel company without three logins between them.
+///
+/// Deliberately no role column. RoleAssignment already grants a role scoped to
+/// an ORGANIZATION, and a second place to record "what may they do here" would
+/// disagree with the first the day either changed. Membership answers only
+/// "may they be here at all"; the authorization engine answers the rest.
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  orgId     String
+  /// Where this person lands when they have not chosen. Exactly one per user
+  /// after the backfill, and the workspace chooser sets it when they switch.
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  org  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  /// A person belongs to an organisation once, or not at all.
+  @@unique([userId, orgId])
+  @@index([userId])
+  @@index([orgId])
 }

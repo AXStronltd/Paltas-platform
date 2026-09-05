@@ -708,6 +708,8 @@
   "ws.switch": "Keisti darbo sritį",
   "ws.manage": "Valdymo konsolė",
   "ws.manage.sub": "Portfelis, skelbimai, finansai, atlyginimai, darbuotojai ir audito žurnalas",
+  "ws.org": "Organizacija",
+  "ws.org.sub": "Perjungti į šią organizaciją.",
   "ws.landlord": "Nekilnojamojo turto valdymas",
   "ws.landlord.sub": "Jūsų butai, nuomininkai, nuoma ir priežiūra",
   "ws.developer": "Nekilnojamojo turto valdymas",

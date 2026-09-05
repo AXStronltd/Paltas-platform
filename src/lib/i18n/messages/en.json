@@ -696,6 +696,8 @@
   "ws.switch": "Switch workspace",
   "ws.manage": "Management console",
   "ws.manage.sub": "Portfolio, listings, finance, payroll, staff and the audit trail",
+  "ws.org": "Organisation",
+  "ws.org.sub": "Switch to this organisation.",
   "ws.landlord": "Property Management",
   "ws.landlord.sub": "Your units, tenants, rent and maintenance",
   "ws.developer": "Property Management",

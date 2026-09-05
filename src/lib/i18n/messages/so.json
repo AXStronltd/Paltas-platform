@@ -708,6 +708,8 @@
   "ws.switch": "Bedel goobta shaqada",
   "ws.manage": "Console-ka maaraynta",
   "ws.manage.sub": "Hantida, liisaska, maaliyadda, mushaharka, shaqaalaha iyo diiwaanka hubinta",
+  "ws.org": "Hay'ad",
+  "ws.org.sub": "U beddel hay'addan.",
   "ws.landlord": "Maaraynta Hantida",
   "ws.landlord.sub": "Guryahaaga, kireystayaasha, kirada iyo dayactirka",
   "ws.developer": "Maaraynta Hantida",
