@@ -26,7 +26,6 @@ export default function OnboardingPage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState(false);
   const [uploadsAvailable, setUploadsAvailable] = useState(true);
 
   // Signed out, or already through — either way this form is not the place to
@@ -37,7 +36,7 @@ export default function OnboardingPage() {
       const payload = await response.json().catch(() => null);
       if (payload?.role) setRole(payload.role as RoleKey);
       if (payload?.profile?.name) setData((d) => ({ name: payload.profile.name, phone: payload.profile.phone ?? "", ...d }));
-      if (payload?.onboardingCompleted) setPending(true);
+      if (payload?.onboardingCompleted) { window.location.assign("/"); return; }
       if (payload && payload.uploadsAvailable === false) setUploadsAvailable(false);
     });
   }, [router]);
@@ -99,25 +98,14 @@ export default function OnboardingPage() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) return setError(payload?.error?.message ?? "Please check your details.");
-      if (payload.pendingApproval) { setPending(true); return; }
-      // Approved already — the server names the dashboard, not this page.
-      window.location.assign(payload.destination ?? "/manage");
+      // A pending account cannot enter /manage: the gate there sends it back to
+      // this form, so it would loop. The marketplace is somewhere it can be.
+      window.location.assign(payload.pendingApproval ? "/" : (payload.destination ?? "/manage"));
     } catch {
       setError("We could not reach PALTAS to save this. Check your connection and try again.");
     } finally {
       setBusy(false);
     }
-  }
-
-  if (pending) {
-    return <main className="auth-page"><div className="auth-card">
-      <h1 className="auth-title">Thank you — you&apos;re in the queue</h1>
-      <p className="auth-sub">
-        Your details and documents have been submitted. PALTAS reviews every account before
-        access is granted, and you will be signed in to your dashboard once that is done.
-      </p>
-      <p className="auth-notice">Your access is pending verification and approval.</p>
-    </div></main>;
   }
 
   if (!role) {
