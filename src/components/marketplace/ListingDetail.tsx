@@ -13,7 +13,16 @@ import { BookingPanel } from "@/components/booking/BookingPanel";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 
-const NIGHTS = 3; // in a full build this comes from a date picker
+/** Where the example stay starts, when nobody has chosen yet. */
+const DEFAULT_FROM = 30;
+const DEFAULT_NIGHTS = 3;
+const isoDay = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+
+/** Whole nights between two dates, floored at one. */
+function nightsBetween(from: string, to: string): number {
+  const ms = new Date(to).getTime() - new Date(from).getTime();
+  return Math.max(1, Math.round(ms / 86_400_000));
+}
 
 /**
  * One listing, in full.
@@ -39,6 +48,15 @@ export function ListingDetail({
   const router = useRouter();
   const { t, money, date } = useI18n();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  // Real state, not a constant. The dates below used to be printed text beside
+  // a price fixed at three nights, so changing them changed nothing — the one
+  // thing a price panel exists to do.
+  const [checkIn, setCheckIn] = useState(isoDay(DEFAULT_FROM));
+  const [checkOut, setCheckOut] = useState(isoDay(DEFAULT_FROM + DEFAULT_NIGHTS));
+  const nights = nightsBetween(checkIn, checkOut);
+  // A monthly rent and a sale price are not nightly rates, and a panel that
+  // multiplies either by a number of nights is inventing a figure.
+  const nightly = listing.kind !== "RENT" && listing.kind !== "SALE";
   const rated = listing.reviewCount > 0;
 
   return (
@@ -148,24 +166,36 @@ export function ListingDetail({
             ) : (
               <>
                 <div className="book-price">
-                  <b>{money(listing.price, listing.currency)}</b> <span>{t("card.perNight")}</span>
+                  <b>{money(listing.price, listing.currency)}</b>{" "}
+                  <span>{listing.kind === "SALE" ? "" : listing.kind === "RENT" ? t("card.perMonth") : t("card.perNight")}</span>
                 </div>
-                <div className="book-fields">
-                  <div className="bf-row">
-                    <div className="bf">
-                      <label>{t("book.checkIn")}</label>
-                      <div className="v">{date(exampleDay(30))}</div>
+                {nightly && (
+                  <div className="book-fields">
+                    <div className="bf-row">
+                      <div className="bf">
+                        <label htmlFor="ld-in">{t("book.checkIn")}</label>
+                        <input id="ld-in" type="date" value={checkIn} min={isoDay(0)}
+                          onChange={(e) => {
+                            setCheckIn(e.target.value);
+                            // Leaving before arriving is not a shorter stay, it
+                            // is an impossible one.
+                            if (e.target.value >= checkOut) {
+                              setCheckOut(new Date(new Date(e.target.value).getTime() + 86_400_000).toISOString().slice(0, 10));
+                            }
+                          }} />
+                      </div>
+                      <div className="bf">
+                        <label htmlFor="ld-out">{t("book.checkOut")}</label>
+                        <input id="ld-out" type="date" value={checkOut} min={checkIn}
+                          onChange={(e) => setCheckOut(e.target.value)} />
+                      </div>
                     </div>
                     <div className="bf">
-                      <label>{t("book.checkOut")}</label>
-                      <div className="v">{date(exampleDay(33))}</div>
+                      <label>{t("book.guests")}</label>
+                      <div className="v">{t("search.guests", { count: 2 })}</div>
                     </div>
                   </div>
-                  <div className="bf">
-                    <label>{t("book.guests")}</label>
-                    <div className="v">{t("search.guests", { count: 2 })}</div>
-                  </div>
-                </div>
+                )}
                 <div className="book-note">
                   {t("listing.exampleOnly")} <Link href="/">{t("listing.browseReal")}</Link>
                 </div>
@@ -177,7 +207,7 @@ export function ListingDetail({
             {!listing.bookable && (
               <>
                 {/* Same component as the checkout, so the two cannot disagree. */}
-                <PricePanel listing={listing} nights={NIGHTS} />
+                {nightly && <PricePanel listing={listing} nights={nights} />}
                 <div className="reassure">{t("listing.notCharged")}</div>
               </>
             )}
@@ -188,7 +218,7 @@ export function ListingDetail({
       {checkoutOpen && !listing.bookable && (
         <CheckoutModal
           listing={listing}
-          nights={NIGHTS}
+          nights={nights}
           onClose={() => setCheckoutOpen(false)}
           onComplete={(bookingId) => {
             setCheckoutOpen(false);
@@ -201,4 +231,3 @@ export function ListingDetail({
 }
 
 /** Illustrative dates for the example listing, formatted in the reader's locale. */
-const exampleDay = (n: number) => new Date(Date.now() + n * 86_400_000);
