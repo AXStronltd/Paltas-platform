@@ -36,6 +36,7 @@ const UNGUARDED_BY_DESIGN = {
   "/public/listings/route.ts": "public marketplace feed — PUBLISHED listings only, own projection",
   "/public/listings/[id]/route.ts": "public listing detail — PUBLISHED only, own projection",
   "/public/listings/[id]/quote/route.ts": "public price check — reads inventory, writes and holds nothing",
+  "/public/destinations/route.ts": "the shopfront's own index of where it has inventory — city, country, a centroid averaged from published listings, and how many. Public by design, and it reveals nothing a visitor could not learn by browsing the catalogue itself. It reads only PUBLISHED listings and writes nothing.",
   "/public/external/route.ts": "third-party listings — gated by the licence engine, not by permissions; see src/lib/external/licence.ts",
   "/version/route.ts": "which build is deployed — public by design, so anyone testing can tell a stale page from a real bug. It returns a commit hash and nothing about the platform's state.",
   "/public/enquiries/route.ts": "buy/sell enquiry from a stranger — unauthenticated by design, since requiring an account before someone may ask a question loses the lead. It can only create a NEW unassigned lead: stage, owner, organisation and source are all derived server-side, and it is rate limited by email and address. Recorded as the Lead itself rather than an audit entry — there is no actor to attribute it to.",
