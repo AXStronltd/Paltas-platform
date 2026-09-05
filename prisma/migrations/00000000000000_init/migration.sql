@@ -1324,4 +1324,3 @@ ALTER TABLE "PropertyListing" ADD CONSTRAINT "PropertyListing_propertyId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "PropertyListing" ADD CONSTRAINT "PropertyListing_unitId_fkey" FOREIGN KEY ("unitId") REFERENCES "Unit"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-

@@ -279,6 +279,18 @@ model Property {
   city      String?
   country   String   @default("KE")
   kind      String   @default("residential")
+  /// Where this actually is, once somebody has geocoded it.
+  ///
+  /// Null until then, and everything that reads it must cope with that: a
+  /// property with no coordinates is simply absent from distance-ranked
+  /// results rather than being placed at nought degrees north. Backfilled by
+  /// scripts/backfill-coordinates.mjs from the address the host typed.
+  latitude  Float?
+  longitude Float?
+  /// The Google place this resolved to, so a re-geocode can be skipped and a
+  /// selected destination can be matched against inventory by place rather
+  /// than by string.
+  placeId   String?
   createdAt DateTime @default(now())
 
   org              Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
