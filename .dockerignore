@@ -6,7 +6,11 @@ tests
 .test-build
 *.md
 !README.md
+# Design references. Both are large HTML exports kept for reference; neither is
+# imported, served or built, and PROTOTYPE-reference.html was already excluded
+# while its newer sibling — the larger of the two — was not.
 PROTOTYPE-reference.html
+Paltas_real_state.html
 .env
 .env.*
 
