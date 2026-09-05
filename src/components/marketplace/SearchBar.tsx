@@ -35,6 +35,16 @@ export function SearchBar({ onSearch, busy, viewport }: {
   const [panelOpen, setPanelOpen] = useState(false);
   const [chosen, setChosen] = useState<Chosen | null>(null);
   const [near, setNear] = useState<{ latitude: number; longitude: number } | null>(null);
+  /*
+   * Whether the whole form is showing.
+   *
+   * On a phone it starts closed: the compact card is location, then dates and
+   * guests side by side, then Search — enough to run a search without ever
+   * opening anything. Tapping a field opens the full form. On a desktop the
+   * class is inert; the media query below 768px is the only thing that reads
+   * it, so the wide layout is untouched.
+   */
+  const [expanded, setExpanded] = useState(false);
 
   /*
    * Where the visitor is, asked for only when they open the field.
@@ -85,7 +95,7 @@ export function SearchBar({ onSearch, busy, viewport }: {
   }
 
   return (
-    <form className="hero-search" onSubmit={submit} role="search">
+    <form className={`hero-search ${expanded ? "expanded" : "compact"}`} onSubmit={submit} role="search">
       <div className="hs-field hs-where" ref={whereBox}>
         <span className="hs-ico" aria-hidden="true">📍</span>
         <div className="hs-body">
@@ -95,7 +105,7 @@ export function SearchBar({ onSearch, busy, viewport }: {
             value={where}
             ref={whereInput}
             onChange={(e) => { setWhere(e.target.value); setSelectedCity(""); setChosen(null); setPanelOpen(true); }}
-            onFocus={() => setPanelOpen(true)}
+            onFocus={() => { setPanelOpen(true); setExpanded(true); }}
             placeholder={t("search.wherePlaceholder")}
             autoComplete="off"
             role="combobox"
@@ -121,11 +131,18 @@ export function SearchBar({ onSearch, busy, viewport }: {
 
       <div className="hs-divider" />
 
+      {/* Wrapped so a phone can put these three on one line while a desktop
+          keeps them as equal siblings of the field above. `display: contents`
+          off mobile means this element does not exist as far as the wide
+          layout is concerned. */}
+      <div className="hs-rest">
+
       <div className="hs-field">
         <span className="hs-ico" aria-hidden="true">📅</span>
         <div className="hs-body">
           <label htmlFor="hs-in">{t("search.checkIn")}</label>
           <input id="hs-in" type="date" value={checkIn} min={today()}
+            onFocus={() => setExpanded(true)}
             onChange={(e) => setCheckIn(e.target.value)} />
         </div>
       </div>
@@ -151,6 +168,8 @@ export function SearchBar({ onSearch, busy, viewport }: {
           <input id="hs-guests" type="number" min={1} max={30} value={guests}
             onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 1))} />
         </div>
+      </div>
+
       </div>
 
       <button className="hs-search-btn" type="submit" disabled={busy}>

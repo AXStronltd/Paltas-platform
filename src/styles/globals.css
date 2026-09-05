@@ -661,6 +661,9 @@ p.hero-sub {
 .hs-field label { display: block; font-size: 12px; color: var(--muted); font-weight: 700; }
 .hs-val { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 2px; }
 .hs-divider { width: 1px; height: 38px; background: var(--line); }
+/* The mobile grouping wrapper. Off phones it is not a box at all, so the fields
+   inside remain direct flex children of the bar exactly as before. */
+.hs-rest { display: contents; }
 .hs-search-btn {
   background: linear-gradient(135deg,#00c4ac,#2ea6ff); color: #fff; font-weight: 800; font-size: 16px;
   border-radius: 15px; padding: 16px 30px; white-space: nowrap; box-shadow: 0 10px 26px rgba(0,196,172,.4);
@@ -715,9 +718,16 @@ p.hero-sub {
 /* prototype search bar: bigger radius, cleaner */
 .hero-search { border-radius: 22px; padding: 10px 10px 10px 6px; }
 .hs-search-btn { border-radius: 16px; padding: 17px 32px; }
-/* make hero taller like prototype and ensure text readable on real photo */
-.hero { min-height: 440px; }
-.hero-title { font-size: 72px; }
+/* Taller hero and larger headline — desktop only. These were unconditional and
+   sat after the ≤900px block, so they silently beat it: the phone hero was
+   440px rather than the 360 the mobile rule asked for, and the headline was set
+   in 72px before being overridden again further down. Two rules disagreeing
+   about the same property at the same width is how a layout becomes
+   unpredictable, and this pair was the reason the hero swallowed the screen. */
+@media (min-width: 901px) {
+  .hero { min-height: 440px; }
+  .hero-title { font-size: 72px; }
+}
 /* filter chips: rounded pill w/ arrow scroller feel */
 .chips { gap: 10px; align-items: center; }
 .chip { border-radius: 30px; padding: 12px 20px; font-weight: 700; border: 1.5px solid var(--line-2); background: #fff; display: inline-flex; align-items: center; gap: 8px; }
@@ -2441,4 +2451,69 @@ body:has(.scrim) .tabbar { display: none; }
   .grid { gap: 8px; }
   .grid > * { flex-basis: 62vw; }
   .card-body { padding: 8px 9px 10px; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   MOBILE HOMEPAGE — the hero and its search, ≤767px.
+
+   Built as its own layout rather than a scaled-down desktop one. The wide
+   search is a single row of four fields, and there is no honest way to shrink
+   that onto a 320px screen: stacked, it became five full-width rows that
+   covered the photograph entirely. So on a phone it is a card — where, then
+   when and how many, then Search — and the full form is one tap away.
+   ════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Hero ─────────────────────────────────────────────────────────────────
+     Sized so the photograph, the headline and the whole search card fit above
+     the fold on the shortest phone we support, with the first properties
+     visible underneath. */
+  .hero { min-height: 0; padding: 22px 0 18px; margin-bottom: 18px; }
+  .hero-inner { padding-top: 8px; padding-bottom: 8px; }
+  .hero-badge { font-size: 10.5px; padding: 5px 11px; }
+  .hero-title { font-size: 28px; line-height: 1.1; letter-spacing: -.4px; }
+  p.hero-sub { font-size: 13.5px; margin-top: 8px; }
+
+  /* ── The search card ──────────────────────────────────────────────────────
+     A card over the photograph, not a form that replaces it. */
+  .hero-search {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 8px;
+    border-radius: 16px;
+    box-shadow: 0 12px 34px rgba(8,20,34,.24);
+  }
+  .hs-divider { display: none; }
+
+  /* Row 1: where. The field people actually use. */
+  .hero-search .hs-field { padding: 9px 10px; border-radius: 11px; background: var(--bg-2); gap: 9px; }
+  .hero-search .hs-ico { font-size: 15px; }
+  .hero-search .hs-body label { font-size: 10px; }
+  .hero-search .hs-body input { font-size: 14px; }
+
+  /* Row 2: dates and guests, three across. Compact by grouping rather than by
+     shrinking type — the labels stay legible because the row is a grid, not a
+     squeezed flex line. */
+  .hs-rest { display: grid; grid-template-columns: 1fr 1fr .72fr; gap: 6px; }
+
+  /* Row 3: the primary action, full width and unmistakable. */
+  .hs-search-btn { width: 100%; padding: 13px 16px; border-radius: 12px; font-size: 15px; margin: 2px 0 0; }
+
+  /* Collapsed, dates and guests are one summary row; tapping anything opens
+     the full card. Both states are the same markup, so nothing is duplicated. */
+  .hero-search.compact .hs-rest .hs-field { padding: 7px 8px; }
+  .hero-search.compact .hs-body label { font-size: 9.5px; }
+  .hero-search.compact .hs-body input { font-size: 12.5px; }
+  .hero-search.expanded .hs-rest { grid-template-columns: 1fr; }
+  .hero-search.expanded .hs-rest .hs-field { padding: 9px 10px; }
+}
+
+/* The shortest phones. Guests moves under the dates rather than squeezing a
+   third column into 320px, where it would be too narrow to read. */
+@media (max-width: 359px) {
+  .hero-title { font-size: 25px; }
+  .hs-rest { grid-template-columns: 1fr 1fr; }
+  .hs-rest .hs-field:last-child { grid-column: 1 / -1; }
 }
