@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 import { ONBOARDING, ROLES, COUNTRY_CODES, requiredDocuments, type Field, type RoleKey } from "./steps";
 import { currencyForCountry } from "@/lib/i18n/countries";
 
@@ -43,6 +44,7 @@ const TIMEZONES: string[] = (() => {
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const names = useNames();
   const [role, setRole] = useState<RoleKey | "">("");
   const [step, setStep] = useState(0);
@@ -234,7 +236,7 @@ export default function OnboardingPage() {
       // The PUT above goes straight to the document store, on another origin.
       // A browser reports a blocked cross-origin request as a bare network
       // failure — "Load failed" in Safari — which tells the person nothing.
-      setError("The upload could not reach the document store. This is usually the storage bucket's CORS rules, not your file.");
+      setError(t("ob.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -255,7 +257,7 @@ export default function OnboardingPage() {
       if (payload.pendingApproval) { setStalled(true); return; }
       setDone(true);
     } catch {
-      setError("We could not reach PALTAS to save this. Check your connection and try again.");
+      setError(t("ob.saveFailed"));
     } finally {
       setBusy(false);
     }
@@ -263,22 +265,20 @@ export default function OnboardingPage() {
 
   if (stalled) {
     return <main className="auth-page"><div className="auth-card">
-      <h1 className="auth-title">Your details are saved</h1>
+      <h1 className="auth-title">{t("ob.stalledTitle")}</h1>
       <p className="auth-sub">
-        We have everything you submitted. This account cannot be opened automatically,
-        so PALTAS will be in touch about it.
+        {t("ob.stalledSub")}
       </p>
-      <p className="auth-notice">Your access is pending a decision on this account.</p>
+      <p className="auth-notice">{t("ob.stalledNotice")}</p>
     </div></main>;
   }
 
   if (done) {
     const dashboard = role ? (ROLES.find((r) => r.key === role) ? `/portal/${role}` : "/manage") : "/manage";
     return <main className="auth-page"><div className="auth-card">
-      <h1 className="auth-title">You&apos;re set up.</h1>
+      <h1 className="auth-title">{t("ob.doneTitle")}</h1>
       <p className="auth-sub">
-        Your dashboard is ready. We&apos;ve switched on the sections that match how you
-        work — everything else is one click away in the sidebar.
+        {t("ob.doneSub")}
       </p>
       {/* Pointed at screens this application actually has. The patch named
           /properties, /documents and /settings, which belong to a different
@@ -286,29 +286,29 @@ export default function OnboardingPage() {
           welcome than no suggestions at all. */}
       <div className="ob-next">
         <a className="ob-nextcard" href="/manage/portfolio">
-          <b>Add your properties</b>
-          <span>Buildings, units and the people in them</span>
+          <b>{t("ob.nextProperties")}</b>
+          <span>{t("ob.nextPropertiesSub")}</span>
         </a>
         <a className="ob-nextcard" href="/manage/listings">
-          <b>Create your first listing</b>
-          <span>Write the advert; PALTAS reviews it before it goes live</span>
+          <b>{t("ob.nextListing")}</b>
+          <span>{t("ob.nextListingSub")}</span>
         </a>
         <a className="ob-nextcard" href="/manage/staff">
-          <b>Invite your team</b>
-          <span>Decide who can see and change what</span>
+          <b>{t("ob.nextTeam")}</b>
+          <span>{t("ob.nextTeamSub")}</span>
         </a>
       </div>
       <div className="ob-actions">
-        <button className="btn btn-primary" onClick={() => window.location.assign(dashboard)}>Go to my dashboard</button>
+        <button className="btn btn-primary" onClick={() => window.location.assign(dashboard)}>{t("ob.goDashboard")}</button>
       </div>
     </div></main>;
   }
 
   if (!role) {
     return <main className="auth-page"><div className="auth-card">
-      <p className="muted">Role → Details → Verification</p>
-      <h1 className="auth-title">What best describes you?</h1>
-      <p className="auth-sub">Your selection shapes the questions that follow.</p>
+      <p className="muted">{t("ob.steps")}</p>
+      <h1 className="auth-title">{t("ob.whoTitle")}</h1>
+      <p className="auth-sub">{t("ob.whoSub")}</p>
       <div className="ob-roles">
         {ROLES.map((r) => (
           <button type="button" key={r.key} className="ob-role" onClick={() => { setRole(r.key); setStep(0); }}>
@@ -319,7 +319,7 @@ export default function OnboardingPage() {
     </div></main>;
   }
 
-  if (!current) return <main className="auth-page"><div className="auth-card"><p className="muted">Loading…</p></div></main>;
+  if (!current) return <main className="auth-page"><div className="auth-card"><p className="muted">{t("ob.loading")}</p></div></main>;
 
   /** One field, with its label, help, and its error tied to it by id. */
   function renderField(f: Field) {
@@ -390,7 +390,7 @@ export default function OnboardingPage() {
         <label className="auth-field" htmlFor={id}>{label}
           <select {...common} value="" ref={(el) => { inputRefs.current[f.k] = el; }}
             onChange={(e) => { if (e.target.value) toggleMany(f.k, e.target.value); }}>
-            <option value="">Add a country…</option>
+            <option value="">{t("ob.addCountry")}</option>
             {COUNTRY_CODES.filter((c) => !chosen.includes(c)).map((c) => (
               <option key={c} value={c}>{names.country(c)}</option>
             ))}
@@ -418,7 +418,7 @@ export default function OnboardingPage() {
         <label className="auth-field" htmlFor={id}>{label}
           <select {...common} value={data[f.k] ?? ""} ref={(el) => { inputRefs.current[f.k] = el; }}
             onChange={(e) => set(f.k, e.target.value)}>
-            <option value="">Select…</option>
+            <option value="">{t("ob.select")}</option>
             {options.map((o) => <option key={o} value={o}>{labelFor(o)}</option>)}
           </select>
         </label>
@@ -497,7 +497,7 @@ export default function OnboardingPage() {
       </label>
     ))}
     {isLast && uploadsAvailable && needed.length > 0 && (
-      <p className="muted small">Documents are private and visible only to authorized reviewers.</p>
+      <p className="muted small">{t("ob.docsPrivate")}</p>
     )}
 
     {error && <p className="auth-error" role="alert">{error}</p>}
