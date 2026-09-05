@@ -78,7 +78,26 @@ ENV HOSTNAME=0.0.0.0
 
 # Migrate, seed an empty database, then serve.
 #
-# `migrate deploy` is idempotent. `first-boot.mjs` counts users and does nothing
+# The migration is fatal and the seed is not, which is the distinction the old
+# `;` lost. It ran the server whatever happened, so a failed migration produced
+# a container that started happily, passed its health check — /api/public/
+# listings needs no new column to answer — and served a build whose code was
+# newer than its schema. The failure then surfaced days later as a 500 from
+# whichever endpoint touched the missing column, with nothing to connect it to
+# the deploy that caused it. That is precisely how a banner committed into a
+# migration file went unnoticed through three deploys.
+#
+# Failing to start is the better outcome. Render keeps the previous container
+# serving until a new one passes its health check, so a refused boot is a
+# visible failed deploy rather than downtime, and the site stays on the last
+# version whose schema actually matched it.
+#
+# first-boot.mjs stays non-fatal on purpose. It counts users and does nothing
 # unless there are none, so it cannot overwrite real data however often it runs
-# — and it never blocks the boot if it fails.
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node prisma/first-boot.mjs; node server.js"]
+# — and a seeding convenience should never be the reason a healthy build
+# refuses to serve.
+#
+# `exec` so that node replaces the shell and becomes PID 1: without it SIGTERM
+# reaches sh, which does not pass it on, and every shutdown is a ten-second
+# wait for the kill that follows.
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && { node prisma/first-boot.mjs || echo '[boot] seed step failed; continuing'; } && exec node server.js"]
