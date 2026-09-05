@@ -64,6 +64,18 @@ Settings → Deploy Hook, added under GitHub → Settings → Secrets and variab
 Actions. Without it the deploy job fails loudly and says so, rather than going
 green while nothing ships.
 
+**`autoDeploy: false` in this file is not enough on its own.** A blueprint key
+only applies to a service Render actually manages from the blueprint, and it
+takes effect on the sync *after* the commit that introduces it. The first commit
+carrying this setting deployed anyway, while its own deploy job was failing on
+the missing secret — the gate reported "not deployed" and the site updated
+regardless, which is precisely the failure this was meant to end.
+
+So confirm it in the dashboard: the service → Settings → Auto-Deploy must read
+**No**. Until it does, Render deploys on push and the workflow's verdict changes
+nothing. The check is one click and the alternative is a pipeline that looks
+strict and is not.
+
 ### Both halves must share a region
 
 ```yaml
