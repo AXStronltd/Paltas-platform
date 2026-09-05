@@ -77,6 +77,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     googleMapsKey: process.env.GOOGLE_MAPS_BROWSER_KEY
       || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       || process.env.GOOGLE_MAPS_API_KEY || "",
+    // Stripe's publishable key, for the same reason and with the same trap.
+    // The card form read it from NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, which Next
+    // substitutes at build time — and Render builds this Dockerfile without the
+    // service environment, so it compiled to an empty string and the form could
+    // never load. Setting it in the dashboard looked right and did nothing.
+    // STRIPE_PUBLISHABLE_KEY has no prefix, so it is read per request.
+    stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY
+      || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
   }).replace(/</g, "\\u003c");
 
   return (

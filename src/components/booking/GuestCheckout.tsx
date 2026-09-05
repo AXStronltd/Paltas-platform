@@ -29,7 +29,11 @@ import { AuthField, AuthError, AuthSubmit, AuthAlt } from "@/components/auth/Aut
 
 let stripePromise: Promise<Stripe | null> | null = null;
 function getStripe(): Promise<Stripe | null> | null {
-  const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  // Runtime config first — NEXT_PUBLIC_* is substituted at build time, and this
+  // image is built without the service environment, so that variable is empty
+  // in production however it is set in the dashboard.
+  const key = (typeof window !== "undefined" ? window.__PALTAS_PUBLIC_CONFIG__?.stripePublishableKey : "")
+    || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   if (!key) return null;
   if (!stripePromise) stripePromise = loadStripe(key);
   return stripePromise;

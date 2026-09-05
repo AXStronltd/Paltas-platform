@@ -29,7 +29,15 @@ let stripePromise: Promise<Stripe | null> | null = null;
  * can start a payment attempt and nothing else — but it must still be present.
  */
 function getStripe(): Promise<Stripe | null> | null {
-  const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  // The runtime config first, and the build-time variable only as a fallback.
+  // Next substitutes NEXT_PUBLIC_* at build time, and this image is built
+  // without the service environment — so that variable compiled to an empty
+  // string, getStripe returned null, and the card form rendered its "not
+  // configured" notice on a deployment where the key was set correctly in the
+  // dashboard. Nothing about that was visible from the outside: the form simply
+  // never appeared.
+  const key = (typeof window !== "undefined" ? window.__PALTAS_PUBLIC_CONFIG__?.stripePublishableKey : "")
+    || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   if (!key) return null;
   if (!stripePromise) stripePromise = loadStripe(key);
   return stripePromise;

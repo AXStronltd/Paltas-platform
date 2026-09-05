@@ -6,6 +6,7 @@ declare global {
       supabaseUrl?: string;
       supabaseAnonKey?: string;
       googleMapsKey?: string;
+      stripePublishableKey?: string;
     };
   }
 }

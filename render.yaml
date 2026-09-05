@@ -172,10 +172,20 @@ services:
       # service's Environment tab, once live keys have been issued:
       #
       #   STRIPE_SECRET_KEY                   payments 503 without it
-      #   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  the card form cannot render
+      #   STRIPE_PUBLISHABLE_KEY              the card form's key, read at
+      #                                       runtime. NOT the NEXT_PUBLIC_
+      #                                       variable — Next substitutes those
+      #                                       at build time and this image is
+      #                                       built without the service
+      #                                       environment, so it compiles to an
+      #                                       empty string and the form silently
+      #                                       never loads.
+      #   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY  the old build-time variable, kept
+      #                                       only as a fallback. It cannot work
+      #                                       on this deployment — see above.
       #   STRIPE_WEBHOOK_SECRET               bookings stay PENDING after payment
       #
-      # The site runs correctly without all three; only payment does not.
+      # The site runs correctly without them; only payment does not.
 
       # ---- Email, and the help assistant ------------------------------------
       # Absent here for the same reason, and added the same way — in the
