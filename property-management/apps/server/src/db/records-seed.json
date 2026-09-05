@@ -1,0 +1,4398 @@
+{
+ "ai-recent-questions": [
+  {
+   "id": "h1",
+   "when": "Today 08:40",
+   "q": "Which properties lost money last month?",
+   "ms": 1.4,
+   "data": "Finance, Portfolio",
+   "action": "—",
+   "by": "Ahmed Akboole"
+  },
+  {
+   "id": "h2",
+   "when": "Today 08:12",
+   "q": "What should I do about Marina Bay?",
+   "ms": 2.1,
+   "data": "Portfolio, Units, Marketplace, Finance",
+   "action": "—",
+   "by": "Ahmed Akboole"
+  },
+  {
+   "id": "h3",
+   "when": "Yesterday 17:20",
+   "q": "Prepare my monthly management report.",
+   "ms": 6.8,
+   "data": "All modules",
+   "action": "Queued for approval",
+   "by": "Ahmed Akboole"
+  },
+  {
+   "id": "h4",
+   "when": "Yesterday 14:02",
+   "q": "Which units should I increase rent on?",
+   "ms": 1.9,
+   "data": "Units, Rentals, market data",
+   "action": "42 increases queued",
+   "by": "Grace Wanjiru"
+  },
+  {
+   "id": "h5",
+   "when": "3 Sep 11:14",
+   "q": "Why is water consumption up at Nairobi Heights?",
+   "ms": 2.4,
+   "data": "Facilities, Utilities",
+   "action": "WO-4401 created",
+   "by": "Amina Yusuf"
+  },
+  {
+   "id": "h6",
+   "when": "2 Sep 09:30",
+   "q": "Which vendors are underperforming?",
+   "ms": 1.6,
+   "data": "Vendors, Maintenance, Procurement",
+   "action": "—",
+   "by": "David Kimani"
+  }
+ ],
+ "assets-golden-park-homes-phase-2": [
+  {
+   "name": "Site preparation",
+   "sub": "Complete",
+   "start": 0,
+   "length": 1.5,
+   "progress": 100
+  },
+  {
+   "name": "Foundations & piling",
+   "sub": "Complete",
+   "start": 1.2,
+   "length": 2,
+   "progress": 100
+  },
+  {
+   "name": "Structural frame",
+   "sub": "BuildCo · in progress",
+   "start": 3,
+   "length": 3.5,
+   "progress": 72,
+   "milestone": 6.4
+  },
+  {
+   "name": "Roofing & envelope",
+   "sub": "Starts 12 Oct",
+   "start": 6.2,
+   "length": 2,
+   "progress": 0,
+   "tone": "info"
+  },
+  {
+   "name": "MEP first fix",
+   "sub": "Elektra Ltd",
+   "start": 6.8,
+   "length": 2.4,
+   "progress": 0,
+   "tone": "info"
+  },
+  {
+   "name": "Internal finishes",
+   "sub": "Not started",
+   "start": 8.6,
+   "length": 2.6,
+   "progress": 0,
+   "tone": "info"
+  },
+  {
+   "name": "External works",
+   "sub": "Not started",
+   "start": 9.4,
+   "length": 1.8,
+   "progress": 0,
+   "tone": "info"
+  },
+  {
+   "name": "Snagging & handover",
+   "sub": "Target 18 Dec",
+   "start": 11,
+   "length": 1,
+   "progress": 0,
+   "tone": "info",
+   "milestone": 11.8
+  }
+ ],
+ "assets-kilimani-development": [
+  {
+   "name": "Enabling works",
+   "sub": "Complete",
+   "start": 0,
+   "length": 1.4,
+   "progress": 100
+  },
+  {
+   "name": "Substructure",
+   "sub": "Complete · 6 days late",
+   "start": 1.2,
+   "length": 2.2,
+   "progress": 100,
+   "tone": "warn"
+  },
+  {
+   "name": "Superstructure",
+   "sub": "Delayed · 9 days",
+   "start": 3.2,
+   "length": 3,
+   "progress": 54,
+   "tone": "danger",
+   "milestone": 6
+  },
+  {
+   "name": "Envelope",
+   "sub": "At risk",
+   "start": 6,
+   "length": 2,
+   "progress": 0,
+   "tone": "warn"
+  },
+  {
+   "name": "Services",
+   "sub": "Re-sequenced",
+   "start": 6.4,
+   "length": 2.2,
+   "progress": 0,
+   "tone": "info"
+  },
+  {
+   "name": "Fit-out",
+   "sub": "Not started",
+   "start": 8,
+   "length": 1.8,
+   "progress": 0,
+   "tone": "info"
+  }
+ ],
+ "assets-site-headcount-today": [
+  {
+   "icon": "users",
+   "title": "BuildCo — structural",
+   "right": "42"
+  },
+  {
+   "icon": "users",
+   "title": "Elektra Ltd — MEP",
+   "right": "11"
+  },
+  {
+   "icon": "users",
+   "title": "Site supervision",
+   "right": "6"
+  },
+  {
+   "icon": "users",
+   "title": "Security",
+   "right": "4"
+  }
+ ],
+ "assets-material-inventory": [
+  {
+   "id": "m1",
+   "name": "Cement (42.5N)",
+   "project": "Golden Park P2",
+   "unit": "bags",
+   "onSite": 140,
+   "reorder": 400,
+   "onOrder": 1200,
+   "cost": 8.4,
+   "low": true
+  },
+  {
+   "id": "m2",
+   "name": "Rebar 12mm",
+   "project": "Golden Park P2",
+   "unit": "tonnes",
+   "onSite": 4.2,
+   "reorder": 8,
+   "onOrder": 18,
+   "cost": 940,
+   "low": true
+  },
+  {
+   "id": "m3",
+   "name": "Rebar 16mm",
+   "project": "Golden Park P2",
+   "unit": "tonnes",
+   "onSite": 14.6,
+   "reorder": 8,
+   "onOrder": 0,
+   "cost": 965,
+   "low": false
+  },
+  {
+   "id": "m4",
+   "name": "Ceramic tiles 60×60",
+   "project": "Kilimani",
+   "unit": "m²",
+   "onSite": 310,
+   "reorder": 600,
+   "onOrder": 2400,
+   "cost": 14.2,
+   "low": true
+  },
+  {
+   "id": "m5",
+   "name": "Concrete blocks",
+   "project": "Kilimani",
+   "unit": "units",
+   "onSite": 8400,
+   "reorder": 3000,
+   "onOrder": 0,
+   "cost": 0.62,
+   "low": false
+  },
+  {
+   "id": "m6",
+   "name": "PVC conduit 20mm",
+   "project": "Golden Park P2",
+   "unit": "metres",
+   "onSite": 2180,
+   "reorder": 1000,
+   "onOrder": 4000,
+   "cost": 0.94,
+   "low": false
+  },
+  {
+   "id": "m7",
+   "name": "Sanitary ware sets",
+   "project": "Kilimani",
+   "unit": "sets",
+   "onSite": 46,
+   "reorder": 20,
+   "onOrder": 60,
+   "cost": 184,
+   "low": false
+  }
+ ],
+ "assets-cost-plan": [
+  {
+   "id": "c1",
+   "head": "Land & acquisition",
+   "budget": 3.8,
+   "committed": 3.8,
+   "spent": 3.8,
+   "forecast": 3.8,
+   "variance": 0,
+   "status": "Closed",
+   "tone": "neutral"
+  },
+  {
+   "id": "c2",
+   "head": "Substructure",
+   "budget": 2.4,
+   "committed": 2.4,
+   "spent": 2.34,
+   "forecast": 2.34,
+   "variance": 0.06,
+   "status": "Complete",
+   "tone": "ok"
+  },
+  {
+   "id": "c3",
+   "head": "Superstructure",
+   "budget": 4.2,
+   "committed": 4.2,
+   "spent": 2.86,
+   "forecast": 4.26,
+   "variance": -0.06,
+   "status": "In progress",
+   "tone": "info"
+  },
+  {
+   "id": "c4",
+   "head": "MEP",
+   "budget": 1.14,
+   "committed": 1.14,
+   "spent": 0.4,
+   "forecast": 1.14,
+   "variance": 0,
+   "status": "In progress",
+   "tone": "info"
+  },
+  {
+   "id": "c5",
+   "head": "Finishes",
+   "budget": 2.6,
+   "committed": 0.38,
+   "spent": 0,
+   "forecast": 2.54,
+   "variance": 0.06,
+   "status": "Not started",
+   "tone": "neutral"
+  },
+  {
+   "id": "c6",
+   "head": "External works",
+   "budget": 0.62,
+   "committed": 0.62,
+   "spent": 0.1,
+   "forecast": 0.63,
+   "variance": -0.01,
+   "status": "In progress",
+   "tone": "info"
+  },
+  {
+   "id": "c7",
+   "head": "Professional fees",
+   "budget": 0.84,
+   "committed": 0.84,
+   "spent": 0.61,
+   "forecast": 0.83,
+   "variance": 0.01,
+   "status": "In progress",
+   "tone": "info"
+  },
+  {
+   "id": "c8",
+   "head": "Contingency",
+   "budget": 0.72,
+   "committed": 0.08,
+   "spent": 0.08,
+   "forecast": 0.37,
+   "variance": 0.35,
+   "status": "49% drawn",
+   "tone": "warn"
+  }
+ ],
+ "assets-certificates-consents": [
+  {
+   "id": "x1",
+   "cert": "Fire safety certificate",
+   "property": "Westgate Tower B",
+   "authority": "Nairobi County",
+   "expires": "2 Sep 2026",
+   "left": -3,
+   "owner": "Amina Yusuf",
+   "tone": "danger",
+   "status": "Expired"
+  },
+  {
+   "id": "x2",
+   "cert": "Lift inspection certificate",
+   "property": "Nairobi Heights",
+   "authority": "DOSHS",
+   "expires": "12 Oct 2026",
+   "left": 37,
+   "owner": "Amina Yusuf",
+   "tone": "warn",
+   "status": "Expiring"
+  },
+  {
+   "id": "x3",
+   "cert": "EPC (energy)",
+   "property": "Docklands Court",
+   "authority": "UK Gov",
+   "expires": "8 Nov 2026",
+   "left": 64,
+   "owner": "Helen Carter",
+   "tone": "warn",
+   "status": "Expiring"
+  },
+  {
+   "id": "x4",
+   "cert": "Occupation certificate",
+   "property": "Golden Park Homes",
+   "authority": "Nairobi County",
+   "expires": "Permanent",
+   "left": 9999,
+   "owner": "Michael Sitienei",
+   "tone": "ok",
+   "status": "Valid"
+  },
+  {
+   "id": "x5",
+   "cert": "Fire safety certificate",
+   "property": "Golden Park Homes",
+   "authority": "Nairobi County",
+   "expires": "15 Mar 2027",
+   "left": 191,
+   "owner": "Amina Yusuf",
+   "tone": "ok",
+   "status": "Valid"
+  },
+  {
+   "id": "x6",
+   "cert": "Gas safety certificate",
+   "property": "Docklands Court",
+   "authority": "Gas Safe",
+   "expires": "20 Apr 2027",
+   "left": 227,
+   "owner": "Helen Carter",
+   "tone": "ok",
+   "status": "Valid"
+  }
+ ],
+ "business-attendance-today": [
+  {
+   "id": "at1",
+   "name": "Joseph Mutiso",
+   "dept": "Security",
+   "rostered": "06:00–18:00",
+   "in": "05:52",
+   "location": "Golden Park gate",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "at2",
+   "name": "Wanjiku Mburu",
+   "dept": "Housekeeping",
+   "rostered": "08:00–16:00",
+   "in": "07:56",
+   "location": "Kilimani Suites",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "at3",
+   "name": "Joseph Kimani",
+   "dept": "Maintenance",
+   "rostered": "08:00–17:00",
+   "in": "07:48",
+   "location": "Mobile · 3 sites",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "at4",
+   "name": "Samuel Kiptoo",
+   "dept": "Security",
+   "rostered": "06:00–18:00",
+   "in": "06:24",
+   "location": "Nairobi Heights",
+   "status": "Late",
+   "tone": "warn"
+  },
+  {
+   "id": "at5",
+   "name": "Anthony Mwaura",
+   "dept": "Security",
+   "rostered": "06:00–18:00",
+   "in": "—",
+   "location": "—",
+   "status": "Absent",
+   "tone": "danger"
+  },
+  {
+   "id": "at6",
+   "name": "Grace Wanjiru",
+   "dept": "Leasing",
+   "rostered": "08:00–17:00",
+   "in": "—",
+   "location": "—",
+   "status": "Annual leave",
+   "tone": "info"
+  }
+ ],
+ "business-september-timesheets": [
+  {
+   "id": "ts1",
+   "name": "Joseph Kimani",
+   "dept": "Maintenance",
+   "contracted": 40,
+   "logged": 46,
+   "ot": 6,
+   "rate": 6.8,
+   "submitted": true,
+   "status": "Approved",
+   "tone": "ok"
+  },
+  {
+   "id": "ts2",
+   "name": "Ann Wangui",
+   "dept": "Maintenance",
+   "contracted": 40,
+   "logged": 40,
+   "ot": 0,
+   "rate": 6.4,
+   "submitted": true,
+   "status": "Approved",
+   "tone": "ok"
+  },
+  {
+   "id": "ts3",
+   "name": "Wanjiku Mburu",
+   "dept": "Housekeeping",
+   "contracted": 40,
+   "logged": 44,
+   "ot": 4,
+   "rate": 4.2,
+   "submitted": true,
+   "status": "Awaiting approval",
+   "tone": "warn"
+  },
+  {
+   "id": "ts4",
+   "name": "Joseph Mutiso",
+   "dept": "Security",
+   "contracted": 60,
+   "logged": 60,
+   "ot": 0,
+   "rate": 3.9,
+   "submitted": true,
+   "status": "Approved",
+   "tone": "ok"
+  },
+  {
+   "id": "ts5",
+   "name": "Michael Ochieng",
+   "dept": "Security",
+   "contracted": 60,
+   "logged": 72,
+   "ot": 12,
+   "rate": 3.9,
+   "submitted": true,
+   "status": "Overtime query",
+   "tone": "warn"
+  },
+  {
+   "id": "ts6",
+   "name": "Elizabeth Auma",
+   "dept": "Hospitality",
+   "contracted": 60,
+   "logged": 0,
+   "ot": 0,
+   "rate": 4.6,
+   "submitted": false,
+   "status": "Not submitted",
+   "tone": "danger"
+  }
+ ],
+ "business-payroll-export": [
+  {
+   "icon": "users",
+   "title": "Employees included",
+   "right": "96"
+  },
+  {
+   "icon": "clock",
+   "title": "Total hours",
+   "right": "1,842"
+  },
+  {
+   "icon": "trend",
+   "title": "Overtime hours",
+   "right": "104"
+  },
+  {
+   "icon": "money",
+   "title": "Gross payroll",
+   "right": "$ 96,400"
+  },
+  {
+   "icon": "scale",
+   "title": "Statutory deductions",
+   "right": "$ 18,200"
+  },
+  {
+   "icon": "bank",
+   "title": "Net to pay",
+   "right": "$ 78,200"
+  }
+ ],
+ "business-performance-summary": [
+  {
+   "id": "pf1",
+   "name": "Sarah Lemayian",
+   "dept": "Sales",
+   "role": "Sales Manager",
+   "met": "6 of 6",
+   "quality": 4.8,
+   "attendance": 98,
+   "peer": 4.7,
+   "band": "Exceeding",
+   "tone": "ok"
+  },
+  {
+   "id": "pf2",
+   "name": "Amina Yusuf",
+   "dept": "Property",
+   "role": "Property Manager",
+   "met": "5 of 6",
+   "quality": 4.6,
+   "attendance": 96,
+   "peer": 4.8,
+   "band": "Exceeding",
+   "tone": "ok"
+  },
+  {
+   "id": "pf3",
+   "name": "Peter Njoroge",
+   "dept": "Development",
+   "role": "Site Manager",
+   "met": "4 of 6",
+   "quality": 4.2,
+   "attendance": 99,
+   "peer": 4.4,
+   "band": "Meeting",
+   "tone": "teal"
+  },
+  {
+   "id": "pf4",
+   "name": "Joseph Kimani",
+   "dept": "Maintenance",
+   "role": "Technician",
+   "met": "6 of 6",
+   "quality": 4.8,
+   "attendance": 97,
+   "peer": 4.6,
+   "band": "Exceeding",
+   "tone": "ok"
+  },
+  {
+   "id": "pf5",
+   "name": "Mary Achieng",
+   "dept": "Sales",
+   "role": "Agent",
+   "met": "2 of 5",
+   "quality": 3.9,
+   "attendance": 94,
+   "peer": 4.1,
+   "band": "Developing",
+   "tone": "warn"
+  },
+  {
+   "id": "pf6",
+   "name": "Brian Kimutai",
+   "dept": "Sales",
+   "role": "Junior Agent",
+   "met": "1 of 5",
+   "quality": 3.4,
+   "attendance": 88,
+   "peer": 3.8,
+   "band": "Coaching plan",
+   "tone": "danger"
+  },
+  {
+   "id": "pf7",
+   "name": "Anthony Mwaura",
+   "dept": "Security",
+   "role": "Guard",
+   "met": "2 of 4",
+   "quality": 2.9,
+   "attendance": 76,
+   "peer": 3.2,
+   "band": "Formal review",
+   "tone": "danger"
+  }
+ ],
+ "business-recent-transactions": [
+  {
+   "id": "tx1",
+   "desc": "Unit sale — Nairobi Heights #B12",
+   "date": "24 Aug",
+   "dir": "in",
+   "amount": 420000,
+   "method": "Bank transfer",
+   "cat": "Sales"
+  },
+  {
+   "id": "tx2",
+   "desc": "Contractor payment — Phase 2",
+   "date": "22 Aug",
+   "dir": "out",
+   "amount": 85000,
+   "method": "Bank transfer",
+   "cat": "Contractors"
+  },
+  {
+   "id": "tx3",
+   "desc": "Deposit — Golden Park #A4",
+   "date": "21 Aug",
+   "dir": "in",
+   "amount": 65000,
+   "method": "M-Pesa",
+   "cat": "Sales"
+  },
+  {
+   "id": "tx4",
+   "desc": "Marketing — digital ads",
+   "date": "20 Aug",
+   "dir": "out",
+   "amount": 12400,
+   "method": "Card",
+   "cat": "Marketing"
+  },
+  {
+   "id": "tx5",
+   "desc": "Unit sale — Westgate #C7",
+   "date": "18 Aug",
+   "dir": "in",
+   "amount": 180000,
+   "method": "Bank transfer",
+   "cat": "Sales"
+  },
+  {
+   "id": "tx6",
+   "desc": "Payroll — August",
+   "date": "15 Aug",
+   "dir": "out",
+   "amount": 96000,
+   "method": "Bank transfer",
+   "cat": "Payroll"
+  },
+  {
+   "id": "tx7",
+   "desc": "Cement & steel — Phase 2",
+   "date": "13 Aug",
+   "dir": "out",
+   "amount": 142000,
+   "method": "Bank transfer",
+   "cat": "Construction"
+  }
+ ],
+ "business-by-legal-entity": [
+  {
+   "id": "en1",
+   "entity": "Paltas Group Holdings",
+   "juris": "🇬🇧 UK",
+   "fn": "Holding",
+   "revenue": 1.84,
+   "costs": 1.62,
+   "profit": 0.22,
+   "assets": 86.4,
+   "cash": 1.42
+  },
+  {
+   "id": "en2",
+   "entity": "Paltas Developments Kenya",
+   "juris": "🇰🇪 Kenya",
+   "fn": "Development",
+   "revenue": 3.42,
+   "costs": 2.58,
+   "profit": 0.84,
+   "assets": 24.8,
+   "cash": 1.18
+  },
+  {
+   "id": "en3",
+   "entity": "Paltas Property Holdings",
+   "juris": "🇰🇪 Kenya",
+   "fn": "Rentals",
+   "revenue": 2.12,
+   "costs": 1.34,
+   "profit": 0.78,
+   "assets": 17,
+   "cash": 0.86
+  },
+  {
+   "id": "en4",
+   "entity": "Paltas Hospitality",
+   "juris": "🇰🇪 Kenya",
+   "fn": "Short-let stays",
+   "revenue": 1.28,
+   "costs": 0.96,
+   "profit": 0.32,
+   "assets": 6.4,
+   "cash": 0.34
+  },
+  {
+   "id": "en5",
+   "entity": "Paltas UK Property",
+   "juris": "🇬🇧 UK",
+   "fn": "Rentals",
+   "revenue": 1.86,
+   "costs": 1.19,
+   "profit": 0.67,
+   "assets": 36.2,
+   "cash": 0.42
+  },
+  {
+   "id": "en6",
+   "entity": "Paltas Gulf FZ-LLC",
+   "juris": "🇦🇪 UAE",
+   "fn": "Rentals",
+   "revenue": 0.51,
+   "costs": 0.55,
+   "profit": -0.04,
+   "assets": 8.2,
+   "cash": 0.06
+  },
+  {
+   "id": "en7",
+   "entity": "Paltas Baltics UAB",
+   "juris": "🇱🇹 Lithuania",
+   "fn": "Commercial",
+   "revenue": 0.55,
+   "costs": 0.15,
+   "profit": 0.4,
+   "assets": 5.6,
+   "cash": 0.2
+  }
+ ],
+ "business-filing-calendar": [
+  {
+   "id": "tx1",
+   "obligation": "PAYE remittance",
+   "entity": "All Kenyan entities",
+   "juris": "🇰🇪 Kenya",
+   "period": "Aug 2026",
+   "due": "9 Sep",
+   "days": 4,
+   "est": 18200,
+   "by": "David Kimani",
+   "tone": "danger",
+   "status": "Urgent"
+  },
+  {
+   "id": "tx2",
+   "obligation": "VAT return",
+   "entity": "Paltas Developments Kenya",
+   "juris": "🇰🇪 Kenya",
+   "period": "Aug 2026",
+   "due": "20 Sep",
+   "days": 15,
+   "est": 41200,
+   "by": "David Kimani",
+   "tone": "warn",
+   "status": "In preparation"
+  },
+  {
+   "id": "tx3",
+   "obligation": "Withholding tax",
+   "entity": "Paltas Property Holdings",
+   "juris": "🇰🇪 Kenya",
+   "period": "Aug 2026",
+   "due": "20 Sep",
+   "days": 15,
+   "est": 6400,
+   "by": "David Kimani",
+   "tone": "warn",
+   "status": "In preparation"
+  },
+  {
+   "id": "tx4",
+   "obligation": "Annual accounts",
+   "entity": "Paltas Group Holdings",
+   "juris": "🇬🇧 UK",
+   "period": "FY2025",
+   "due": "30 Sep",
+   "days": 25,
+   "est": 0,
+   "by": "Grant Thornton",
+   "tone": "warn",
+   "status": "Draft ready"
+  },
+  {
+   "id": "tx5",
+   "obligation": "Corporation tax",
+   "entity": "Paltas UK Property",
+   "juris": "🇬🇧 UK",
+   "period": "FY2025",
+   "due": "31 Dec",
+   "days": 117,
+   "est": 128400,
+   "by": "Grant Thornton",
+   "tone": "info",
+   "status": "With advisers"
+  },
+  {
+   "id": "tx6",
+   "obligation": "Economic substance report",
+   "entity": "Paltas Gulf FZ-LLC",
+   "juris": "🇦🇪 UAE",
+   "period": "FY2025",
+   "due": "30 Nov",
+   "days": 86,
+   "est": 0,
+   "by": "Local adviser",
+   "tone": "neutral",
+   "status": "Not started"
+  }
+ ],
+ "business-forecast-detail": [
+  {
+   "id": "f1",
+   "metric": "Total revenue (monthly)",
+   "now": "$ 945K",
+   "m3": "$ 1,084K",
+   "m6": "$ 1,142K",
+   "m12": "$ 1,268K",
+   "conf": "High",
+   "driver": "Phase 2 completions"
+  },
+  {
+   "id": "f2",
+   "metric": "Rental income",
+   "now": "$ 478K",
+   "m3": "$ 496K",
+   "m6": "$ 524K",
+   "m12": "$ 558K",
+   "conf": "High",
+   "driver": "Rent increases + occupancy"
+  },
+  {
+   "id": "f3",
+   "metric": "Sales income",
+   "now": "$ 320K",
+   "m3": "$ 412K",
+   "m6": "$ 428K",
+   "m12": "$ 486K",
+   "conf": "Medium",
+   "driver": "Pipeline conversion"
+  },
+  {
+   "id": "f4",
+   "metric": "Short-let income",
+   "now": "$ 147K",
+   "m3": "$ 176K",
+   "m6": "$ 190K",
+   "m12": "$ 224K",
+   "conf": "Medium",
+   "driver": "Seasonality + events"
+  },
+  {
+   "id": "f5",
+   "metric": "Rental collection rate",
+   "now": "86.4%",
+   "m3": "92.1%",
+   "m6": "93.4%",
+   "m12": "94.0%",
+   "conf": "High",
+   "driver": "Auto-payment adoption"
+  },
+  {
+   "id": "f6",
+   "metric": "Occupancy",
+   "now": "91.4%",
+   "m3": "92.6%",
+   "m6": "93.1%",
+   "m12": "93.8%",
+   "conf": "Medium",
+   "driver": "Marina Bay reposition"
+  },
+  {
+   "id": "f7",
+   "metric": "Vacancy (units)",
+   "now": "121",
+   "m3": "104",
+   "m6": "97",
+   "m12": "88",
+   "conf": "Medium",
+   "driver": "Repricing + refurb"
+  }
+ ],
+ "business-submarket-demand": [
+  {
+   "id": "sm1",
+   "market": "Kilimani, Nairobi",
+   "enquiries": 412,
+   "days": 14,
+   "trend": 8.2,
+   "supply": 96,
+   "share": 11,
+   "outlook": "Strong",
+   "tone": "ok"
+  },
+  {
+   "id": "sm2",
+   "market": "Westlands, Nairobi",
+   "enquiries": 386,
+   "days": 19,
+   "trend": 6.4,
+   "supply": 210,
+   "share": 18,
+   "outlook": "Strong",
+   "tone": "ok"
+  },
+  {
+   "id": "sm3",
+   "market": "Karen, Nairobi",
+   "enquiries": 142,
+   "days": 28,
+   "trend": 9.1,
+   "supply": 18,
+   "share": 6,
+   "outlook": "Strong",
+   "tone": "ok"
+  },
+  {
+   "id": "sm4",
+   "market": "Docklands, London",
+   "enquiries": 208,
+   "days": 6,
+   "trend": 4.8,
+   "supply": 64,
+   "share": 4,
+   "outlook": "Very strong",
+   "tone": "ok"
+  },
+  {
+   "id": "sm5",
+   "market": "Dubai Marina",
+   "enquiries": 96,
+   "days": 62,
+   "trend": -3.1,
+   "supply": 120,
+   "share": 2,
+   "outlook": "Oversupplied",
+   "tone": "danger"
+  },
+  {
+   "id": "sm6",
+   "market": "Vilnius centre",
+   "enquiries": 64,
+   "days": 21,
+   "trend": 3.9,
+   "supply": 24,
+   "share": 3,
+   "outlook": "Stable",
+   "tone": "teal"
+  }
+ ],
+ "business-contract-register": [
+  {
+   "id": "ct1",
+   "name": "BuildCo main contract",
+   "cat": "Construction",
+   "tone": "warn",
+   "party": "BuildCo Ltd",
+   "entity": "Paltas Developments KE",
+   "value": 4200000,
+   "start": "Jan 2026",
+   "ends": "Dec 2026",
+   "law": "🇰🇪 Kenya",
+   "status": "Active",
+   "st": "ok"
+  },
+  {
+   "id": "ct2",
+   "name": "Elektra maintenance",
+   "cat": "Services",
+   "tone": "info",
+   "party": "Elektra Ltd",
+   "entity": "Paltas Property Holdings",
+   "value": 48000,
+   "start": "Sep 2024",
+   "ends": "30 Sep 2026",
+   "law": "🇰🇪 Kenya",
+   "status": "Expiring",
+   "st": "warn"
+  },
+  {
+   "id": "ct3",
+   "name": "CoolAir HVAC maintenance",
+   "cat": "Services",
+   "tone": "info",
+   "party": "CoolAir Services",
+   "entity": "Paltas Hospitality",
+   "value": 64800,
+   "start": "Jan 2025",
+   "ends": "31 Dec 2026",
+   "law": "🇰🇪 Kenya",
+   "status": "Under review",
+   "st": "warn"
+  },
+  {
+   "id": "ct4",
+   "name": "KCB development facility",
+   "cat": "Finance",
+   "tone": "teal",
+   "party": "KCB Bank",
+   "entity": "Paltas Developments KE",
+   "value": 9000000,
+   "start": "Mar 2024",
+   "ends": "Mar 2027",
+   "law": "🇰🇪 Kenya",
+   "status": "Active",
+   "st": "ok"
+  },
+  {
+   "id": "ct5",
+   "name": "Barclays BTL facility",
+   "cat": "Finance",
+   "tone": "teal",
+   "party": "Barclays UK",
+   "entity": "Paltas UK Property",
+   "value": 20300000,
+   "start": "Jun 2020",
+   "ends": "Jun 2030",
+   "law": "🇬🇧 England",
+   "status": "Active",
+   "st": "ok"
+  },
+  {
+   "id": "ct6",
+   "name": "SecureGuard guarding",
+   "cat": "Services",
+   "tone": "info",
+   "party": "SecureGuard Ltd",
+   "entity": "Paltas Property Holdings",
+   "value": 134400,
+   "start": "Apr 2024",
+   "ends": "31 Mar 2027",
+   "law": "🇰🇪 Kenya",
+   "status": "Performance notice",
+   "st": "warn"
+  }
+ ],
+ "business-policies": [
+  {
+   "id": "i1",
+   "policy": "PL-4471",
+   "kind": "Property all risks",
+   "insurer": "Jubilee Insurance",
+   "covers": "Westgate Residences",
+   "insured": 9800000,
+   "premium": 38900,
+   "excess": 5000,
+   "expires": "11 Sep 2026",
+   "days": 6,
+   "tone": "danger",
+   "status": "Renewal urgent"
+  },
+  {
+   "id": "i2",
+   "policy": "PL-4468",
+   "kind": "Property all risks",
+   "insurer": "Jubilee Insurance",
+   "covers": "Golden Park Homes",
+   "insured": 13600000,
+   "premium": 48200,
+   "excess": 5000,
+   "expires": "15 Mar 2027",
+   "days": 191,
+   "tone": "ok",
+   "status": "Active"
+  },
+  {
+   "id": "i3",
+   "policy": "PL-4469",
+   "kind": "Property all risks",
+   "insurer": "Jubilee Insurance",
+   "covers": "Nairobi Heights",
+   "insured": 11200000,
+   "premium": 39600,
+   "excess": 5000,
+   "expires": "15 Mar 2027",
+   "days": 191,
+   "tone": "ok",
+   "status": "Active"
+  },
+  {
+   "id": "i4",
+   "policy": "UK-88120",
+   "kind": "Landlord & buildings",
+   "insurer": "Aviva",
+   "covers": "Docklands + Canary Wharf",
+   "insured": 36200000,
+   "premium": 52400,
+   "excess": 2500,
+   "expires": "1 Jun 2027",
+   "days": 269,
+   "tone": "ok",
+   "status": "Active"
+  },
+  {
+   "id": "i5",
+   "policy": "CAR-2214",
+   "kind": "Contractors all risks",
+   "insurer": "APA Insurance",
+   "covers": "Golden Park P2 + Kilimani",
+   "insured": 7060000,
+   "premium": 21200,
+   "excess": 10000,
+   "expires": "31 Dec 2026",
+   "days": 117,
+   "tone": "ok",
+   "status": "Active"
+  },
+  {
+   "id": "i6",
+   "policy": "DO-0441",
+   "kind": "Directors & officers",
+   "insurer": "Chubb",
+   "covers": "Group",
+   "insured": 3000000,
+   "premium": 4500,
+   "excess": 2500,
+   "expires": "30 Jun 2027",
+   "days": 298,
+   "tone": "ok",
+   "status": "Active"
+  }
+ ],
+ "business-obligations": [
+  {
+   "id": "ob1",
+   "ob": "PAYE remittance",
+   "cat": "Tax",
+   "juris": "🇰🇪 Kenya",
+   "entity": "All Kenyan entities",
+   "freq": "Monthly",
+   "due": "9 Sep",
+   "days": 4,
+   "owner": "David Kimani",
+   "tone": "danger",
+   "status": "Urgent"
+  },
+  {
+   "id": "ob2",
+   "ob": "Fire certificate renewal",
+   "cat": "Safety",
+   "juris": "🇰🇪 Kenya",
+   "entity": "Paltas Property Holdings",
+   "freq": "Annual",
+   "due": "Overdue",
+   "days": -3,
+   "owner": "Amina Yusuf",
+   "tone": "danger",
+   "status": "Overdue"
+  },
+  {
+   "id": "ob3",
+   "ob": "VAT return",
+   "cat": "Tax",
+   "juris": "🇰🇪 Kenya",
+   "entity": "Paltas Developments KE",
+   "freq": "Monthly",
+   "due": "20 Sep",
+   "days": 15,
+   "owner": "David Kimani",
+   "tone": "warn",
+   "status": "In progress"
+  },
+  {
+   "id": "ob4",
+   "ob": "Annual accounts filing",
+   "cat": "Corporate",
+   "juris": "🇬🇧 UK",
+   "entity": "Paltas Group Holdings",
+   "freq": "Annual",
+   "due": "30 Sep",
+   "days": 25,
+   "owner": "Michael Sitienei",
+   "tone": "warn",
+   "status": "Draft ready"
+  },
+  {
+   "id": "ob5",
+   "ob": "Lift statutory inspection",
+   "cat": "Safety",
+   "juris": "🇰🇪 Kenya",
+   "entity": "Paltas Property Holdings",
+   "freq": "Annual",
+   "due": "12 Oct",
+   "days": 37,
+   "owner": "Amina Yusuf",
+   "tone": "ok",
+   "status": "Booked"
+  },
+  {
+   "id": "ob6",
+   "ob": "AML / KYC policy review",
+   "cat": "Regulatory",
+   "juris": "Group",
+   "entity": "All entities",
+   "freq": "Annual",
+   "due": "31 Dec",
+   "days": 117,
+   "owner": "Michael Sitienei",
+   "tone": "info",
+   "status": "Scheduled"
+  }
+ ],
+ "business-vendor-directory": [
+  {
+   "id": "v1",
+   "name": "BuildCo Ltd",
+   "role": "Main contractor",
+   "cat": "Contractor",
+   "tone": "warn",
+   "spend": 2860000,
+   "pos": 1,
+   "score": 4.6,
+   "compliance": "Complete",
+   "ok": true
+  },
+  {
+   "id": "v2",
+   "name": "Mwangi Construction",
+   "role": "Main contractor",
+   "cat": "Contractor",
+   "tone": "warn",
+   "spend": 1540000,
+   "pos": 1,
+   "score": 4.1,
+   "compliance": "Complete",
+   "ok": true
+  },
+  {
+   "id": "v3",
+   "name": "Elektra Ltd",
+   "role": "M&E contractor",
+   "cat": "Contractor",
+   "tone": "warn",
+   "spend": 450000,
+   "pos": 2,
+   "score": 4.6,
+   "compliance": "Complete",
+   "ok": true
+  },
+  {
+   "id": "v4",
+   "name": "Devki Steel",
+   "role": "Materials",
+   "cat": "Supplier",
+   "tone": "info",
+   "spend": 286000,
+   "pos": 1,
+   "score": 4.8,
+   "compliance": "Complete",
+   "ok": true
+  },
+  {
+   "id": "v5",
+   "name": "Bamburi Cement",
+   "role": "Materials",
+   "cat": "Supplier",
+   "tone": "info",
+   "spend": 218000,
+   "pos": 1,
+   "score": 4.9,
+   "compliance": "Complete",
+   "ok": true
+  },
+  {
+   "id": "v6",
+   "name": "SecureGuard Ltd",
+   "role": "Guarding",
+   "cat": "Services",
+   "tone": "teal",
+   "spend": 134000,
+   "pos": 0,
+   "score": 3.4,
+   "compliance": "Tax cert expired",
+   "ok": false
+  },
+  {
+   "id": "v7",
+   "name": "CoolAir Services",
+   "role": "HVAC",
+   "cat": "Services",
+   "tone": "teal",
+   "spend": 68000,
+   "pos": 1,
+   "score": 3.1,
+   "compliance": "Insurance expired",
+   "ok": false
+  },
+  {
+   "id": "v8",
+   "name": "Otis Kenya",
+   "role": "Lifts",
+   "cat": "Services",
+   "tone": "teal",
+   "spend": 28800,
+   "pos": 1,
+   "score": 4.9,
+   "compliance": "Complete",
+   "ok": true
+  }
+ ],
+ "business-vendor-scorecard": [
+  {
+   "id": "sc1",
+   "name": "Bamburi Cement",
+   "onTime": 99,
+   "quality": 4.9,
+   "price": "On quote",
+   "resp": 4.8,
+   "comp": 100,
+   "overall": 4.9,
+   "trend": "↑",
+   "rec": "Preferred",
+   "tone": "ok"
+  },
+  {
+   "id": "sc2",
+   "name": "Otis Kenya",
+   "onTime": 96,
+   "quality": 4.9,
+   "price": "On quote",
+   "resp": 4.9,
+   "comp": 100,
+   "overall": 4.9,
+   "trend": "→",
+   "rec": "Preferred",
+   "tone": "ok"
+  },
+  {
+   "id": "sc3",
+   "name": "Devki Steel",
+   "onTime": 97,
+   "quality": 4.8,
+   "price": "+1.2%",
+   "resp": 4.7,
+   "comp": 100,
+   "overall": 4.8,
+   "trend": "↑",
+   "rec": "Preferred",
+   "tone": "ok"
+  },
+  {
+   "id": "sc4",
+   "name": "BuildCo Ltd",
+   "onTime": 88,
+   "quality": 4.7,
+   "price": "+1.4%",
+   "resp": 4.4,
+   "comp": 100,
+   "overall": 4.6,
+   "trend": "→",
+   "rec": "Approved",
+   "tone": "ok"
+  },
+  {
+   "id": "sc5",
+   "name": "Mwangi Construction",
+   "onTime": 76,
+   "quality": 4.2,
+   "price": "+4.8%",
+   "resp": 4,
+   "comp": 100,
+   "overall": 4.1,
+   "trend": "↓",
+   "rec": "Monitor",
+   "tone": "warn"
+  },
+  {
+   "id": "sc6",
+   "name": "SecureGuard Ltd",
+   "onTime": 86,
+   "quality": 3.4,
+   "price": "On quote",
+   "resp": 3.2,
+   "comp": 80,
+   "overall": 3.4,
+   "trend": "↓",
+   "rec": "Performance notice",
+   "tone": "warn"
+  },
+  {
+   "id": "sc7",
+   "name": "CoolAir Services",
+   "onTime": 64,
+   "quality": 3,
+   "price": "+15.9%",
+   "resp": 2.8,
+   "comp": 60,
+   "overall": 3.1,
+   "trend": "↓↓",
+   "rec": "Terminate?",
+   "tone": "danger"
+  }
+ ],
+ "business-payment-schedule": [
+  {
+   "id": "vp1",
+   "vendor": "BuildCo Ltd",
+   "invoice": "INV-88209",
+   "po": "PO-3387",
+   "amount": 142000,
+   "terms": "30 days",
+   "due": "15 Sep",
+   "days": 10,
+   "approved": false,
+   "status": "Blocking works",
+   "tone": "danger"
+  },
+  {
+   "id": "vp2",
+   "vendor": "Tile World Ltd",
+   "invoice": "INV-88214",
+   "po": "PO-3388",
+   "amount": 34080,
+   "terms": "30 days",
+   "due": "25 Sep",
+   "days": 20,
+   "approved": true,
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "vp3",
+   "vendor": "Mwangi Construction",
+   "invoice": "INV-88211",
+   "po": "PO-3384",
+   "amount": 96200,
+   "terms": "45 days",
+   "due": "26 Sep",
+   "days": 21,
+   "approved": true,
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "vp4",
+   "vendor": "AquaFix Ltd",
+   "invoice": "INV-88198",
+   "po": "PO-3371",
+   "amount": 5400,
+   "terms": "30 days",
+   "due": "18 Sep",
+   "days": 13,
+   "approved": true,
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "vp5",
+   "vendor": "CoolAir Services",
+   "invoice": "INV-88204",
+   "po": "PO-3376",
+   "amount": 3940,
+   "terms": "30 days",
+   "due": "20 Sep",
+   "days": 15,
+   "approved": false,
+   "status": "Disputed",
+   "tone": "danger"
+  },
+  {
+   "id": "vp6",
+   "vendor": "Elektra Ltd",
+   "invoice": "INV-88220",
+   "po": "PO-3379",
+   "amount": 68400,
+   "terms": "30 days",
+   "due": "1 Oct",
+   "days": 26,
+   "approved": true,
+   "status": "Scheduled",
+   "tone": "info"
+  }
+ ],
+ "business-investment-vehicles": [
+  {
+   "id": "iv1",
+   "name": "Paltas Property Fund I",
+   "structure": "LP · UK",
+   "strategy": "Residential development",
+   "vintage": 2022,
+   "target": 20,
+   "committed": 20,
+   "deployed": 18.4,
+   "investors": 62,
+   "irr": 14.2,
+   "dpi": 1.42,
+   "status": "Deploying",
+   "tone": "ok"
+  },
+  {
+   "id": "iv2",
+   "name": "Paltas Property Fund II",
+   "structure": "LP · UK",
+   "strategy": "Mixed use + income",
+   "vintage": 2026,
+   "target": 16,
+   "committed": 9.9,
+   "deployed": 2.4,
+   "investors": 22,
+   "irr": 0,
+   "dpi": 0,
+   "status": "Raising",
+   "tone": "warn"
+  },
+  {
+   "id": "iv3",
+   "name": "Vilnius JV",
+   "structure": "JV · Lithuania",
+   "strategy": "Commercial",
+   "vintage": 2024,
+   "target": 5.6,
+   "committed": 5.6,
+   "deployed": 5.6,
+   "investors": 1,
+   "irr": 10.4,
+   "dpi": 0.31,
+   "status": "Held",
+   "tone": "ok"
+  },
+  {
+   "id": "iv4",
+   "name": "Karen Villas SPV",
+   "structure": "SPV · Kenya",
+   "strategy": "Luxury development",
+   "vintage": 2023,
+   "target": 4.2,
+   "committed": 4.2,
+   "deployed": 4.2,
+   "investors": 8,
+   "irr": 18.6,
+   "dpi": 2.14,
+   "status": "Realising",
+   "tone": "ok"
+  }
+ ],
+ "business-investor-register": [
+  {
+   "id": "in1",
+   "name": "Dr. Ahmed Noor",
+   "where": "🇦🇪 UAE · individual",
+   "kind": "LP",
+   "vehicle": "Fund I + II",
+   "since": "Mar 2024",
+   "committed": 1500000,
+   "drawn": 1380000,
+   "distributed": 420000,
+   "nav": 1240000,
+   "irr": 14.8
+  },
+  {
+   "id": "in2",
+   "name": "Nordic Property Partners",
+   "where": "🇸🇪 Sweden · institution",
+   "kind": "LP",
+   "vehicle": "Fund I",
+   "since": "Jun 2022",
+   "committed": 4000000,
+   "drawn": 3680000,
+   "distributed": 1140000,
+   "nav": 3420000,
+   "irr": 14.1
+  },
+  {
+   "id": "in3",
+   "name": "Baltic Partners UAB",
+   "where": "🇱🇹 Lithuania · JV",
+   "kind": "JV",
+   "vehicle": "Vilnius JV",
+   "since": "Aug 2024",
+   "committed": 2240000,
+   "drawn": 2240000,
+   "distributed": 680000,
+   "nav": 2180000,
+   "irr": 10.4
+  },
+  {
+   "id": "in4",
+   "name": "Kariuki Family Office",
+   "where": "🇰🇪 Kenya · family office",
+   "kind": "LP",
+   "vehicle": "Fund I + Karen SPV",
+   "since": "Sep 2022",
+   "committed": 2800000,
+   "drawn": 2800000,
+   "distributed": 1420000,
+   "nav": 2640000,
+   "irr": 17.2
+  },
+  {
+   "id": "in5",
+   "name": "Whitfield Capital",
+   "where": "🇬🇧 UK · institution",
+   "kind": "LP",
+   "vehicle": "Fund II",
+   "since": "Jun 2026",
+   "committed": 2000000,
+   "drawn": 300000,
+   "distributed": 0,
+   "nav": 300000,
+   "irr": 0
+  }
+ ],
+ "business-automated-reports": [
+  {
+   "icon": "doc",
+   "title": "Monthly property report",
+   "sub": "Per asset: income, expenses, occupancy, NOI, works",
+   "right": "1st",
+   "rightSub": "18 recipients"
+  },
+  {
+   "icon": "money",
+   "title": "Monthly rental statement",
+   "sub": "Per owner: rent collected, fees deducted, net paid",
+   "right": "5th",
+   "rightSub": "12 owners"
+  },
+  {
+   "icon": "trend",
+   "title": "Quarterly investment statement",
+   "sub": "Per investor: capital, NAV, distributions, IRR",
+   "right": "Quarterly",
+   "rightSub": "84 investors"
+  },
+  {
+   "icon": "hardhat",
+   "title": "Monthly construction report",
+   "sub": "Progress, spend, programme, change orders",
+   "right": "1st",
+   "rightSub": "Fund I LPs"
+  },
+  {
+   "icon": "bank",
+   "title": "Annual report",
+   "sub": "Audited group accounts and portfolio review",
+   "right": "Annual",
+   "rightSub": "All investors"
+  }
+ ],
+ "business-owner-statement-august-2026": [
+  {
+   "id": "os1",
+   "owner": "Paltas Property Holdings",
+   "props": 3,
+   "due": 248400,
+   "collected": 214600,
+   "arrears": 33800,
+   "fee": 21460,
+   "repairs": 12400,
+   "net": 180740
+  },
+  {
+   "id": "os2",
+   "owner": "Paltas UK Property",
+   "props": 2,
+   "due": 154200,
+   "collected": 152800,
+   "arrears": 1400,
+   "fee": 15280,
+   "repairs": 1900,
+   "net": 135620
+  },
+  {
+   "id": "os3",
+   "owner": "Paltas Gulf FZ-LLC",
+   "props": 1,
+   "due": 46400,
+   "collected": 42700,
+   "arrears": 3700,
+   "fee": 4270,
+   "repairs": 3900,
+   "net": 34530
+  },
+  {
+   "id": "os4",
+   "owner": "Paltas Baltics UAB",
+   "props": 1,
+   "due": 28700,
+   "collected": 28700,
+   "arrears": 0,
+   "fee": 2870,
+   "repairs": 400,
+   "net": 25430
+  }
+ ],
+ "command-this-week": [
+  {
+   "icon": "calendar",
+   "title": "12 viewings",
+   "sub": "Mon–Sun, 4 agents",
+   "right": "8 confirmed"
+  },
+  {
+   "icon": "key",
+   "title": "9 move-ins",
+   "sub": "Keys, meters, welcome packs",
+   "right": "6 ready"
+  },
+  {
+   "icon": "close",
+   "title": "4 move-outs",
+   "sub": "Deposit inspections due",
+   "right": "2 booked"
+  },
+  {
+   "icon": "sign",
+   "title": "7 contracts to sign",
+   "sub": "3 leases · 2 sales · 2 vendor",
+   "right": "e-sign sent"
+  },
+  {
+   "icon": "truck",
+   "title": "5 material deliveries",
+   "sub": "Phase 2 + Kilimani",
+   "right": "$ 91K"
+  },
+  {
+   "icon": "wrench",
+   "title": "14 planned maintenance jobs",
+   "sub": "Preventive schedule",
+   "right": "on track"
+  }
+ ],
+ "command-numbers-behind-the-summary": [
+  {
+   "icon": "money",
+   "title": "Revenue MTD",
+   "right": "$ 596,400",
+   "rightSub": "+6.2% vs Aug"
+  },
+  {
+   "icon": "percent",
+   "title": "Collection rate",
+   "right": "86.4%",
+   "rightSub": "target 94%"
+  },
+  {
+   "icon": "door",
+   "title": "Occupancy",
+   "right": "91.4%",
+   "rightSub": "+1.8pt"
+  },
+  {
+   "icon": "chart",
+   "title": "NOI margin",
+   "right": "58.9%",
+   "rightSub": "-0.4pt"
+  },
+  {
+   "icon": "clock",
+   "title": "Avg days to let",
+   "right": "19 days",
+   "rightSub": "-4 days"
+  },
+  {
+   "icon": "wrench",
+   "title": "Maintenance SLA met",
+   "right": "88%",
+   "rightSub": "2 breaches"
+  }
+ ],
+ "command-ai-insights": [
+  {
+   "icon": "fire",
+   "title": "16 new hot leads this month",
+   "sub": "Momentum up across 2-bed inventory"
+  },
+  {
+   "icon": "trend",
+   "title": "High demand · 2-bed units at 95%",
+   "sub": "Consider a price increase this cycle"
+  }
+ ],
+ "growth-contact-directory": [
+  {
+   "id": "c1",
+   "name": "Joseph Kariuki",
+   "contact": "+254 7·· ··· 214",
+   "kind": "Buyer",
+   "tone": "ok",
+   "since": "Jul 2026",
+   "last": "Today",
+   "channel": "WhatsApp",
+   "ltv": 34000,
+   "owner": "Sarah Lemayian",
+   "status": "Active"
+  },
+  {
+   "id": "c2",
+   "name": "Nancy Chebet",
+   "contact": "+254 7·· ··· 512",
+   "kind": "Tenant",
+   "tone": "teal",
+   "since": "Nov 2023",
+   "last": "3 days ago",
+   "channel": "Portal",
+   "ltv": 21120,
+   "owner": "Grace Wanjiru",
+   "status": "Active"
+  },
+  {
+   "id": "c3",
+   "name": "Rashid Omar",
+   "contact": "+254 7·· ··· 214",
+   "kind": "Lead",
+   "tone": "info",
+   "since": "Aug 2026",
+   "last": "Yesterday",
+   "channel": "Phone",
+   "ltv": 0,
+   "owner": "Sarah Lemayian",
+   "status": "In pipeline"
+  },
+  {
+   "id": "c4",
+   "name": "Anna Berg",
+   "contact": "+46 7· ··· ·· 18",
+   "kind": "Guest",
+   "tone": "violet",
+   "since": "Sep 2026",
+   "last": "Today",
+   "channel": "App",
+   "ltv": 592,
+   "owner": "Front desk",
+   "status": "In stay"
+  },
+  {
+   "id": "c5",
+   "name": "Dr. Ahmed Noor",
+   "contact": "+971 5· ··· ····",
+   "kind": "Investor",
+   "tone": "warn",
+   "since": "Mar 2024",
+   "last": "1 week ago",
+   "channel": "Email",
+   "ltv": 1240000,
+   "owner": "Michael Sitienei",
+   "status": "Active"
+  },
+  {
+   "id": "c6",
+   "name": "Victor Mutua",
+   "contact": "+254 7·· ··· 774",
+   "kind": "Tenant",
+   "tone": "teal",
+   "since": "Mar 2025",
+   "last": "Yesterday",
+   "channel": "SMS",
+   "ltv": 8400,
+   "owner": "Grace Wanjiru",
+   "status": "At risk"
+  },
+  {
+   "id": "c7",
+   "name": "BuildCo Ltd",
+   "contact": "contracts@buildco···",
+   "kind": "Vendor",
+   "tone": "neutral",
+   "since": "Jan 2024",
+   "last": "Today",
+   "channel": "Email",
+   "ltv": 4200000,
+   "owner": "Peter Njoroge",
+   "status": "Active"
+  }
+ ],
+ "growth-channels": [
+  {
+   "icon": "chat",
+   "iconBg": "rgba(34,201,139,.13)",
+   "iconFg": "#2ee0a0",
+   "title": "WhatsApp Business",
+   "sub": "Connected · +254 7·· ··· 000",
+   "right": "251",
+   "rightSub": "open"
+  },
+  {
+   "icon": "mail",
+   "iconBg": "rgba(59,130,246,.14)",
+   "iconFg": "#7cb0ff",
+   "title": "Email",
+   "sub": "hello@paltas.com",
+   "right": "116",
+   "rightSub": "open"
+  },
+  {
+   "icon": "bell",
+   "iconBg": "rgba(169,155,255,.15)",
+   "iconFg": "#bcb0ff",
+   "title": "SMS",
+   "sub": "Bulk + transactional",
+   "right": "28",
+   "rightSub": "open"
+  },
+  {
+   "icon": "home",
+   "iconBg": "rgba(0,229,200,.12)",
+   "iconFg": "#00E5C8",
+   "title": "Tenant & guest portal",
+   "sub": "In-app messaging",
+   "right": "17",
+   "rightSub": "open"
+  }
+ ],
+ "growth-campaign-performance": [
+  {
+   "id": "m1",
+   "name": "Golden Park Phase 2 launch",
+   "channel": "Multi-channel",
+   "obj": "Off-plan sales",
+   "spend": 62400,
+   "leads": 412,
+   "cpl": 151,
+   "sales": 28,
+   "roas": 7.2,
+   "status": "Running",
+   "tone": "ok"
+  },
+  {
+   "id": "m2",
+   "name": "Referral programme",
+   "channel": "Direct",
+   "obj": "Referrals",
+   "spend": 10600,
+   "leads": 88,
+   "cpl": 120,
+   "sales": 36,
+   "roas": 14.1,
+   "status": "Running",
+   "tone": "ok"
+  },
+  {
+   "id": "m3",
+   "name": "Kilimani short-let awareness",
+   "channel": "Instagram",
+   "obj": "Bookings",
+   "spend": 18200,
+   "leads": 284,
+   "cpl": 64,
+   "sales": 142,
+   "roas": 3.8,
+   "status": "Running",
+   "tone": "ok"
+  },
+  {
+   "id": "m4",
+   "name": "Westgate rental push",
+   "channel": "Portals",
+   "obj": "Lettings",
+   "spend": 22900,
+   "leads": 248,
+   "cpl": 92,
+   "sales": 31,
+   "roas": 2.4,
+   "status": "Running",
+   "tone": "ok"
+  },
+  {
+   "id": "m5",
+   "name": "Google search — buy property Nairobi",
+   "channel": "Google Ads",
+   "obj": "Sales",
+   "spend": 42800,
+   "leads": 126,
+   "cpl": 340,
+   "sales": 8,
+   "roas": 0.9,
+   "status": "Review",
+   "tone": "danger"
+  },
+  {
+   "id": "m6",
+   "name": "Diaspora investor series",
+   "channel": "Email + events",
+   "obj": "Investment",
+   "spend": 28400,
+   "leads": 62,
+   "cpl": 458,
+   "sales": 6,
+   "roas": 9.4,
+   "status": "Running",
+   "tone": "ok"
+  },
+  {
+   "id": "m7",
+   "name": "Marina Bay reposition",
+   "channel": "Multi-channel",
+   "obj": "Lettings",
+   "spend": 16800,
+   "leads": 64,
+   "cpl": 263,
+   "sales": 9,
+   "roas": 1.6,
+   "status": "Running",
+   "tone": "warn"
+  }
+ ],
+ "growth-budget-by-channel": [
+  {
+   "id": "g1",
+   "channel": "Google Ads",
+   "budget": 36000,
+   "spent": 42800,
+   "used": 119,
+   "roas": 0.9,
+   "rec": "Pause and reallocate",
+   "tone": "danger"
+  },
+  {
+   "id": "g2",
+   "channel": "Print & outdoor",
+   "budget": 36000,
+   "spent": 40500,
+   "used": 113,
+   "roas": 1.1,
+   "rec": "Reduce",
+   "tone": "danger"
+  },
+  {
+   "id": "g3",
+   "channel": "PALTAS marketplace",
+   "budget": 48000,
+   "spent": 38400,
+   "used": 80,
+   "roas": 6.8,
+   "rec": "Increase",
+   "tone": "ok"
+  },
+  {
+   "id": "g4",
+   "channel": "Property portals",
+   "budget": 42000,
+   "spent": 36200,
+   "used": 86,
+   "roas": 2.4,
+   "rec": "Hold",
+   "tone": "warn"
+  },
+  {
+   "id": "g5",
+   "channel": "Instagram & Meta",
+   "budget": 42000,
+   "spent": 34100,
+   "used": 81,
+   "roas": 3.8,
+   "rec": "Hold",
+   "tone": "neutral"
+  },
+  {
+   "id": "g6",
+   "channel": "Email & events",
+   "budget": 24000,
+   "spent": 28400,
+   "used": 118,
+   "roas": 9.4,
+   "rec": "Increase budget",
+   "tone": "ok"
+  },
+  {
+   "id": "g7",
+   "channel": "Referral rewards",
+   "budget": 12000,
+   "spent": 10600,
+   "used": 88,
+   "roas": 14.1,
+   "rec": "Increase heavily",
+   "tone": "ok"
+  }
+ ],
+ "growth-marketplace-listings": [
+  {
+   "id": "l1",
+   "name": "Golden Park A-block, 2 bed",
+   "kind": "For sale",
+   "tone": "ok",
+   "property": "Golden Park",
+   "price": "$ 34,000",
+   "impressions": 48200,
+   "views": 6140,
+   "enquiries": 184,
+   "ctr": 12.7,
+   "placement": "Featured",
+   "live": true
+  },
+  {
+   "id": "l2",
+   "name": "Kilimani Suites 204",
+   "kind": "Short stay",
+   "tone": "violet",
+   "property": "Kilimani",
+   "price": "$ 148/night",
+   "impressions": 92400,
+   "views": 11800,
+   "enquiries": 412,
+   "ctr": 12.8,
+   "placement": "Carousel",
+   "live": true
+  },
+  {
+   "id": "l3",
+   "name": "Karen Villas V1–V6",
+   "kind": "For sale",
+   "tone": "ok",
+   "property": "Karen Villas",
+   "price": "$ 284,000",
+   "impressions": 18600,
+   "views": 3240,
+   "enquiries": 62,
+   "ctr": 17.4,
+   "placement": "Luxury",
+   "live": true
+  },
+  {
+   "id": "l4",
+   "name": "Westgate 2-bed rentals",
+   "kind": "To rent",
+   "tone": "info",
+   "property": "Westgate",
+   "price": "$ 690/mo",
+   "impressions": 28900,
+   "views": 3610,
+   "enquiries": 94,
+   "ctr": 12.5,
+   "placement": "Standard",
+   "live": true
+  },
+  {
+   "id": "l5",
+   "name": "Docklands Court studios",
+   "kind": "To rent",
+   "tone": "info",
+   "property": "Docklands",
+   "price": "$ 2,180/mo",
+   "impressions": 21400,
+   "views": 4180,
+   "enquiries": 142,
+   "ctr": 19.5,
+   "placement": "Standard",
+   "live": true
+  },
+  {
+   "id": "l6",
+   "name": "Marina Bay 2-beds",
+   "kind": "To rent",
+   "tone": "info",
+   "property": "Marina Bay",
+   "price": "$ 2,400/mo",
+   "impressions": 34100,
+   "views": 2180,
+   "enquiries": 28,
+   "ctr": 6.4,
+   "placement": "Search boost",
+   "live": false
+  }
+ ],
+ "growth-marketplace-enquiries": [
+  {
+   "id": "e1",
+   "from": "Grace Muthoni",
+   "where": "🇰🇪 Nairobi",
+   "listing": "Golden Park A-block",
+   "msg": "“Is the 2 bed still available and what are the payment terms?”",
+   "received": "12 min ago",
+   "response": 0,
+   "owner": "Mary Achieng",
+   "status": "Awaiting reply",
+   "tone": "warn"
+  },
+  {
+   "id": "e2",
+   "from": "Priya Sharma",
+   "where": "🇮🇳 Mumbai",
+   "listing": "Golden Park SL-3",
+   "msg": "“Can we check in late on the 6th?”",
+   "received": "1h ago",
+   "response": 8,
+   "owner": "Front desk",
+   "status": "Converted",
+   "tone": "ok"
+  },
+  {
+   "id": "e3",
+   "from": "Tunde Bakare",
+   "where": "🇳🇬 Lagos",
+   "listing": "Karen Villas V3",
+   "msg": "“Can you do a video walkthrough this week?”",
+   "received": "3h ago",
+   "response": 14,
+   "owner": "Sarah Lemayian",
+   "status": "In pipeline",
+   "tone": "info"
+  },
+  {
+   "id": "e4",
+   "from": "Oliver Grant",
+   "where": "🇬🇧 London",
+   "listing": "Docklands studios",
+   "msg": "“Available from 1 October? I can provide references.”",
+   "received": "8h ago",
+   "response": 11,
+   "owner": "Helen Carter",
+   "status": "In pipeline",
+   "tone": "info"
+  },
+  {
+   "id": "e5",
+   "from": "Hassan Al Mansoori",
+   "where": "🇦🇪 Dubai",
+   "listing": "Marina Bay 2-bed",
+   "msg": "“Is the price negotiable for a 24-month lease?”",
+   "received": "2 days ago",
+   "response": 840,
+   "owner": "Unassigned",
+   "status": "At risk",
+   "tone": "danger"
+  }
+ ],
+ "growth-syndication-partners": [
+  {
+   "id": "p1",
+   "partner": "BuyRentKenya",
+   "kind": "Portal",
+   "pushed": 186,
+   "impressions": 142000,
+   "enquiries": 148,
+   "deals": 16,
+   "cost": "$ 14,400",
+   "roi": 2.8,
+   "sync": "Live",
+   "ok": true
+  },
+  {
+   "id": "p2",
+   "partner": "Property24",
+   "kind": "Portal",
+   "pushed": 186,
+   "impressions": 118000,
+   "enquiries": 100,
+   "deals": 10,
+   "cost": "$ 12,800",
+   "roi": 1.9,
+   "sync": "Live",
+   "ok": true
+  },
+  {
+   "id": "p3",
+   "partner": "Rightmove",
+   "kind": "Portal (UK)",
+   "pushed": 42,
+   "impressions": 86000,
+   "enquiries": 142,
+   "deals": 14,
+   "cost": "$ 9,000",
+   "roi": 6.4,
+   "sync": "Live",
+   "ok": true
+  },
+  {
+   "id": "p4",
+   "partner": "Booking.com",
+   "kind": "OTA",
+   "pushed": 48,
+   "impressions": 204000,
+   "enquiries": 0,
+   "deals": 152,
+   "cost": "15% comm.",
+   "roi": 4.2,
+   "sync": "2 min ago",
+   "ok": true
+  },
+  {
+   "id": "p5",
+   "partner": "Bayut",
+   "kind": "Portal (UAE)",
+   "pushed": 24,
+   "impressions": 34000,
+   "enquiries": 28,
+   "deals": 2,
+   "cost": "$ 6,200",
+   "roi": 0.8,
+   "sync": "Live",
+   "ok": false
+  },
+  {
+   "id": "p6",
+   "partner": "Agoda",
+   "kind": "OTA",
+   "pushed": 0,
+   "impressions": 0,
+   "enquiries": 0,
+   "deals": 0,
+   "cost": "17% comm.",
+   "roi": 0,
+   "sync": "4 days ago",
+   "ok": false
+  }
+ ],
+ "operations-incident-log": [
+  {
+   "id": "SEC-1184",
+   "when": "4 Sep 23:14",
+   "property": "Westgate Residences",
+   "category": "Attempted entry",
+   "desc": "Perimeter gate forced at the service entrance. No entry gained, damage to the latch mechanism.",
+   "by": "Night guard · Post 2",
+   "response": 3,
+   "severity": "Medium",
+   "tone": "warn",
+   "status": "Under investigation"
+  },
+  {
+   "id": "SEC-1183",
+   "when": "2 Sep 14:40",
+   "property": "Kilimani Suites",
+   "category": "Lost property",
+   "desc": "Guest reported a missing laptop from room 204. CCTV review shows no unauthorised entry.",
+   "by": "Front desk",
+   "response": 12,
+   "severity": "Low",
+   "tone": "neutral",
+   "status": "Closed"
+  },
+  {
+   "id": "SEC-1181",
+   "when": "28 Aug 06:20",
+   "property": "Golden Park Homes",
+   "category": "Vehicle damage",
+   "desc": "Contractor vehicle reversed into a resident car in the visitor bay. Insurance details exchanged.",
+   "by": "Day guard · Post 1",
+   "response": 4,
+   "severity": "Low",
+   "tone": "neutral",
+   "status": "Closed"
+  },
+  {
+   "id": "SEC-1174",
+   "when": "11 Aug 02:38",
+   "property": "Nairobi Heights",
+   "category": "Fire alarm",
+   "desc": "Alarm activated on level 4. Cause: burnt cooking. Building evacuated and cleared in 14 minutes.",
+   "by": "Night guard · Post 1",
+   "response": 2,
+   "severity": "High",
+   "tone": "danger",
+   "status": "Closed"
+  }
+ ],
+ "operations-shift-roster-today": [
+  {
+   "id": "g1",
+   "name": "Joseph Mutiso",
+   "property": "Golden Park Homes",
+   "post": "Main gate",
+   "shift": "06:00–18:00",
+   "in": "05:52",
+   "patrols": "6 of 8",
+   "provider": "In-house",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "g2",
+   "name": "Peter Ndungu",
+   "property": "Golden Park Homes",
+   "post": "Service gate",
+   "shift": "06:00–18:00",
+   "in": "05:58",
+   "patrols": "6 of 8",
+   "provider": "In-house",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "g3",
+   "name": "Samuel Kiptoo",
+   "property": "Nairobi Heights",
+   "post": "Main gate",
+   "shift": "06:00–18:00",
+   "in": "06:04",
+   "patrols": "5 of 8",
+   "provider": "SecureGuard",
+   "status": "On duty",
+   "tone": "ok"
+  },
+  {
+   "id": "g4",
+   "name": "Anthony Mwaura",
+   "property": "Westgate Residences",
+   "post": "Main gate",
+   "shift": "06:00–18:00",
+   "in": "—",
+   "patrols": "0 of 8",
+   "provider": "SecureGuard",
+   "status": "No show",
+   "tone": "danger"
+  },
+  {
+   "id": "g5",
+   "name": "Elizabeth Auma",
+   "property": "Kilimani Suites",
+   "post": "Reception",
+   "shift": "07:00–19:00",
+   "in": "06:55",
+   "patrols": "n/a",
+   "provider": "In-house",
+   "status": "On duty",
+   "tone": "ok"
+  }
+ ],
+ "operations-access-events-flagged": [
+  {
+   "id": "e1",
+   "time": "04:12",
+   "property": "Westgate",
+   "door": "Service door B",
+   "cred": "CARD-8841",
+   "holder": "Unknown / former tenant",
+   "result": "Denied",
+   "tone": "danger",
+   "note": "4 attempts in 90 seconds"
+  },
+  {
+   "id": "e2",
+   "time": "23:14",
+   "property": "Westgate",
+   "door": "Service gate",
+   "cred": "—",
+   "holder": "—",
+   "result": "Forced",
+   "tone": "danger",
+   "note": "Linked to incident SEC-1184"
+  },
+  {
+   "id": "e3",
+   "time": "19:48",
+   "property": "Golden Park",
+   "door": "Roof access",
+   "cred": "APP-2210",
+   "holder": "Peter Njoroge",
+   "result": "Granted",
+   "tone": "ok",
+   "note": "Out of hours, authorised"
+  },
+  {
+   "id": "e4",
+   "time": "14:02",
+   "property": "Nairobi Heights",
+   "door": "Plant room",
+   "cred": "CARD-4417",
+   "holder": "Elektra technician",
+   "result": "Granted",
+   "tone": "ok",
+   "note": "Contractor, escorted"
+  }
+ ],
+ "operations-technicians-and-contractors": [
+  {
+   "id": "tc1",
+   "name": "Joseph Kimani",
+   "trade": "General maintenance",
+   "kind": "In-house",
+   "open": 4,
+   "closed": 38,
+   "avg": 1.2,
+   "ftf": 92,
+   "rating": 4.8
+  },
+  {
+   "id": "tc2",
+   "name": "Ann Wangui",
+   "trade": "Plumbing",
+   "kind": "In-house",
+   "open": 3,
+   "closed": 31,
+   "avg": 1.4,
+   "ftf": 88,
+   "rating": 4.7
+  },
+  {
+   "id": "tc3",
+   "name": "CoolAir Services",
+   "trade": "HVAC",
+   "kind": "Contractor",
+   "open": 5,
+   "closed": 12,
+   "avg": 5.8,
+   "ftf": 64,
+   "rating": 3.6
+  },
+  {
+   "id": "tc4",
+   "name": "Otis Kenya",
+   "trade": "Lifts",
+   "kind": "Contractor",
+   "open": 2,
+   "closed": 6,
+   "avg": 2.1,
+   "ftf": 96,
+   "rating": 4.9
+  },
+  {
+   "id": "tc5",
+   "name": "AquaFix Ltd",
+   "trade": "Water systems",
+   "kind": "Contractor",
+   "open": 4,
+   "closed": 18,
+   "avg": 2.6,
+   "ftf": 81,
+   "rating": 4.4
+  },
+  {
+   "id": "tc6",
+   "name": "PowerGen Ltd",
+   "trade": "Generators",
+   "kind": "Contractor",
+   "open": 1,
+   "closed": 4,
+   "avg": 0.8,
+   "ftf": 100,
+   "rating": 4.9
+  },
+  {
+   "id": "tc7",
+   "name": "Elektra Ltd",
+   "trade": "Electrical",
+   "kind": "Contractor",
+   "open": 2,
+   "closed": 22,
+   "avg": 1.9,
+   "ftf": 90,
+   "rating": 4.6
+  }
+ ],
+ "operations-cost-by-property": [
+  {
+   "id": "p1",
+   "property": "Westgate Residences",
+   "units": 210,
+   "mtd": 12400,
+   "ytd": 96800,
+   "perUnit": 461,
+   "open": 7,
+   "sla": 81,
+   "trend": 14
+  },
+  {
+   "id": "p2",
+   "property": "Golden Park Homes",
+   "units": 250,
+   "mtd": 9800,
+   "ytd": 84200,
+   "perUnit": 337,
+   "open": 5,
+   "sla": 94,
+   "trend": -6
+  },
+  {
+   "id": "p3",
+   "property": "Nairobi Heights",
+   "units": 180,
+   "mtd": 8600,
+   "ytd": 71400,
+   "perUnit": 397,
+   "open": 6,
+   "sla": 92,
+   "trend": 0
+  },
+  {
+   "id": "p4",
+   "property": "Kilimani Suites",
+   "units": 96,
+   "mtd": 6200,
+   "ytd": 48900,
+   "perUnit": 509,
+   "open": 3,
+   "sla": 76,
+   "trend": 22
+  },
+  {
+   "id": "p5",
+   "property": "Marina Bay Apartments",
+   "units": 120,
+   "mtd": 3900,
+   "ytd": 42100,
+   "perUnit": 351,
+   "open": 1,
+   "sla": 96,
+   "trend": -4
+  },
+  {
+   "id": "p6",
+   "property": "Docklands Court",
+   "units": 64,
+   "mtd": 1900,
+   "ytd": 22600,
+   "perUnit": 353,
+   "open": 1,
+   "sla": 98,
+   "trend": 0
+  }
+ ],
+ "operations-asset-register": [
+  {
+   "id": "a1",
+   "asset": "Standby generator 250kVA",
+   "property": "Golden Park",
+   "cat": "Power",
+   "model": "Cummins C250 D5",
+   "installed": "Jun 2024",
+   "life": 15,
+   "age": 2.2,
+   "replace": 68000,
+   "condition": "Faulty",
+   "tone": "danger",
+   "warranty": "Active to Jun 2027"
+  },
+  {
+   "id": "a2",
+   "asset": "Passenger lift #1",
+   "property": "Nairobi Heights",
+   "cat": "Vertical transport",
+   "model": "Otis Gen2 630kg",
+   "installed": "Mar 2021",
+   "life": 25,
+   "age": 5.5,
+   "replace": 82000,
+   "condition": "Attention",
+   "tone": "warn",
+   "warranty": "Expired"
+  },
+  {
+   "id": "a3",
+   "asset": "Booster pump set",
+   "property": "Westgate",
+   "cat": "Water",
+   "model": "Grundfos Hydro MPC",
+   "installed": "Aug 2020",
+   "life": 12,
+   "age": 6.1,
+   "replace": 24000,
+   "condition": "Attention",
+   "tone": "warn",
+   "warranty": "Expired"
+  },
+  {
+   "id": "a4",
+   "asset": "Chiller unit A",
+   "property": "Kilimani Suites",
+   "cat": "HVAC",
+   "model": "Carrier 30XA-352",
+   "installed": "Nov 2023",
+   "life": 18,
+   "age": 2.8,
+   "replace": 96000,
+   "condition": "Good",
+   "tone": "ok",
+   "warranty": "Active to Nov 2028"
+  },
+  {
+   "id": "a5",
+   "asset": "Fire alarm panel",
+   "property": "Golden Park",
+   "cat": "Fire safety",
+   "model": "Honeywell Notifier",
+   "installed": "Jun 2024",
+   "life": 15,
+   "age": 2.2,
+   "replace": 18000,
+   "condition": "Good",
+   "tone": "ok",
+   "warranty": "Active to Jun 2029"
+  },
+  {
+   "id": "a6",
+   "asset": "Solar array 120kWp",
+   "property": "Golden Park",
+   "cat": "Power",
+   "model": "Jinko Tiger Neo",
+   "installed": "Apr 2025",
+   "life": 25,
+   "age": 1.4,
+   "replace": 142000,
+   "condition": "Good",
+   "tone": "ok",
+   "warranty": "Active to Apr 2035"
+  }
+ ],
+ "operations-planned-maintenance-schedule": [
+  {
+   "id": "pm1",
+   "asset": "Standby generator",
+   "property": "Golden Park",
+   "task": "Load test + service",
+   "freq": "Monthly",
+   "last": "4 Sep",
+   "next": "4 Oct",
+   "days": -1,
+   "who": "PowerGen Ltd",
+   "status": "Failed — reattend",
+   "tone": "danger"
+  },
+  {
+   "id": "pm2",
+   "asset": "Passenger lifts ×2",
+   "property": "Nairobi Heights",
+   "task": "Statutory inspection",
+   "freq": "Annual",
+   "last": "12 Oct 25",
+   "next": "12 Oct 26",
+   "days": 37,
+   "who": "Otis Kenya",
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "pm3",
+   "asset": "Fire alarm system",
+   "property": "All properties",
+   "task": "Weekly call point test",
+   "freq": "Weekly",
+   "last": "2 Sep",
+   "next": "9 Sep",
+   "days": 4,
+   "who": "In-house",
+   "status": "On schedule",
+   "tone": "ok"
+  },
+  {
+   "id": "pm4",
+   "asset": "Chiller units ×4",
+   "property": "Kilimani Suites",
+   "task": "Filter + coil clean",
+   "freq": "Quarterly",
+   "last": "1 Jul",
+   "next": "1 Oct",
+   "days": 26,
+   "who": "CoolAir Services",
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "pm5",
+   "asset": "Booster pump set",
+   "property": "Westgate",
+   "task": "Seal + pressure check",
+   "freq": "Quarterly",
+   "last": "20 Jun",
+   "next": "20 Sep",
+   "days": 15,
+   "who": "AquaFix Ltd",
+   "status": "Scheduled",
+   "tone": "info"
+  },
+  {
+   "id": "pm6",
+   "asset": "Water tanks",
+   "property": "All properties",
+   "task": "Clean and chlorinate",
+   "freq": "Biannual",
+   "last": "14 Apr",
+   "next": "14 Oct",
+   "days": 39,
+   "who": "AquaFix Ltd",
+   "status": "Scheduled",
+   "tone": "info"
+  }
+ ],
+ "operations-open-purchase-orders": [
+  {
+   "id": "PO-3391",
+   "supplier": "Bamburi Cement",
+   "desc": "Cement 42.5N — 1,200 bags",
+   "project": "Golden Park P2",
+   "value": 10080,
+   "received": 0,
+   "raised": "4 Sep",
+   "expected": "7 Sep",
+   "approved": true,
+   "status": "Awaiting delivery"
+  },
+  {
+   "id": "PO-3392",
+   "supplier": "Devki Steel",
+   "desc": "Rebar 12mm — 18 t",
+   "project": "Golden Park P2",
+   "value": 16920,
+   "received": 0,
+   "raised": "4 Sep",
+   "expected": "8 Sep",
+   "approved": true,
+   "status": "Awaiting delivery"
+  },
+  {
+   "id": "PO-3390",
+   "supplier": "Homeplus Kenya",
+   "desc": "Sanitary ware — 60 sets",
+   "project": "Kilimani",
+   "value": 11040,
+   "received": 0,
+   "raised": "2 Sep",
+   "expected": "11 Sep",
+   "approved": true,
+   "status": "Confirmed"
+  },
+  {
+   "id": "PO-3388",
+   "supplier": "Tile World Ltd",
+   "desc": "Ceramic tiles — 2,400 m²",
+   "project": "Kilimani",
+   "value": 34080,
+   "received": 0,
+   "raised": "1 Sep",
+   "expected": "9 Sep",
+   "approved": true,
+   "status": "In transit"
+  },
+  {
+   "id": "PO-3387",
+   "supplier": "BuildCo Ltd",
+   "desc": "Structural works valuation 14",
+   "project": "Golden Park P2",
+   "value": 142000,
+   "received": 100,
+   "raised": "1 Sep",
+   "expected": "—",
+   "approved": false,
+   "status": "Awaiting approval"
+  },
+  {
+   "id": "PO-3394",
+   "supplier": "Elektra Supplies",
+   "desc": "PVC conduit — 4,000 m",
+   "project": "Golden Park P2",
+   "value": 3760,
+   "received": 0,
+   "raised": "4 Sep",
+   "expected": "10 Sep",
+   "approved": false,
+   "status": "Awaiting approval"
+  }
+ ],
+ "operations-requests-for-quotation": [
+  {
+   "id": "RFQ-0412",
+   "scope": "Fire extinguisher servicing, 8 properties",
+   "invited": 4,
+   "quotes": 3,
+   "lowest": 3880,
+   "rec": 4020,
+   "closes": "8 Sep",
+   "status": "Open",
+   "tone": "info"
+  },
+  {
+   "id": "RFQ-0411",
+   "scope": "Internal finishes package — Kilimani",
+   "invited": 5,
+   "quotes": 5,
+   "lowest": 892000,
+   "rec": 940000,
+   "closes": "Closed",
+   "status": "Awarded",
+   "tone": "ok"
+  },
+  {
+   "id": "RFQ-0410",
+   "scope": "Sanitary ware — 60 sets",
+   "invited": 3,
+   "quotes": 3,
+   "lowest": 10440,
+   "rec": 11040,
+   "closes": "Closed",
+   "status": "Awarded",
+   "tone": "ok"
+  },
+  {
+   "id": "RFQ-0409",
+   "scope": "HVAC maintenance contract 2027",
+   "invited": 4,
+   "quotes": 2,
+   "lowest": 28800,
+   "rec": 0,
+   "closes": "12 Sep",
+   "status": "Open",
+   "tone": "info"
+  }
+ ],
+ "operations-rfq-0412-quote-comparison": [
+  {
+   "id": "q1",
+   "supplier": "SafeFire Kenya",
+   "price": 4020,
+   "lead": 5,
+   "warranty": "12 months",
+   "perf": 98,
+   "score": 92,
+   "rec": "Recommended",
+   "tone": "ok"
+  },
+  {
+   "id": "q2",
+   "supplier": "FireGuard Ltd",
+   "price": 3880,
+   "lead": 14,
+   "warranty": "6 months",
+   "perf": 84,
+   "score": 78,
+   "rec": "Lowest price",
+   "tone": "info"
+  },
+  {
+   "id": "q3",
+   "supplier": "Extinct Systems",
+   "price": 4410,
+   "lead": 7,
+   "warranty": "12 months",
+   "perf": 0,
+   "score": 64,
+   "rec": "New supplier",
+   "tone": "neutral"
+  }
+ ],
+ "operations-procurement-budgets": [
+  {
+   "id": "b1",
+   "line": "Construction materials",
+   "owner": "Peter Njoroge",
+   "budget": 2400000,
+   "committed": 2140000,
+   "spent": 1860000,
+   "used": 89,
+   "tone": "ok",
+   "status": "On track"
+  },
+  {
+   "id": "b2",
+   "line": "Facilities & maintenance",
+   "owner": "Amina Yusuf",
+   "budget": 552000,
+   "committed": 486000,
+   "spent": 442000,
+   "used": 88,
+   "tone": "warn",
+   "status": "Watch"
+  },
+  {
+   "id": "b3",
+   "line": "FF&E",
+   "owner": "Amina Yusuf",
+   "budget": 180000,
+   "committed": 121000,
+   "spent": 114000,
+   "used": 67,
+   "tone": "ok",
+   "status": "On track"
+  },
+  {
+   "id": "b4",
+   "line": "Professional services",
+   "owner": "Michael Sitienei",
+   "budget": 420000,
+   "committed": 298000,
+   "spent": 286000,
+   "used": 71,
+   "tone": "ok",
+   "status": "On track"
+  },
+  {
+   "id": "b5",
+   "line": "Marketing",
+   "owner": "Sarah Lemayian",
+   "budget": 240000,
+   "committed": 252000,
+   "spent": 231000,
+   "used": 105,
+   "tone": "danger",
+   "status": "Over budget"
+  },
+  {
+   "id": "b6",
+   "line": "IT & systems",
+   "owner": "Michael Sitienei",
+   "budget": 96000,
+   "committed": 61000,
+   "spent": 58000,
+   "used": 64,
+   "tone": "ok",
+   "status": "On track"
+  }
+ ],
+ "portfolio-profitability-by-asset": [
+  {
+   "id": "gph",
+   "name": "Golden Park Homes",
+   "gross": 1480000,
+   "opex": 588000,
+   "noi": 892000,
+   "margin": 60.3,
+   "debt": 402000,
+   "net": 490000,
+   "growth": 8.2
+  },
+  {
+   "id": "nh",
+   "name": "Nairobi Heights",
+   "gross": 1190000,
+   "opex": 486000,
+   "noi": 704000,
+   "margin": 59.2,
+   "debt": 348000,
+   "net": 356000,
+   "growth": 6.9
+  },
+  {
+   "id": "dc",
+   "name": "Docklands Court",
+   "gross": 1860000,
+   "opex": 670000,
+   "noi": 1190000,
+   "margin": 64,
+   "debt": 742000,
+   "net": 448000,
+   "growth": 5.1
+  },
+  {
+   "id": "wr",
+   "name": "Westgate Residences",
+   "gross": 1020000,
+   "opex": 472000,
+   "noi": 548000,
+   "margin": 53.7,
+   "debt": 386000,
+   "net": 162000,
+   "growth": 3.4
+  },
+  {
+   "id": "ks",
+   "name": "Kilimani Suites",
+   "gross": 684000,
+   "opex": 366000,
+   "noi": 318000,
+   "margin": 46.5,
+   "debt": 244000,
+   "net": 74000,
+   "growth": 2.1
+  },
+  {
+   "id": "mb",
+   "name": "Marina Bay Apartments",
+   "gross": 512000,
+   "opex": 554000,
+   "noi": -42000,
+   "margin": -8.2,
+   "debt": 318000,
+   "net": -360000,
+   "growth": -2.6
+  }
+ ],
+ "portfolio-facilities": [
+  {
+   "id": "f1",
+   "lender": "KCB Bank",
+   "secured": "Golden Park Homes",
+   "type": "Development",
+   "drawn": 7.2,
+   "limit": 9,
+   "rate": 12.4,
+   "ltv": 53,
+   "maturity": "Mar 2027",
+   "ok": true
+  },
+  {
+   "id": "f2",
+   "lender": "Equity Bank",
+   "secured": "Nairobi Heights",
+   "type": "Term loan",
+   "drawn": 5.8,
+   "limit": 5.8,
+   "rate": 11.9,
+   "ltv": 52,
+   "maturity": "Aug 2029",
+   "ok": true
+  },
+  {
+   "id": "f3",
+   "lender": "Barclays UK",
+   "secured": "Docklands Court",
+   "type": "Buy-to-let",
+   "drawn": 12.4,
+   "limit": 12.4,
+   "rate": 5.4,
+   "ltv": 58,
+   "maturity": "Jun 2030",
+   "ok": true
+  },
+  {
+   "id": "f4",
+   "lender": "Barclays UK",
+   "secured": "Canary Wharf Lofts",
+   "type": "Buy-to-let",
+   "drawn": 7.9,
+   "limit": 7.9,
+   "rate": 5.1,
+   "ltv": 53,
+   "maturity": "Jun 2030",
+   "ok": true
+  },
+  {
+   "id": "f5",
+   "lender": "Emirates NBD",
+   "secured": "Marina Bay Apartments",
+   "type": "Term loan",
+   "drawn": 5.1,
+   "limit": 5.1,
+   "rate": 6.8,
+   "ltv": 62,
+   "maturity": "Nov 2027",
+   "ok": false
+  },
+  {
+   "id": "f6",
+   "lender": "Šiaulių Bankas",
+   "secured": "Vilnius Business Park",
+   "type": "Commercial",
+   "drawn": 2.6,
+   "limit": 3.2,
+   "rate": 4.6,
+   "ltv": 46,
+   "maturity": "Feb 2031",
+   "ok": true
+  }
+ ],
+ "portfolio-performance-by-country": [
+  {
+   "id": "ke",
+   "country": "🇰🇪 Kenya",
+   "assets": 11,
+   "units": 1148,
+   "value": 44.9,
+   "occ": 90.2,
+   "gross": 9.8,
+   "net": 6.1,
+   "coll": 86.4,
+   "growth": 6.4
+  },
+  {
+   "id": "uk",
+   "country": "🇬🇧 UK",
+   "assets": 4,
+   "units": 113,
+   "value": 36.2,
+   "occ": 97.1,
+   "gross": 6.4,
+   "net": 5.3,
+   "coll": 99.1,
+   "growth": 4.8
+  },
+  {
+   "id": "ae",
+   "country": "🇦🇪 UAE",
+   "assets": 1,
+   "units": 120,
+   "value": 8.2,
+   "occ": 61,
+   "gross": 6.2,
+   "net": -0.5,
+   "coll": 92,
+   "growth": -2.6
+  },
+  {
+   "id": "lt",
+   "country": "🇱🇹 Lithuania",
+   "assets": 2,
+   "units": 24,
+   "value": 5.6,
+   "occ": 94,
+   "gross": 8.9,
+   "net": 7.2,
+   "coll": 97.4,
+   "growth": 3.9
+  }
+ ],
+ "revenue-score-distribution": [
+  {
+   "icon": "fire",
+   "title": "Hot (81–100)",
+   "sub": "Contact within 1 hour",
+   "right": "21",
+   "rightSub": "62% close"
+  },
+  {
+   "icon": "trend",
+   "title": "Warm (61–80)",
+   "sub": "Contact within 24 hours",
+   "right": "52",
+   "rightSub": "28% close"
+  },
+  {
+   "icon": "clock",
+   "title": "Cool (41–60)",
+   "sub": "Nurture sequence",
+   "right": "86",
+   "rightSub": "9% close"
+  },
+  {
+   "icon": "close",
+   "title": "Cold (0–40)",
+   "sub": "Low-touch automation",
+   "right": "62",
+   "rightSub": "2% close"
+  }
+ ],
+ "revenue-conversion-by-source": [
+  {
+   "id": "s1",
+   "source": "Referral",
+   "leads": 88,
+   "sales": 36,
+   "rate": 41,
+   "cost": 120
+  },
+  {
+   "id": "s2",
+   "source": "PALTAS marketplace",
+   "leads": 412,
+   "sales": 108,
+   "rate": 26,
+   "cost": 310
+  },
+  {
+   "id": "s3",
+   "source": "Walk-in / site office",
+   "leads": 126,
+   "sales": 28,
+   "rate": 22,
+   "cost": 190
+  },
+  {
+   "id": "s4",
+   "source": "Instagram",
+   "leads": 284,
+   "sales": 38,
+   "rate": 13,
+   "cost": 620
+  },
+  {
+   "id": "s5",
+   "source": "Property portals",
+   "leads": 248,
+   "sales": 26,
+   "rate": 10,
+   "cost": 880
+  },
+  {
+   "id": "s6",
+   "source": "Google Ads",
+   "leads": 126,
+   "sales": 8,
+   "rate": 6,
+   "cost": 1240
+  }
+ ],
+ "revenue-recovery-performance": [
+  {
+   "icon": "check2",
+   "title": "Recovered this month",
+   "right": "$ 41,200"
+  },
+  {
+   "icon": "percent",
+   "title": "Recovery rate, 90 days",
+   "right": "88%"
+  },
+  {
+   "icon": "clock",
+   "title": "Avg days to recover",
+   "right": "17"
+  },
+  {
+   "icon": "scale",
+   "title": "Written off, YTD",
+   "right": "$ 6,400"
+  }
+ ],
+ "revenue-payment-plans": [
+  {
+   "icon": "check2",
+   "iconBg": "rgba(34,201,139,.13)",
+   "iconFg": "#2ee0a0",
+   "title": "Active and on track",
+   "sub": "8 plans",
+   "right": "$ 14,200"
+  },
+  {
+   "icon": "alert",
+   "iconBg": "rgba(240,180,41,.14)",
+   "iconFg": "#f5c249",
+   "title": "Proposed, awaiting approval",
+   "sub": "2 plans",
+   "right": "$ 7,900"
+  },
+  {
+   "icon": "close",
+   "iconBg": "rgba(242,73,92,.13)",
+   "iconFg": "#ff7a8a",
+   "title": "Broken",
+   "sub": "1 plan",
+   "right": "$ 2,560"
+  }
+ ],
+ "revenue-short-let-inventory": [
+  {
+   "id": "k204",
+   "name": "Kilimani Suites 204",
+   "property": "Kilimani",
+   "type": "1 bed",
+   "sleeps": 2,
+   "rate": 148,
+   "occ": 86,
+   "revpar": 127,
+   "rating": 4.91,
+   "live": true
+  },
+  {
+   "id": "k301",
+   "name": "Kilimani Suites 301",
+   "property": "Kilimani",
+   "type": "2 bed",
+   "sleeps": 4,
+   "rate": 160,
+   "occ": 81,
+   "revpar": 130,
+   "rating": 4.88,
+   "live": true
+  },
+  {
+   "id": "k108",
+   "name": "Kilimani Suites 108",
+   "property": "Kilimani",
+   "type": "Studio",
+   "sleeps": 2,
+   "rate": 138,
+   "occ": 76,
+   "revpar": 105,
+   "rating": 4.79,
+   "live": true
+  },
+  {
+   "id": "g3",
+   "name": "Golden Park SL-3",
+   "property": "Golden Park",
+   "type": "2 bed",
+   "sleeps": 4,
+   "rate": 170,
+   "occ": 72,
+   "revpar": 122,
+   "rating": 4.84,
+   "live": true
+  },
+  {
+   "id": "g1",
+   "name": "Golden Park SL-1",
+   "property": "Golden Park",
+   "type": "3 bed",
+   "sleeps": 6,
+   "rate": 170,
+   "occ": 64,
+   "revpar": 109,
+   "rating": 4.72,
+   "live": true
+  },
+  {
+   "id": "k402",
+   "name": "Kilimani Suites 402",
+   "property": "Kilimani",
+   "type": "1 bed",
+   "sleeps": 2,
+   "rate": 148,
+   "occ": 41,
+   "revpar": 61,
+   "rating": 4.42,
+   "live": false
+  }
+ ],
+ "system-yesterday": [
+  {
+   "icon": "alert",
+   "iconBg": "rgba(240,180,41,.14)",
+   "iconFg": "#f5c249",
+   "title": "Kilimani programme slipped to 9 days behind",
+   "sub": "Development · rain + materials",
+   "right": "17:40"
+  },
+  {
+   "icon": "wrench",
+   "iconBg": "rgba(240,180,41,.14)",
+   "iconFg": "#f5c249",
+   "title": "SLA breached — WO-4408 AC not cooling",
+   "sub": "Maintenance · CoolAir · 6 days open against a 3-day SLA",
+   "right": "16:02"
+  },
+  {
+   "icon": "cart",
+   "iconBg": "rgba(59,130,246,.14)",
+   "iconFg": "#7cb0ff",
+   "title": "2 purchase requisitions awaiting your approval",
+   "sub": "Procurement · $ 27,000 combined",
+   "right": "14:20"
+  },
+  {
+   "icon": "star",
+   "iconBg": "rgba(34,201,139,.13)",
+   "iconFg": "#2ee0a0",
+   "title": "New 5-star review — Kilimani Suites 204",
+   "sub": "Stays · Anna Berg",
+   "right": "11:10"
+  }
+ ],
+ "system-notification-rules": [
+  {
+   "id": "nr1",
+   "rule": "Certificate expiry",
+   "module": "Compliance",
+   "trigger": "90 / 60 / 30 / 7 days before expiry",
+   "sev": "Critical",
+   "tone": "danger",
+   "to": "Owner + property manager",
+   "ch": "Email, push, in-app",
+   "esc": "7 days → CEO",
+   "fired": 12
+  },
+  {
+   "id": "nr2",
+   "rule": "Payment approval pending",
+   "module": "Approvals",
+   "trigger": "Pending more than 48 hours",
+   "sev": "Critical",
+   "tone": "danger",
+   "to": "Approver",
+   "ch": "Push, WhatsApp",
+   "esc": "72h → CEO",
+   "fired": 6
+  },
+  {
+   "id": "nr3",
+   "rule": "Rent overdue",
+   "module": "Rentals",
+   "trigger": "Day after due date",
+   "sev": "Warning",
+   "tone": "warn",
+   "to": "Tenant + property manager",
+   "ch": "SMS, email, portal",
+   "esc": "30 days → legal",
+   "fired": 42
+  },
+  {
+   "id": "nr4",
+   "rule": "Maintenance SLA at risk",
+   "module": "Maintenance",
+   "trigger": "80% of SLA elapsed",
+   "sev": "Warning",
+   "tone": "warn",
+   "to": "Assignee + manager",
+   "ch": "Push, in-app",
+   "esc": "On breach → manager",
+   "fired": 18
+  },
+  {
+   "id": "nr5",
+   "rule": "Utility anomaly",
+   "module": "Facilities",
+   "trigger": "Consumption >20% off trend",
+   "sev": "Warning",
+   "tone": "warn",
+   "to": "Property manager + finance",
+   "ch": "Email, in-app",
+   "esc": "48h → CEO",
+   "fired": 3
+  },
+  {
+   "id": "nr6",
+   "rule": "Budget threshold",
+   "module": "Finance",
+   "trigger": "Budget line reaches 85% / 100%",
+   "sev": "Warning",
+   "tone": "warn",
+   "to": "Budget owner + finance",
+   "ch": "Email",
+   "esc": "At 100% → CEO",
+   "fired": 4
+  },
+  {
+   "id": "nr7",
+   "rule": "Security incident",
+   "module": "Security",
+   "trigger": "Any incident logged",
+   "sev": "Critical",
+   "tone": "danger",
+   "to": "Security manager + CEO if high",
+   "ch": "Push, SMS",
+   "esc": "Immediate",
+   "fired": 2
+  },
+  {
+   "id": "nr8",
+   "rule": "High-value lead",
+   "module": "CRM",
+   "trigger": "Score ≥ 75 or budget ≥ $ 150K",
+   "sev": "Info",
+   "tone": "info",
+   "to": "Assigned agent",
+   "ch": "WhatsApp, push",
+   "esc": "2h → sales manager",
+   "fired": 21
+  },
+  {
+   "id": "nr9",
+   "rule": "Daily digest",
+   "module": "Group",
+   "trigger": "07:00 daily",
+   "sev": "Info",
+   "tone": "info",
+   "to": "CEO + department heads",
+   "ch": "Email",
+   "esc": "—",
+   "fired": 31
+  }
+ ],
+ "system-recent-runs": [
+  {
+   "id": "r1",
+   "time": "09:14",
+   "wf": "Payment received",
+   "trigger": "Bank transfer settled",
+   "record": "Golden Park A12 · J. Kariuki",
+   "ran": "4 of 4",
+   "dur": "1.2s",
+   "result": "Success",
+   "tone": "ok",
+   "detail": "Receipt issued, escrow released, ledger posted, buyer notified"
+  },
+  {
+   "id": "r2",
+   "time": "08:52",
+   "wf": "Booking confirmed",
+   "trigger": "Booking.com push",
+   "record": "Kilimani 204 · 12–19 Sep",
+   "ran": "5 of 5",
+   "dur": "2.4s",
+   "result": "Success",
+   "tone": "ok",
+   "detail": "Inventory closed on 4 channels, clean scheduled, revenue deferred"
+  },
+  {
+   "id": "r3",
+   "time": "08:31",
+   "wf": "E-signature completed",
+   "trigger": "DocuSign webhook",
+   "record": "Lease DC-0305",
+   "ran": "3 of 3",
+   "dur": "0.9s",
+   "result": "Success",
+   "tone": "ok",
+   "detail": "Lease filed, tenancy activated, portal access granted"
+  },
+  {
+   "id": "r4",
+   "time": "07:42",
+   "wf": "Utility anomaly detection",
+   "trigger": "Meter reading",
+   "record": "NH-BULK-W",
+   "ran": "3 of 3",
+   "dur": "1.8s",
+   "result": "Success",
+   "tone": "ok",
+   "detail": "Alert raised, WO-4401 created, finance notified"
+  },
+  {
+   "id": "r5",
+   "time": "06:00",
+   "wf": "Rent arrears escalation",
+   "trigger": "Daily 06:00",
+   "record": "42 accounts",
+   "ran": "184 of 186",
+   "dur": "42s",
+   "result": "Partial",
+   "tone": "warn",
+   "detail": "2 SMS failed — invalid numbers on file"
+  },
+  {
+   "id": "r6",
+   "time": "05:30",
+   "wf": "Direct debit run",
+   "trigger": "Scheduled monthly",
+   "record": "412 tenancies",
+   "ran": "378 of 412",
+   "dur": "3m 14s",
+   "result": "Partial",
+   "tone": "warn",
+   "detail": "34 failed — 27 insufficient funds, 5 expired cards, 2 cancelled mandates"
+  },
+  {
+   "id": "r7",
+   "time": "04:00",
+   "wf": "Channel sync",
+   "trigger": "Every 15 min",
+   "record": "48 stay listings",
+   "ran": "0 of 1",
+   "dur": "30s",
+   "result": "Failed",
+   "tone": "danger",
+   "detail": "Agoda API returned 401 — credentials expired"
+  },
+  {
+   "id": "r8",
+   "time": "02:00",
+   "wf": "Nightly compliance sweep",
+   "trigger": "Daily 02:00",
+   "record": "1,486 documents",
+   "ran": "14 of 14",
+   "dur": "8.2s",
+   "result": "Success",
+   "tone": "ok",
+   "detail": "1 expired, 13 expiry warnings raised"
+  }
+ ],
+ "system-recent-decisions": [
+  {
+   "id": "ah1",
+   "when": "Today 09:02",
+   "item": "Escrow release — Golden Park A12",
+   "cat": "Finance",
+   "value": 34000,
+   "byWho": "System",
+   "dec": "Ahmed Akboole",
+   "took": "4 min",
+   "outcome": "Approved",
+   "tone": "ok",
+   "note": "Final payment confirmed"
+  },
+  {
+   "id": "ah2",
+   "when": "Yesterday",
+   "item": "Change order CO-014 — kitchen upgrade",
+   "cat": "Development",
+   "value": 28800,
+   "byWho": "Peter Njoroge",
+   "dec": "Ahmed Akboole",
+   "took": "1.2 days",
+   "outcome": "Approved",
+   "tone": "ok",
+   "note": "Buyer-funded, no cost to us"
+  },
+  {
+   "id": "ah3",
+   "when": "Yesterday",
+   "item": "Change order CO-018 — lift spec upgrade",
+   "cat": "Development",
+   "value": 62000,
+   "byWho": "Peter Njoroge",
+   "dec": "Ahmed Akboole",
+   "took": "1.2 days",
+   "outcome": "Declined",
+   "tone": "danger",
+   "note": "Not justified at this occupancy"
+  },
+  {
+   "id": "ah4",
+   "when": "3 Sep",
+   "item": "Vendor onboarding — Extinct Systems",
+   "cat": "Vendors",
+   "value": 0,
+   "byWho": "Amina Yusuf",
+   "dec": "David Kimani",
+   "took": "2.1 days",
+   "outcome": "Conditional",
+   "tone": "warn",
+   "note": "Pending workmen’s comp certificate"
+  },
+  {
+   "id": "ah5",
+   "when": "2 Sep",
+   "item": "Marketing overspend — Google Ads",
+   "cat": "Finance",
+   "value": 6800,
+   "byWho": "Sarah Lemayian",
+   "dec": "Ahmed Akboole",
+   "took": "0.4 days",
+   "outcome": "Declined",
+   "tone": "danger",
+   "note": "0.9x return, reallocate to referral"
+  },
+  {
+   "id": "ah6",
+   "when": "1 Sep",
+   "item": "Payment plan — Ibrahim Noor",
+   "cat": "Rentals",
+   "value": 1440,
+   "byWho": "Grace Wanjiru",
+   "dec": "Amina Yusuf",
+   "took": "3 hours",
+   "outcome": "Approved",
+   "tone": "ok",
+   "note": "3 monthly instalments"
+  },
+  {
+   "id": "ah7",
+   "when": "28 Aug",
+   "item": "RFQ award — internal finishes",
+   "cat": "Procurement",
+   "value": 940000,
+   "byWho": "James Otieno",
+   "dec": "Ahmed Akboole",
+   "took": "3.4 days",
+   "outcome": "Approved",
+   "tone": "ok",
+   "note": "Not lowest — better programme fit"
+  }
+ ],
+ "system-approval-matrix": [
+  {
+   "id": "am1",
+   "action": "Purchase order",
+   "threshold": "Up to $ 1,000",
+   "first": "Department head",
+   "second": "—",
+   "auto": "Within budget + framework rate",
+   "esc": "48h"
+  },
+  {
+   "id": "am2",
+   "action": "Purchase order",
+   "threshold": "$ 1,001 – $ 10,000",
+   "first": "Budget owner",
+   "second": "—",
+   "auto": "—",
+   "esc": "48h"
+  },
+  {
+   "id": "am3",
+   "action": "Purchase order",
+   "threshold": "$ 10,001 – $ 50,000",
+   "first": "Budget owner",
+   "second": "Finance",
+   "auto": "—",
+   "esc": "48h"
+  },
+  {
+   "id": "am4",
+   "action": "Purchase order",
+   "threshold": "Above $ 50,000",
+   "first": "Finance",
+   "second": "CEO",
+   "auto": "—",
+   "esc": "72h → board"
+  },
+  {
+   "id": "am5",
+   "action": "Supplier invoice",
+   "threshold": "Any",
+   "first": "Automatic",
+   "second": "—",
+   "auto": "3-way match within 2%",
+   "esc": "48h"
+  },
+  {
+   "id": "am6",
+   "action": "Refund or credit",
+   "threshold": "Above $ 500",
+   "first": "Finance",
+   "second": "—",
+   "auto": "—",
+   "esc": "24h"
+  },
+  {
+   "id": "am7",
+   "action": "Sale discount",
+   "threshold": "Above 3%",
+   "first": "Sales manager",
+   "second": "CEO if above 5%",
+   "auto": "—",
+   "esc": "24h"
+  },
+  {
+   "id": "am8",
+   "action": "Rent increase batch",
+   "threshold": "Any",
+   "first": "Property manager",
+   "second": "CEO if above 20 units",
+   "auto": "—",
+   "esc": "5 days"
+  },
+  {
+   "id": "am9",
+   "action": "Notice to quit",
+   "threshold": "Any",
+   "first": "Property manager",
+   "second": "CEO",
+   "auto": "Never",
+   "esc": "No escalation"
+  },
+  {
+   "id": "am10",
+   "action": "Contract signature",
+   "threshold": "Above $ 25,000",
+   "first": "CEO",
+   "second": "—",
+   "auto": "—",
+   "esc": "72h"
+  },
+  {
+   "id": "am11",
+   "action": "External report distribution",
+   "threshold": "Any",
+   "first": "CEO",
+   "second": "—",
+   "auto": "Internal recipients only",
+   "esc": "48h"
+  }
+ ],
+ "system-roles": [
+  {
+   "id": "ro1",
+   "role": "Group MD / CEO",
+   "people": 1,
+   "entities": "All",
+   "modules": "All",
+   "approve": "Everything",
+   "finance": "Full",
+   "exp": true,
+   "del": true
+  },
+  {
+   "id": "ro2",
+   "role": "Finance lead",
+   "people": 1,
+   "entities": "All",
+   "modules": "Finance, Procurement, Approvals, Analytics",
+   "approve": "Up to $ 50K",
+   "finance": "Full",
+   "exp": true,
+   "del": false
+  },
+  {
+   "id": "ro3",
+   "role": "Property manager",
+   "people": 3,
+   "entities": "Assigned only",
+   "modules": "Properties, Units, Rentals, Maintenance, Facilities, Security",
+   "approve": "Up to $ 5K",
+   "finance": "Property only",
+   "exp": true,
+   "del": false
+  },
+  {
+   "id": "ro4",
+   "role": "Sales manager",
+   "people": 1,
+   "entities": "Assigned only",
+   "modules": "Sales, CRM, Marketing, Marketplace",
+   "approve": "Discounts to 3%",
+   "finance": "Sales only",
+   "exp": true,
+   "del": false
+  },
+  {
+   "id": "ro5",
+   "role": "Site manager",
+   "people": 2,
+   "entities": "Development only",
+   "modules": "Development, Procurement (raise only)",
+   "approve": "None",
+   "finance": "Project only",
+   "exp": false,
+   "del": false
+  },
+  {
+   "id": "ro6",
+   "role": "Agent",
+   "people": 4,
+   "entities": "Assigned only",
+   "modules": "CRM, Sales (own records)",
+   "approve": "None",
+   "finance": "Own commission",
+   "exp": false,
+   "del": false
+  },
+  {
+   "id": "ro7",
+   "role": "Investor (read-only)",
+   "people": 84,
+   "entities": "Their vehicle",
+   "modules": "Investments, reports",
+   "approve": "None",
+   "finance": "Their vehicle",
+   "exp": true,
+   "del": false
+  },
+  {
+   "id": "ro8",
+   "role": "External auditor",
+   "people": 2,
+   "entities": "All",
+   "modules": "Finance, Documents, Legal (read-only)",
+   "approve": "None",
+   "finance": "Full read",
+   "exp": true,
+   "del": false
+  }
+ ],
+ "system-connected-systems": [
+  {
+   "id": "ig1",
+   "name": "M-Pesa (Safaricom)",
+   "cat": "Payments",
+   "does": "Rent collection, deposits, booking payments",
+   "since": "Feb 2024",
+   "sync": "1 min ago",
+   "ok": true
+  },
+  {
+   "id": "ig2",
+   "name": "KCB Bank",
+   "cat": "Banking",
+   "does": "Account feeds, payment files, facility balances",
+   "since": "Mar 2024",
+   "sync": "12 min ago",
+   "ok": true
+  },
+  {
+   "id": "ig3",
+   "name": "Barclays UK",
+   "cat": "Banking",
+   "does": "UK account feeds and standing orders",
+   "since": "Jun 2020",
+   "sync": "1h ago",
+   "ok": true
+  },
+  {
+   "id": "ig4",
+   "name": "WhatsApp Business",
+   "cat": "Messaging",
+   "does": "Two-way tenant, guest and lead messaging",
+   "since": "Jan 2025",
+   "sync": "Live",
+   "ok": true
+  },
+  {
+   "id": "ig5",
+   "name": "DocuSign",
+   "cat": "E-signature",
+   "does": "Leases, sale agreements, vendor contracts",
+   "since": "Mar 2024",
+   "sync": "4 min ago",
+   "ok": true
+  },
+  {
+   "id": "ig6",
+   "name": "Booking.com",
+   "cat": "Distribution",
+   "does": "Rates, availability and reservations",
+   "since": "Jun 2024",
+   "sync": "2 min ago",
+   "ok": true
+  },
+  {
+   "id": "ig7",
+   "name": "Agoda",
+   "cat": "Distribution",
+   "does": "Stay listings and bookings",
+   "since": "Aug 2024",
+   "sync": "4 days ago",
+   "ok": false
+  },
+  {
+   "id": "ig8",
+   "name": "Xero",
+   "cat": "Accounting",
+   "does": "Ledger sync for the two UK entities",
+   "since": "May 2021",
+   "sync": "1h ago",
+   "ok": true
+  },
+  {
+   "id": "ig9",
+   "name": "Google Workspace",
+   "cat": "Identity",
+   "does": "Single sign-on and calendar",
+   "since": "Jan 2024",
+   "sync": "Live",
+   "ok": true
+  }
+ ],
+ "system-incident-response-procedures": [
+  {
+   "id": "ir1",
+   "scenario": "Fire or evacuation",
+   "owner": "Amina Yusuf",
+   "first": "Activate alarm, evacuate to muster point",
+   "esc": "Fire brigade 999, then CEO",
+   "target": "Immediate",
+   "drilled": "12 Jun 2026",
+   "status": "Ready",
+   "tone": "ok"
+  },
+  {
+   "id": "ir2",
+   "scenario": "Building flood or water ingress",
+   "owner": "Amina Yusuf",
+   "first": "Isolate riser, call AquaFix 24h line",
+   "esc": "Insurer within 48h",
+   "target": "4 hours",
+   "drilled": "4 Apr 2026",
+   "status": "Ready",
+   "tone": "ok"
+  },
+  {
+   "id": "ir3",
+   "scenario": "Total power failure",
+   "owner": "Joseph Kimani",
+   "first": "Start standby generator, verify lifts and pumps",
+   "esc": "PowerGen within 4h",
+   "target": "1 hour",
+   "drilled": "—",
+   "status": "Generator faulty",
+   "tone": "danger"
+  },
+  {
+   "id": "ir4",
+   "scenario": "Systems outage",
+   "owner": "Michael Sitienei",
+   "first": "Fail over to standby region",
+   "esc": "Provider, then CEO",
+   "target": "4 hours",
+   "drilled": "14 Aug 2026",
+   "status": "Ready",
+   "tone": "ok"
+  },
+  {
+   "id": "ir5",
+   "scenario": "Cyber incident or data breach",
+   "owner": "Michael Sitienei",
+   "first": "Isolate, revoke credentials, preserve logs",
+   "esc": "Regulator within 72h",
+   "target": "24 hours",
+   "drilled": "2 Feb 2026",
+   "status": "Ready",
+   "tone": "ok"
+  },
+  {
+   "id": "ir6",
+   "scenario": "Loss of key personnel",
+   "owner": "Michael Sitienei",
+   "first": "Activate deputy, transfer approvals",
+   "esc": "Board",
+   "target": "48 hours",
+   "drilled": "—",
+   "status": "Documented",
+   "tone": "warn"
+  },
+  {
+   "id": "ir7",
+   "scenario": "Contractor insolvency",
+   "owner": "Peter Njoroge",
+   "first": "Secure site, call bonds, appoint replacement",
+   "esc": "Legal and insurer",
+   "target": "7 days",
+   "drilled": "—",
+   "status": "Documented",
+   "tone": "warn"
+  }
+ ],
+ "system-active-add-ons": [
+  {
+   "id": "ad1",
+   "name": "Multi-entity consolidation",
+   "does": "Group reporting across 8 legal entities",
+   "inc": "No",
+   "price": 340,
+   "since": "Mar 2024",
+   "active": true
+  },
+  {
+   "id": "ad2",
+   "name": "Channel manager",
+   "does": "OTA distribution for short-let stays",
+   "inc": "No",
+   "price": 280,
+   "since": "Jun 2024",
+   "active": true
+  },
+  {
+   "id": "ad3",
+   "name": "Investor portal",
+   "does": "LP access, statements and distributions",
+   "inc": "No",
+   "price": 220,
+   "since": "Jun 2022",
+   "active": true
+  },
+  {
+   "id": "ad4",
+   "name": "Advanced AI assistant",
+   "does": "Full data access and report generation",
+   "inc": "Partly",
+   "price": 60,
+   "since": "Jan 2026",
+   "active": true
+  },
+  {
+   "id": "ad5",
+   "name": "E-signature (unlimited)",
+   "does": "Beyond the 100 documents included",
+   "inc": "Partly",
+   "price": 0,
+   "since": "Mar 2024",
+   "active": true
+  },
+  {
+   "id": "ad6",
+   "name": "Construction module",
+   "does": "Gantt, site diary, materials, change orders",
+   "inc": "Yes",
+   "price": 0,
+   "since": "Mar 2024",
+   "active": true
+  },
+  {
+   "id": "ad7",
+   "name": "White-label tenant portal",
+   "does": "Your branding on the tenant and guest portal",
+   "inc": "No",
+   "price": 180,
+   "since": "—",
+   "active": false
+  },
+  {
+   "id": "ad8",
+   "name": "API access",
+   "does": "Read and write to PALTAS from your own systems",
+   "inc": "No",
+   "price": 240,
+   "since": "—",
+   "active": false
+  }
+ ],
+ "system-current-bill": [
+  {
+   "icon": "star",
+   "title": "Portfolio plan",
+   "sub": "Up to 2,000 units, 120 seats",
+   "right": "$ 2,940"
+  },
+  {
+   "icon": "bank",
+   "title": "Multi-entity consolidation",
+   "sub": "8 entities",
+   "right": "$ 340"
+  },
+  {
+   "icon": "globe",
+   "title": "Channel manager",
+   "sub": "6 channels",
+   "right": "$ 280"
+  },
+  {
+   "icon": "chart",
+   "title": "Investor portal",
+   "sub": "84 investors",
+   "right": "$ 220"
+  },
+  {
+   "icon": "ai",
+   "title": "Advanced AI assistant",
+   "sub": "2,000 queries/month",
+   "right": "$ 60"
+  }
+ ],
+ "system-invoice-history": [
+  {
+   "id": "iv1",
+   "ref": "PLT-INV-2026",
+   "period": "Mar 2026 – Feb 2027",
+   "plan": "Portfolio",
+   "sub": 35280,
+   "addons": 10800,
+   "disc": -5530,
+   "total": 40550,
+   "paid": "28 Feb 2026"
+  },
+  {
+   "id": "iv2",
+   "ref": "PLT-INV-2025",
+   "period": "Mar 2025 – Feb 2026",
+   "plan": "Portfolio",
+   "sub": 35280,
+   "addons": 9360,
+   "disc": -5357,
+   "total": 39283,
+   "paid": "26 Feb 2025"
+  },
+  {
+   "id": "iv3",
+   "ref": "PLT-INV-2024",
+   "period": "Mar 2024 – Feb 2025",
+   "plan": "Growth → Portfolio",
+   "sub": 24960,
+   "addons": 6720,
+   "disc": -3802,
+   "total": 27878,
+   "paid": "1 Mar 2024"
+  },
+  {
+   "id": "iv4",
+   "ref": "PLT-INV-2023",
+   "period": "Mar 2023 – Feb 2024",
+   "plan": "Growth",
+   "sub": 14880,
+   "addons": 2640,
+   "disc": -2102,
+   "total": 15418,
+   "paid": "27 Feb 2023"
+  }
+ ],
+ "assets-site-diary": [
+  {
+   "id": "sd1",
+   "project": "Golden Park Phase 2",
+   "day": "Day 184",
+   "author": "Peter Njoroge",
+   "weather": "Clear, 26°C",
+   "operatives": 42,
+   "works": "Level 5 column reinforcement 80% fixed; formwork struck on level 4 slab.",
+   "deliveries": "18t rebar, 120 bags cement",
+   "issues": "Tower crane hydraulic warning logged, engineer attending 07:00.",
+   "safety": "No incidents",
+   "loggedAt": "Today · 17:04"
+  },
+  {
+   "id": "sd2",
+   "project": "Golden Park Phase 2",
+   "day": "Day 183",
+   "author": "Peter Njoroge",
+   "weather": "Overcast, 23°C",
+   "operatives": 39,
+   "works": "Level 4 slab pour completed, 214 m³ placed. Curing started.",
+   "deliveries": "214 m³ ready-mix C30",
+   "issues": "Pour ran 90 minutes late — second pump arrived behind schedule.",
+   "safety": "No incidents",
+   "loggedAt": "Yesterday · 18:20"
+  },
+  {
+   "id": "sd3",
+   "project": "Kilimani Development",
+   "day": "Day 96",
+   "author": "Grace Njeri",
+   "weather": "Light rain, 21°C",
+   "operatives": 28,
+   "works": "Basement waterproofing 60% complete; blockwork to ground floor core.",
+   "deliveries": "40 rolls membrane",
+   "issues": "Rain stopped external works for 3 hours.",
+   "safety": "One near-miss reported — toolbox talk held",
+   "loggedAt": "3 Sep · 17:40"
+  }
+ ],
+ "system-plans": [
+  {
+   "id": "starter",
+   "n": "Starter",
+   "p": "$ 390",
+   "units": "Up to 100 units",
+   "seats": "10 staff seats",
+   "mods": "Core modules only",
+   "sup": "Email support",
+   "cur": false
+  },
+  {
+   "id": "growth",
+   "n": "Growth",
+   "p": "$ 1,240",
+   "units": "Up to 500 units",
+   "seats": "40 staff seats",
+   "mods": "All modules except Investments",
+   "sup": "Priority support",
+   "cur": false
+  },
+  {
+   "id": "portfolio",
+   "n": "Portfolio",
+   "p": "$ 2,940",
+   "units": "Up to 2,000 units",
+   "seats": "120 staff seats",
+   "mods": "Every module",
+   "sup": "Dedicated manager",
+   "cur": true
+  }
+ ]
+}

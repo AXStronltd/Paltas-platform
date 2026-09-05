@@ -1,0 +1,30 @@
+{
+  "name": "property-management",
+  "private": true,
+  "version": "2.0.0",
+  "description": "PALTAS Property Management — React client + Node API",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,web -c cyan,magenta \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "npm run dev -w @paltas/server",
+    "dev:web": "npm run dev -w @paltas/web",
+    "build": "npm run build -w @paltas/shared && npm run build -w @paltas/server && npm run build -w @paltas/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:seed": "npm run db:seed -w @paltas/server",
+    "db:reset": "npm run db:reset -w @paltas/server",
+    "setup": "npm install && npm run build -w @paltas/shared && npm run db:reset",
+    "start": "npm run start -w @paltas/server",
+    "db:generate": "npm run db:generate -w @paltas/server",
+    "db:migrate": "npm run db:migrate -w @paltas/server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

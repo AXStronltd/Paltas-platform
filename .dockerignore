@@ -9,3 +9,8 @@ tests
 PROTOTYPE-reference.html
 .env
 .env.*
+
+# A second application living in this repo. It has its own toolchain and is
+# not built or served by this image; copying it in only enlarges the build
+# context and the layer cache.
+property-management

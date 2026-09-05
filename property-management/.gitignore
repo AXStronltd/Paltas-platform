@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+dist/
+build/
+*.tsbuildinfo
+
+# local database and uploaded documents
+apps/server/paltas.db
+apps/server/paltas.db-shm
+apps/server/paltas.db-wal
+apps/server/storage/
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# editors and OS
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# test output
+playwright-report/
+test-results/
+coverage/

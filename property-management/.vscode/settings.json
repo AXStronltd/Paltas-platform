@@ -1,0 +1,29 @@
+{
+  // Use the workspace TypeScript so editor errors match `npm run typecheck`.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": { "source.organizeImports": "explicit" },
+
+  // Tailwind classes appear inside cn() and plain string constants.
+  "tailwindCSS.experimental.classRegex": [
+    ["cn\\(([^)]*)\\)", "'([^']*)'"],
+    ["className=\"([^\"]*)\""]
+  ],
+  "tailwindCSS.includeLanguages": { "typescript": "javascript", "typescriptreact": "javascript" },
+
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/*.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/package-lock.json": true
+  },
+  "files.eol": "\n"
+}
