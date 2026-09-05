@@ -4,7 +4,7 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
   # NEXT_PUBLIC_DATA_SOURCE is gone: there is no mock mode any more. The app
   # reads a real PostgreSQL database through Prisma and its own /api routes.
   # Note this deployment has no DATABASE_URL, so it is a build check rather
