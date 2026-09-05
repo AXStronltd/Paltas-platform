@@ -55,6 +55,19 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
 
+    # Render must NOT deploy on push. The tests are the gate.
+    #
+    # Until this was set, both workflows ran *alongside* the deploy rather than
+    # before it: Render began building the moment a commit landed, so a red tick
+    # arrived after the broken code was already serving paltas.io. That is how CI
+    # once failed silently for ten commits while the site deployed regardless —
+    # the checks were real, they simply could not stop anything.
+    #
+    # Deployment is triggered by .github/workflows/image.yml instead, once the
+    # unit suites, the end-to-end suites and the container test have all passed
+    # on the same commit.
+    autoDeploy: false
+
     # No build or start command: the image carries both. Its CMD applies
     # pending migrations and then serves — see the Dockerfile.
     healthCheckPath: /api/public/listings

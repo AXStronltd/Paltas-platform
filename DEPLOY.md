@@ -43,8 +43,26 @@ deploys than they solved.
 
 The same Dockerfile is built and fully exercised in CI on every push:
 `.github/workflows/image.yml` runs the resulting container against a real
-Postgres and passes all five e2e suites against it. So what Render builds is an
+Postgres and passes every e2e suite against it. So what Render builds is an
 artifact already proven to start, apply migrations on boot, and serve.
+
+### The tests gate the deploy
+
+`autoDeploy: false` in `render.yaml`. Render does not build on push; the
+`deploy` job in `.github/workflows/image.yml` calls a deploy hook once the
+container test has passed **and** the CI workflow has succeeded on the same
+commit. It then polls `/api/version` until paltas.io is genuinely serving that
+commit, because triggering a deploy and completing one are different things.
+
+This was not always so. Both workflows used to run *alongside* the deploy rather
+than before it, so a red tick arrived after the broken code was already live —
+which is how CI once failed silently for ten commits while the site deployed
+regardless. The checks were real; they simply could not stop anything.
+
+One secret makes it work: `RENDER_DEPLOY_HOOK_URL`, from Render → the service →
+Settings → Deploy Hook, added under GitHub → Settings → Secrets and variables →
+Actions. Without it the deploy job fails loudly and says so, rather than going
+green while nothing ships.
 
 ### Both halves must share a region
 

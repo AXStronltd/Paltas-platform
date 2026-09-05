@@ -155,3 +155,91 @@ jobs:
       - name: Container logs on failure
         if: failure()
         run: docker logs paltas 2>&1 | tail -100
+
+  deploy:
+    name: Deploy to Render
+    # Only after the container has been built, booted and put through every
+    # end-to-end suite. `needs` gives us that half of the gate.
+    needs: verify-image
+    # Never from a pull request: a fork could otherwise deploy production by
+    # opening one.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for CI to pass on this same commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          # The other half of the gate. `needs` cannot reach across workflows, so
+          # CI's verdict on THIS commit is read from the API. Typecheck, the unit
+          # suites and the committed-credential scan all live there; deploying on
+          # the container test alone would skip them.
+          echo "Waiting for the CI workflow on ${SHA}..."
+          for i in $(seq 1 60); do
+            body=$(curl -sf -H "Authorization: Bearer ${GH_TOKEN}" \
+              "https://api.github.com/repos/${REPO}/actions/runs?head_sha=${SHA}&per_page=20") || body=""
+            state=$(printf '%s' "$body" | python3 .github/scripts/ci-state.py)
+            case "$state" in
+              success)
+                echo "CI passed."
+                exit 0
+                ;;
+              running|missing|unknown)
+                sleep 20
+                ;;
+              *)
+                echo "::error::CI concluded '${state}' for ${SHA}. Not deploying."
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::CI did not conclude within 20 minutes. Not deploying."
+          exit 1
+
+      - name: Trigger the deploy
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          # Loud, not silent. Render's autoDeploy is off in render.yaml, so a
+          # missing secret means nothing reaches paltas.io at all -- and a green
+          # pipeline that has quietly stopped deploying is worse than a red one
+          # that says why.
+          if [ -z "${HOOK}" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL is not set, so this commit cannot deploy."
+            echo "Render -> paltas-platform -> Settings -> Deploy Hook -> copy the URL, then"
+            echo "GitHub -> Settings -> Secrets and variables -> Actions -> New repository secret."
+            exit 1
+          fi
+          code=$(curl -s -o /tmp/deploy.out -w '%{http_code}' -X POST "${HOOK}")
+          echo "Render answered HTTP ${code}"
+          if [ "${code}" -lt 200 ] || [ "${code}" -ge 300 ]; then
+            cat /tmp/deploy.out
+            exit 1
+          fi
+
+      - name: Confirm the commit is actually serving
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          # Triggering a deploy is not the same as deploying. /api/version reports
+          # RENDER_GIT_COMMIT, so this waits until paltas.io genuinely serves this
+          # commit rather than trusting the hook's 200 and walking away.
+          want=$(echo "${SHA}" | cut -c1-7)
+          echo "Waiting for paltas.io to serve ${want}..."
+          for i in $(seq 1 60); do
+            live=$(curl -sf https://paltas.io/api/version | python3 .github/scripts/live-commit.py || echo "")
+            if [ "${live}" = "${want}" ]; then
+              echo "paltas.io is serving ${want}."
+              exit 0
+            fi
+            echo "  still ${live:-unreachable} (${i}/60)"
+            sleep 20
+          done
+          echo "::error::paltas.io did not reach ${want} within 20 minutes. Check the Render dashboard."
+          exit 1
