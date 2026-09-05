@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * The messages inbox, for whichever side of PALTAS is signed in.
@@ -30,6 +31,7 @@ function timeAgo(iso: string): string {
 }
 
 export function Inbox() {
+  const { t } = useI18n();
   const [threads, setThreads] = useState<ThreadSummary[] | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -42,11 +44,11 @@ export function Inbox() {
   const loadThreads = useCallback(async () => {
     try {
       const response = await fetch("/api/messages");
-      if (response.status === 401) { setThreads([]); setError("Sign in to see your messages."); return; }
+      if (response.status === 401) { setThreads([]); setError(t("msg.signIn")); return; }
       const payload = await response.json().catch(() => null);
       setThreads(payload?.threads ?? []);
     } catch {
-      setError("Could not load your messages.");
+      setError(t("msg.failedLoad"));
       setThreads([]);
     }
   }, []);
@@ -56,13 +58,13 @@ export function Inbox() {
     try {
       const response = await fetch(`/api/messages/${id}`);
       const payload = await response.json().catch(() => null);
-      if (!response.ok) { setError(payload?.error?.message ?? "That conversation could not be opened."); return; }
+      if (!response.ok) { setError(payload?.error?.message ?? t("msg.failedOpen")); return; }
       setHeader({ name: payload.thread.name, initials: payload.thread.initials, official: payload.thread.official });
       setMessages(payload.thread.messages);
       // The unread badge is now wrong — reading it is what cleared it.
       void loadThreads();
     } catch {
-      setError("Could not load that conversation.");
+      setError(t("msg.failedOpen"));
     }
   }, [loadThreads]);
 
@@ -88,31 +90,31 @@ export function Inbox() {
         body: JSON.stringify({ body }),
       });
       const payload = await response.json().catch(() => null);
-      if (!response.ok) { setError(payload?.error?.message ?? "That message could not be sent."); return; }
+      if (!response.ok) { setError(payload?.error?.message ?? t("msg.failedSend")); return; }
       setMessages((current) => [...current, payload.message]);
       setDraft("");
       void loadThreads();
     } catch {
-      setError("That message could not be sent. Check your connection.");
+      setError(t("msg.failedSend"));
     } finally {
       setSending(false);
     }
   }
 
-  if (threads === null) return <div className="msg-empty">Loading your messages…</div>;
+  if (threads === null) return <div className="msg-empty">{t("msg.loading")}</div>;
 
   return (
     <div className="msg-layout">
       <aside className={`msg-list ${openId ? "has-open" : ""}`}>
-        <h2 className="msg-list-title">Messages</h2>
-        {threads.length === 0 && <p className="msg-empty">{error || "No conversations yet."}</p>}
+        <h2 className="msg-list-title">{t("msg.title")}</h2>
+        {threads.length === 0 && <p className="msg-empty">{error || t("msg.empty")}</p>}
         {threads.map((thread) => (
           <button type="button" key={thread.id}
             className={`msg-item ${openId === thread.id ? "on" : ""}`}
             onClick={() => void openThread(thread.id)}>
             <span className={`msg-item-av ${thread.official ? "official" : ""}`}>{thread.initials}</span>
             <span className="msg-item-body">
-              <b>{thread.name}{thread.official && <span className="msg-verified" title="Verified">✓</span>}</b>
+              <b>{thread.name}{thread.official && <span className="msg-verified" title={t("trust.verified.short")}>✓</span>}</b>
               <span>{thread.listing?.title ?? thread.preview ?? ""}</span>
             </span>
             {thread.unread > 0 && <span className="msg-unread">{thread.unread}</span>}
@@ -121,11 +123,11 @@ export function Inbox() {
       </aside>
 
       <section className={`msg-thread ${openId ? "on" : ""}`}>
-        {!openId && <p className="msg-empty">Choose a conversation.</p>}
+        {!openId && <p className="msg-empty">{t("msg.choose")}</p>}
         {openId && header && (
           <>
             <header className="msg-thread-head">
-              <button type="button" className="msg-back" onClick={() => setOpenId(null)} aria-label="Back">←</button>
+              <button type="button" className="msg-back" onClick={() => setOpenId(null)} aria-label={t("msg.back")}>←</button>
               <span className={`msg-item-av ${header.official ? "official" : ""}`}>{header.initials}</span>
               <b>{header.name}</b>
             </header>
@@ -144,9 +146,9 @@ export function Inbox() {
 
             <form className="msg-compose" onSubmit={send}>
               <input value={draft} onChange={(e) => setDraft(e.target.value)}
-                placeholder="Write a message…" maxLength={4000} aria-label="Write a message" />
+                placeholder={t("msg.write")} maxLength={4000} aria-label={t("msg.write")} />
               <button className="btn btn-primary" disabled={sending || !draft.trim()}>
-                {sending ? "Sending…" : "Send"}
+                {sending ? t("msg.sending") : t("msg.send")}
               </button>
             </form>
           </>

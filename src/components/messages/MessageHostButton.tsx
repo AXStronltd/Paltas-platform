@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useGuest } from "@/components/booking/GuestProvider";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 /**
  * "Message host", on a listing.
@@ -12,6 +13,7 @@ import { useGuest } from "@/components/booking/GuestProvider";
  */
 export function MessageHostButton({ listingId }: { listingId: string }) {
   const { guest } = useGuest();
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,10 +29,10 @@ export function MessageHostButton({ listingId }: { listingId: string }) {
         body: JSON.stringify({ listingId }),
       });
       const payload = await response.json().catch(() => null);
-      if (!response.ok) { setError(payload?.error?.message ?? "Could not open that conversation."); return; }
+      if (!response.ok) { setError(payload?.error?.message ?? t("msg.failedOpen")); return; }
       window.location.assign(`/messages?thread=${payload.threadId}`);
     } catch {
-      setError("Could not reach PALTAS. Check your connection.");
+      setError(t("msg.failedOpen"));
     } finally {
       setBusy(false);
     }
@@ -39,7 +41,7 @@ export function MessageHostButton({ listingId }: { listingId: string }) {
   return (
     <>
       <button type="button" className="btn secondary host-message" onClick={() => void open()} disabled={busy}>
-        {busy ? "Opening…" : "Message host"}
+        {busy ? t("msg.opening") : t("msg.messageHost")}
       </button>
       {error && <p className="auth-error">{error}</p>}
     </>

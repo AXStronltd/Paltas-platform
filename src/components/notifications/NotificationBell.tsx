@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useI18n } from "@/components/i18n/LocaleProvider";
 
 interface Item {
   id: string; kind: string; title: string; body: string | null;
@@ -34,6 +35,7 @@ function ago(iso: string): string {
  */
 export function NotificationBell() {
   const router = useRouter();
+  const { t } = useI18n();
   const [items, setItems] = useState<Item[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -86,15 +88,15 @@ export function NotificationBell() {
   return (
     <div className="notif" ref={box}>
       <button type="button" className="header-heart notif-bell" onClick={() => void toggle()}
-        aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"} aria-expanded={open}>
+        aria-label={unread ? `${t("notif.title")}, ${t("notif.unread", { count: unread })}` : t("notif.title")} aria-expanded={open}>
         🔔
         {unread > 0 && <span className={`notif-badge ${pulse ? "pulse" : ""}`}>{unread > 9 ? "9+" : unread}</span>}
       </button>
 
       {open && (
-        <div className="notif-panel" role="dialog" aria-label="Notifications">
-          <div className="notif-head">Notifications</div>
-          {items.length === 0 && <p className="notif-empty">Nothing yet. Bookings, approvals and document reviews appear here.</p>}
+        <div className="notif-panel" role="dialog" aria-label={t("notif.title")}>
+          <div className="notif-head">{t("notif.title")}</div>
+          {items.length === 0 && <p className="notif-empty">{t("notif.empty")}</p>}
           {items.map((n) => (
             <button type="button" key={n.id}
               className={`notif-item ${n.readAt ? "" : "unread"}`}
