@@ -84,6 +84,11 @@ jobs:
           echo "── migrations"
           docker run --rm --entrypoint sh "$IMAGE" -c 'ls /app/prisma/migrations | tail -5'
 
+      # Storage is declared so the identity-document gates are switched on. They
+      # disable themselves when it is absent — correct in production, where
+      # demanding a document nobody can upload would strand every applicant, and
+      # wrong here, where it skips the very checks approval.e2e exists to make.
+      # Nothing uploads; the platform only has to believe a bucket is there.
       - name: Start it exactly as Render does
         run: |
           docker run -d --name paltas \
@@ -91,6 +96,11 @@ jobs:
             -e DATABASE_URL="postgresql://paltas:paltas@localhost:5432/paltas" \
             -e PORT=10000 \
             -e SEED_PASSWORD="$SEED_PASSWORD" \
+            -e S3_ENDPOINT="https://storage.invalid" \
+            -e S3_BUCKET="ci-not-a-real-bucket" \
+            -e S3_ACCESS_KEY_ID="ci-not-a-real-key" \
+            -e S3_SECRET_ACCESS_KEY="ci-not-a-real-secret" \
+            -e S3_REGION="auto" \
             "$IMAGE"
 
           # It migrates and seeds on boot, so allow for that before polling.
@@ -139,6 +149,8 @@ jobs:
           node tests/enquiry.e2e.mjs
           node tests/trip.e2e.mjs
           node tests/approval.e2e.mjs
+          node tests/messages.e2e.mjs
+          node tests/notifications.e2e.mjs
 
       - name: Container logs on failure
         if: failure()
