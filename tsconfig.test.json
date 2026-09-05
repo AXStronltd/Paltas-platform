@@ -33,6 +33,7 @@
     "src/lib/mail/**/*.ts",
     "src/lib/support/**/*.ts",
     "src/server/storage.ts",
-    "src/lib/search/**/*.ts"
+    "src/lib/search/**/*.ts",
+    "src/lib/auth/**/*.ts"
   ]
 }

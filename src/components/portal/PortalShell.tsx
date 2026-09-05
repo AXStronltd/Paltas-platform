@@ -30,6 +30,8 @@ export function PortalShell({
           <p>{subtitle}</p>
         </div>
         {badge && <span className="portal-badge">{badge}</span>}
+        {/* The way back to the other half of PALTAS this account can open. */}
+        <Link href="/workspace" className="portal-exit portal-switch">⇄ Switch</Link>
         <Link href="/" className="portal-exit">Exit</Link>
       </div>
       <div className="portal-tabs">

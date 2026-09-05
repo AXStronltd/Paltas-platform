@@ -110,6 +110,10 @@ export function ManageShell({ children }: { children: React.ReactNode }) {
           </div>
           <button onClick={signOut} className="manage-signout" title="Sign out">⏻</button>
         </div>
+        {/* Only where there is somewhere to switch to. /workspace redirects
+            straight through for an account holding one workspace, so a person
+            who has only this one is never sent to a page that decides nothing. */}
+        <Link href="/workspace" className="manage-exit manage-switch">⇄ Switch workspace</Link>
         <Link href="/" className="manage-exit">← Back to PALTAS</Link>
       </aside>
       <main className="manage-body">{children}</main>

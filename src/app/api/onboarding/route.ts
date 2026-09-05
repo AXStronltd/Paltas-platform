@@ -3,9 +3,10 @@ import { prisma } from "@/server/db";
 import { currentActor } from "@/server/actor";
 import { badRequest, handle, ok, unauthorized } from "@/server/http";
 import { staffDestination } from "@/lib/auth/destination";
+import { landingFor } from "@/lib/auth/workspaces";
 import { storageEnabled } from "@/server/storage";
 import { writeAudit } from "@/server/audit";
-import { activateAccount, ROLE_FOR } from "@/server/activation";
+import { activateAccount, ROLE_FOR, roleDefinition } from "@/server/activation";
 import { record } from "@/server/notifications";
 import { BUSINESS_KEYS } from "@/app/onboarding/steps";
 
@@ -193,9 +194,20 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Where they go next, decided by the same helper the sign-in forms use so
     // the answer cannot drift between the two places that ask it.
+    // Freshly activated, so the actor loaded at the top of this handler predates
+    // the role that was just granted. The permissions the new role carries are
+    // read from its definition rather than from that stale actor.
+    const granted = activated.ok ? roleDefinition(activated.role)?.permissions ?? [] : [];
     const destination = staffDestination({
       onboardingRequired: status !== "ACTIVE",
       dashboardRole: user.onboardingRole,
+      landing: status === "ACTIVE"
+        ? landingFor({
+            dashboardRole: user.onboardingRole,
+            permissions: granted,
+            isPlatformAdmin: actor.isPlatformAdmin,
+          })
+        : null,
     });
     return ok({
       onboardingCompleted: true,

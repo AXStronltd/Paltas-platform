@@ -5,6 +5,7 @@ import { prisma } from "@/server/db";
 import { createSession } from "@/server/session";
 import { createGuestSession } from "@/server/guest";
 import { effectivePermissionKeys } from "@/lib/security/authorize";
+import { landingFor } from "@/lib/auth/workspaces";
 import { ALL_PERMISSIONS } from "@/lib/security/permissions";
 import { loadActor } from "@/server/actor";
 import { badRequest, fail, handle, ok, readJson } from "@/server/http";
@@ -105,6 +106,14 @@ export async function POST(req: Request): Promise<NextResponse> {
       permissions: actor ? effectivePermissionKeys(actor, ALL_PERMISSIONS) : [],
       onboardingRequired: !user.onboardingCompletedAt || user.status === "PENDING",
       dashboardRole: user.onboardingRole ?? (user.isOwner ? "landlord" : null),
+      // Where to land. Computed here because only the server knows what this
+      // account holds, and because "how many workspaces" is the whole of the
+      // question — one goes straight through, two or more asks.
+      landing: landingFor({
+        dashboardRole: user.onboardingRole ?? (user.isOwner ? "landlord" : null),
+        permissions: actor ? effectivePermissionKeys(actor, ALL_PERMISSIONS) : [],
+        isPlatformAdmin: user.isPlatformAdmin,
+      }),
     });
   });
 }

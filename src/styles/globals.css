@@ -2569,3 +2569,22 @@ body:has(.scrim) .tabbar { display: none; }
   .hs-rest { grid-template-columns: 1fr 1fr; }
   .hs-rest .hs-field:last-child { grid-column: 1 / -1; }
 }
+
+/* ── Workspace chooser ───────────────────────────────────────────────────────
+   Shown only to an account that holds more than one. */
+.ws-card { max-width: 520px; }
+.ws-list { display: grid; gap: 10px; margin: 6px 0 4px; }
+.ws-option {
+  display: flex; align-items: center; gap: 14px; text-align: start;
+  padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--bg-1); transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.ws-option:hover { border-color: var(--brand); transform: translateY(-1px); box-shadow: 0 10px 26px rgba(8,20,34,.10); }
+.ws-option-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.ws-option-body b { font-size: 15.5px; color: var(--ink); }
+.ws-option-body span { font-size: 13px; color: var(--muted); }
+.ws-option-go { flex: 0 0 auto; color: var(--muted); font-size: 17px; }
+.ws-note { margin-top: 14px; font-size: 12.5px; color: var(--muted); text-align: center; }
+
+.manage-switch, .portal-switch { opacity: .9; }
+@media (prefers-reduced-motion: reduce) { .ws-option { transition: none; } }

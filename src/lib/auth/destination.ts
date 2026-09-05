@@ -21,6 +21,12 @@ export const ROLE_DASHBOARDS: Record<string, string> = {
 export interface StaffDestinationInput {
   onboardingRequired?: boolean | null;
   dashboardRole?: string | null;
+  /**
+   * Where the server decided this account should land, having seen what it
+   * holds. Present on sign-in and onboarding responses; absent on the older
+   * call sites, which fall back to the role's own portal.
+   */
+  landing?: string | null;
 }
 
 /**
@@ -33,5 +39,8 @@ export interface StaffDestinationInput {
 export function staffDestination(result: StaffDestinationInput | null | undefined): string {
   if (!result) return "/manage";
   if (result.onboardingRequired) return "/onboarding";
+  // The server's answer wins where it gave one: it counted the workspaces, and
+  // a browser cannot. Without it, the role's own portal is the right guess.
+  if (result.landing) return result.landing;
   return ROLE_DASHBOARDS[result.dashboardRole ?? ""] ?? "/manage";
 }

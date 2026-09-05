@@ -308,10 +308,6 @@ export default function OnboardingPage() {
       <div className="ob-roles">
         {ROLES.map((r) => (
           <button type="button" key={r.key} className="ob-role" onClick={() => { setRole(r.key); setStep(0); }}>
-            {/* Developer's label and blurb are message keys; the other five are
-                still plain English. t() returns a key it cannot find unchanged,
-                so both render correctly — but that is a transitional state, not
-                a design. The remaining five want keys of their own. */}
             <b>{t(r.label)}</b><span>{t(r.blurb)}</span>
           </button>
         ))}

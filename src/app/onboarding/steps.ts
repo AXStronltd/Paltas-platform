@@ -28,11 +28,11 @@ export const ROLES = [
   // renaming it would be a data migration for a change of wording. The portal,
   // its unit-stock and buyer screens, and every permission are untouched.
   { key: "developer", label: "ob.role.developer", blurb: "ob.role.developerBlurb" },
-  { key: "landlord", label: "Landlord", blurb: "Your units, tenants and rent" },
-  { key: "agent", label: "Agent", blurb: "Listings and leads pipeline" },
-  { key: "hotel", label: "Hotel", blurb: "Rooms, rates and availability" },
-  { key: "seller", label: "Seller", blurb: "Sell a property you own" },
-  { key: "resident", label: "Tenant / Resident", blurb: "Your home, rent and requests" },
+  { key: "landlord", label: "ob.role.landlord", blurb: "ob.role.landlordBlurb" },
+  { key: "agent", label: "ob.role.agent", blurb: "ob.role.agentBlurb" },
+  { key: "hotel", label: "ob.role.hotel", blurb: "ob.role.hotelBlurb" },
+  { key: "seller", label: "ob.role.seller", blurb: "ob.role.sellerBlurb" },
+  { key: "resident", label: "ob.role.resident", blurb: "ob.role.residentBlurb" },
 ] as const;
 
 export type RoleKey = (typeof ROLES)[number]["key"];
