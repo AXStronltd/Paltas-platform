@@ -73,3 +73,55 @@ export function moduleEntitles(modules: readonly string[], permission: string): 
   if (ALWAYS_ON.includes(mod)) return true;
   return modules.includes(mod);
 }
+
+/** A subscription, reduced to the two facts entitlement depends on. */
+export interface SubscriptionView {
+  status: string;
+  modules: readonly string[];
+}
+
+/** An exception recorded against one organisation. */
+export interface EntitlementView {
+  module: string;
+  granted: boolean;
+  expiresAt?: Date | string | null;
+}
+
+/**
+ * Statuses that still buy access.
+ *
+ * Past-due keeps working. Chasing an invoice and cutting a landlord off from
+ * their own tenants mid-tenancy are different things, and the second one costs
+ * more than it collects.
+ */
+const PAYING = new Set(["TRIALING", "ACTIVE", "PAST_DUE"]);
+
+/**
+ * Plan plus exceptions, resolved to the modules an organisation may use.
+ *
+ * Pure, and takes `now` rather than reading the clock, so the expiry rule can be
+ * tested at both sides of the boundary. Kept here — not in the server module
+ * that loads the rows — because two callers need it: the one that has only an
+ * organisation id, and the actor loader that already has the rows in hand and
+ * should not fetch them twice.
+ */
+export function composeModules(
+  subscription: SubscriptionView | null | undefined,
+  exceptions: readonly EntitlementView[],
+  now: Date = new Date(),
+): string[] {
+  // No subscription means nobody has decided yet, not that everything is
+  // refused. A new customer seeing an empty product because a row was missed is
+  // a worse failure than one seeing too much, and the boot sweep closes it.
+  const base = subscription
+    ? PAYING.has(subscription.status) ? subscription.modules : []
+    : ALL_MODULES.filter((m) => !ALWAYS_ON.includes(m));
+
+  const modules = new Set<string>(base);
+  for (const e of exceptions) {
+    if (e.expiresAt && new Date(e.expiresAt) <= now) continue;
+    if (e.granted) modules.add(e.module);
+    else modules.delete(e.module);
+  }
+  return [...modules];
+}

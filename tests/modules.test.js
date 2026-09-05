@@ -44,3 +44,59 @@ test("every module is reachable by at least one real permission", () => {
     assert.equal(hit, true, `module "${mod}" sells nothing that exists`);
   }
 });
+
+/* composeModules — plan plus exceptions, the rule both callers share. */
+import { composeModules } from "../.test-build/lib/security/modules.js";
+
+const NOW = new Date("2026-09-06T00:00:00Z");
+
+test("an active plan grants exactly its modules", () => {
+  assert.deepEqual(
+    composeModules({ status: "ACTIVE", modules: ["finance", "bookings"] }, [], NOW).sort(),
+    ["bookings", "finance"],
+  );
+});
+
+test("no subscription is unrestricted, not empty", () => {
+  // A row missed on a new customer must not present them an empty product.
+  const m = composeModules(null, [], NOW);
+  assert.equal(m.includes("finance"), true);
+  assert.equal(m.includes("security"), true);
+});
+
+test("past due keeps working; cancelled does not", () => {
+  const plan = { modules: ["finance"] };
+  assert.deepEqual(composeModules({ ...plan, status: "PAST_DUE" }, [], NOW), ["finance"]);
+  assert.deepEqual(composeModules({ ...plan, status: "TRIALING" }, [], NOW), ["finance"]);
+  assert.deepEqual(composeModules({ ...plan, status: "CANCELLED" }, [], NOW), []);
+});
+
+test("an exception adds a module the plan does not include", () => {
+  const m = composeModules({ status: "ACTIVE", modules: ["bookings"] },
+    [{ module: "finance", granted: true }], NOW);
+  assert.equal(m.includes("finance"), true);
+});
+
+test("an exception withholds a module the plan does include", () => {
+  const m = composeModules({ status: "ACTIVE", modules: ["bookings", "finance"] },
+    [{ module: "finance", granted: false }], NOW);
+  assert.equal(m.includes("finance"), false);
+});
+
+test("an expired exception is ignored in both directions", () => {
+  const past = new Date("2026-01-01T00:00:00Z");
+  const granted = composeModules({ status: "ACTIVE", modules: ["bookings"] },
+    [{ module: "finance", granted: true, expiresAt: past }], NOW);
+  assert.equal(granted.includes("finance"), false, "expired grant should lapse");
+
+  const withheld = composeModules({ status: "ACTIVE", modules: ["finance"] },
+    [{ module: "finance", granted: false, expiresAt: past }], NOW);
+  assert.equal(withheld.includes("finance"), true, "expired withholding should lift");
+});
+
+test("an exception dated in the future still applies", () => {
+  const later = new Date("2027-01-01T00:00:00Z");
+  const m = composeModules({ status: "ACTIVE", modules: ["bookings"] },
+    [{ module: "finance", granted: true, expiresAt: later }], NOW);
+  assert.equal(m.includes("finance"), true);
+});

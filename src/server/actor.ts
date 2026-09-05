@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { entitledModulesFor } from "./entitlements";
+import { composeModules } from "@/lib/security/modules";
 import { currentUserId } from "./session";
 import type { Actor, Grant } from "@/lib/security/types";
 
@@ -19,6 +19,15 @@ export async function loadActor(userId: string): Promise<Actor | null> {
     include: {
       roleAssignments: { include: { role: { include: { permissions: true } } } },
       grants: true,
+      // Fetched alongside the grants rather than in two further round trips of
+      // their own. Every authenticated request loads an actor, so the cost of
+      // asking separately is paid on all of them.
+      org: {
+        select: {
+          subscription: { select: { status: true, plan: { select: { modules: true } } } },
+          entitlements: { select: { module: true, granted: true, expiresAt: true } },
+        },
+      },
     },
   });
   if (!user) return null;
@@ -68,7 +77,12 @@ export async function loadActor(userId: string): Promise<Actor | null> {
     // Loaded here so every authorisation decision in the request already knows
     // what the organisation has bought. One query per request, alongside the
     // grants it sits next to.
-    entitledModules: await entitledModulesFor(user.orgId),
+    entitledModules: composeModules(
+      user.org.subscription
+        ? { status: user.org.subscription.status, modules: user.org.subscription.plan.modules }
+        : null,
+      user.org.entitlements,
+    ),
   };
 }
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db";
-import { ALL_MODULES, ALWAYS_ON, type ModuleKey } from "@/lib/security/modules";
+import { composeModules } from "@/lib/security/modules";
 
 /**
  * Which modules an organisation may use.
@@ -11,12 +11,6 @@ import { ALL_MODULES, ALWAYS_ON, type ModuleKey } from "@/lib/security/modules";
  * disagree there is no way to tell which one is true.
  */
 
-/** The plan every existing organisation was grandfathered onto. */
-const FULL_ACCESS: ModuleKey[] = ALL_MODULES.filter((m) => !ALWAYS_ON.includes(m));
-
-/** Statuses that still buy access. Past-due keeps working; chasing an invoice is not the same as cutting someone off mid-tenancy. */
-const PAYING = new Set(["TRIALING", "ACTIVE", "PAST_DUE"]);
-
 export async function entitledModulesFor(orgId: string): Promise<string[]> {
   const [subscription, exceptions] = await Promise.all([
     prisma.subscription.findUnique({
@@ -24,28 +18,15 @@ export async function entitledModulesFor(orgId: string): Promise<string[]> {
       select: { status: true, plan: { select: { modules: true } } },
     }),
     prisma.entitlement.findMany({
-      where: { orgId, OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] },
-      select: { module: true, granted: true },
+      where: { orgId },
+      select: { module: true, granted: true, expiresAt: true },
     }),
   ]);
 
-  // No subscription means nobody has decided yet, not that everything is
-  // refused. Every organisation was grandfathered by the migration, so this is
-  // reached only by one created since — and a new customer seeing an empty
-  // product because a row was missed is a worse failure than one seeing too
-  // much. The sweep below closes the gap on the next boot either way.
-  const base = subscription
-    ? PAYING.has(subscription.status)
-      ? subscription.plan.modules
-      : []
-    : FULL_ACCESS;
-
-  const modules = new Set<string>(base);
-  for (const e of exceptions) {
-    if (e.granted) modules.add(e.module);
-    else modules.delete(e.module);
-  }
-  return [...modules];
+  return composeModules(
+    subscription ? { status: subscription.status, modules: subscription.plan.modules } : null,
+    exceptions,
+  );
 }
 
 /** Put an organisation on a plan. Safe to call twice. */
