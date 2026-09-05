@@ -11,8 +11,8 @@
  * Nothing in the checkout journey changes.
  */
 
-import type { EscrowProvider, KYCProvider, NotificationProvider, PaymentProvider, PaymentMethod } from "./interfaces";
-import { mockEscrowProvider, mockKYCProvider, mockNotificationProvider } from "./mock";
+import type { KYCProvider, NotificationProvider, PaymentProvider, PaymentMethod } from "./interfaces";
+import { mockKYCProvider, mockNotificationProvider } from "./mock";
 import { stripeProvider } from "./stripeProvider";
 import { appraPayProvider } from "./appraPayProvider";
 import { mobileMoneyProvider } from "./mobileMoneyProvider";
@@ -59,7 +59,6 @@ export function providerFor(method: PaymentMethod, providerName: string): Paymen
 
 export const providers = {
   payment: stripeProvider,
-  escrow: mockEscrowProvider,
   kyc: mockKYCProvider,
   notification: mockNotificationProvider,
 };

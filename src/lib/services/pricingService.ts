@@ -28,14 +28,17 @@ export function allInNightly(listing: Listing): number {
 
 /**
  * Payment mode.
- * Escrow is temporarily disabled for launch — every booking confirms instantly
- * through the payment provider. The escrow branch is kept in the type/codebase
- * so it can be re-enabled later (licensing permitting) without a rebuild.
+ *
+ * Every booking confirms instantly through the payment provider. There is no
+ * second mode: PALTAS is not authorised to hold client funds, so it does not
+ * offer to, and the branch that used to describe one has been removed rather
+ * than left switched off — a disabled escrow path is still a claim sitting in
+ * the codebase waiting to be re-enabled by someone who does not know why it
+ * was disabled.
  */
 export function paymentModeFor(listing: Listing): PaymentMode {
   const stars = listing.stars ?? (listing.rating >= 4.8 ? 5 : listing.rating >= 4.5 ? 4 : 3);
-  // Launch mode: no escrow hold — pay → confirmed.
-  return { escrow: false, reason: "Instant confirmation", stars };
+  return { reason: "Instant confirmation", stars };
 }
 
 /* ============================================================

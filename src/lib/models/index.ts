@@ -26,7 +26,7 @@ export type ListingType =
   | "cottage"
   | "loft";
 
-/** How a listing is booked/paid — drives the escrow-vs-instant decision. */
+/** How a listing is booked and paid for. */
 export type StayMode = "stays" | "hotel" | "rent";
 
 /** Open for the same reason as Currency: hosts write their own. */
@@ -191,46 +191,30 @@ export interface PriceBreakdown {
   currency: Currency;
 }
 
-export type PaymentMode =
-  | { escrow: true; reason: string }
-  | { escrow: false; reason: string; stars: number };
-
-export type EscrowStatus = "held" | "released" | "disputed";
+/**
+ * How a booking is paid for. PALTAS is not authorised to hold client money, so
+ * there is one mode: the guest pays and the booking confirms. This stays a
+ * named type rather than becoming a bare string so the reason shown at
+ * checkout has somewhere to live.
+ */
+export type PaymentMode = { reason: string; stars: number };
 
 /**
- * The full lifecycle of a PALTAS booking. Every state the UI must handle:
- * a booking is created → payment processes → funds held in escrow (or instantly
- * confirmed for verified hotels) → guest stays → both parties confirm → released.
- * Failure and reversal states are first-class, not afterthoughts.
+ * The full lifecycle of a PALTAS booking: created → payment processes →
+ * confirmed → completed. Failure and reversal states are first-class, not
+ * afterthoughts.
+ *
+ * There is no "held" state. Holding a guest's money until both sides confirm
+ * is a regulated activity and PALTAS does not have permission for it.
  */
 export type BookingStatus =
   | "draft"        // being built (review screen)
   | "processing"   // payment being taken (loading/pending)
-  | "confirmed"    // paid; for instant hotels this is the end state
-  | "held"         // paid; funds protected in escrow, awaiting stay/confirmation
-  | "completed"    // both sides confirmed, funds released to host
+  | "confirmed"    // paid; the end state for a booking
+  | "completed"    // the stay happened
   | "failed"       // payment failed — nothing charged
   | "reversed"     // payment reversed/refunded to guest
   | "disputed";    // issue raised, under PALTAS review
-
-export interface EscrowTransaction {
-  id: string;
-  code: string;
-  kind: "booking" | "offer";
-  property: string;
-  location: string;
-  amount: number;
-  currency: Currency;
-  buyerId: string;
-  buyerName: string;
-  host: Host;
-  dates: string;
-  guests: number;
-  status: EscrowStatus;
-  buyerConfirmed: boolean;
-  hostConfirmed: boolean;
-  createdAt: number;
-}
 
 export interface BookingEvent {
   status: BookingStatus;
@@ -252,7 +236,6 @@ export interface Booking {
   guests: number;
   breakdown: PriceBreakdown;
   paymentMode: PaymentMode;
-  escrowId?: string;
   status: BookingStatus;
   /** Full audit trail of state transitions — powers the status timeline & history. */
   events: BookingEvent[];
@@ -270,7 +253,7 @@ export interface Receipt {
   dates: string;
   guests: number;
   breakdown: PriceBreakdown;
-  paymentMode: "escrow" | "instant";
+  paymentMode: "instant";
   status: BookingStatus;
   issuedAt: number;
 }

@@ -1,6 +1,5 @@
 import type { Booking, BookingEvent, BookingStatus, Listing, Result } from "@/lib/models";
 import { priceBreakdown, paymentModeFor } from "./pricingService";
-import { createEscrow } from "./escrowService";
 import { HOSTS } from "@/lib/data/mock";
 import { providers, providerFor } from "@/lib/providers/registry";
 import type { PaymentMethod } from "@/lib/providers/interfaces";
@@ -8,8 +7,12 @@ import { mockDelay } from "./apiClient";
 
 /**
  * Booking service — orchestrates the full PALTAS booking lifecycle through the
- * provider layer. This is the marketplace's money moment (pay -> hold in escrow
- * -> release to host), NOT a payments-transfer app.
+ * provider layer. This is the marketplace's money moment (pay -> confirmed),
+ * NOT a payments-transfer app.
+ *
+ * PALTAS never holds the money. The guest pays through the payment provider and
+ * the booking confirms; there is no hold, no release step and no point at which
+ * the funds are PALTAS's to sit on.
  *
  * Every transition is recorded as a BookingEvent (audit trail / status
  * timeline). Idempotency keys are honoured so a retried payment never
@@ -84,20 +87,11 @@ export async function createBooking(input: CreateBookingInput): Promise<Result<B
     return mockDelay({ data: booking, error: null });
   }
 
-  // Launch mode: no escrow hold. Every booking confirms instantly. We still
-  // create a booking record (for the My Bookings list + stay-confirmation flow);
-  // the escrow branch is retained in code for later re-enablement.
-  {
-    const host = HOSTS[listing.hostId] ?? HOSTS.h5;
-    const esc = await createEscrow({
-      code, kind: "booking", property: listing.name, location: listing.location,
-      amount: breakdown.total, currency: listing.currency,
-      buyerId, buyerName, host, dates: `${checkIn} - ${checkOut}`, guests,
-    });
-    booking.escrowId = esc.data.id;
-    booking.status = "confirmed";
-    booking.events.push(event("confirmed", "Payment received - booking confirmed"));
-  }
+  // The payment succeeded, so the booking is confirmed. Nothing is held: the
+  // money goes to the host's payment account through the provider, and PALTAS
+  // is never in the middle of it.
+  booking.status = "confirmed";
+  booking.events.push(event("confirmed", "Payment received - booking confirmed"));
 
   providers.notification.send({
     to: buyerName, channel: "in-app", title: "Booking confirmed",

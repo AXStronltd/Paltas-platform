@@ -102,7 +102,6 @@ img { display: block; max-width: 100%; }
   background: rgba(26,31,43,.9); padding: 6px 11px; border-radius: 20px; backdrop-filter: blur(4px);
 }
 .card-badge.instant { background: rgba(46,166,255,.95); }
-.card-badge.escrow { background: rgba(0,196,172,.95); }
 .card-body { padding: 15px 16px; }
 .card-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .card-top h3 { font-size: 16px; font-weight: 800; }
@@ -225,12 +224,11 @@ img { display: block; max-width: 100%; }
 .field input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--line-2); border-radius: 11px; font-family: inherit; font-size: 14.5px; }
 .field input:focus { outline: none; border-color: var(--teal); }
 
-/* escrow band */
-.escrow-band { display: flex; gap: 12px; align-items: flex-start; background: linear-gradient(135deg, rgba(0,196,172,.1), rgba(46,166,255,.08)); border: 1px solid rgba(0,196,172,.28); border-radius: 16px; padding: 16px; margin: 18px 0; }
-.escrow-band.instant { background: linear-gradient(135deg, rgba(46,166,255,.1), rgba(0,196,172,.06)); border-color: rgba(46,166,255,.25); }
+/* confirmation band */
+.confirm-band { display: flex; gap: 12px; align-items: flex-start; background: linear-gradient(135deg, rgba(46,166,255,.1), rgba(0,196,172,.06)); border: 1px solid rgba(46,166,255,.25); border-radius: 16px; padding: 16px; margin: 18px 0; }
 .eb-ico { width: 42px; height: 42px; border-radius: 12px; background: var(--grad); color: #fff; display: grid; place-items: center; flex: none; font-size: 20px; }
-.escrow-band b { display: block; font-size: 14.5px; }
-.escrow-band span { font-size: 12.5px; color: var(--ink-2); }
+.confirm-band b { display: block; font-size: 14.5px; }
+.confirm-band span { font-size: 12.5px; color: var(--ink-2); }
 .check-both { display: flex; gap: 16px; margin: 14px 0; }
 .cb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
 .cb-dot { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; }

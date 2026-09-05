@@ -2,7 +2,7 @@
   "name": "paltas-app",
   "version": "0.1.0",
   "private": true,
-  "description": "PALTAS Smart Living \u2014 API-ready product frontend",
+  "description": "PALTAS Smart Living — API-ready product frontend",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -59,7 +59,6 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.7.0",
     "@types/google.maps": "^3.66.2",
     "@types/node": "20.14.10",
     "@types/qrcode": "^1.5.6",

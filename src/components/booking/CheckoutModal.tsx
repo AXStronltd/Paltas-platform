@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Listing, Booking } from "@/lib/models";
 import { PricePanel } from "@/components/marketplace/PricePanel";
-import { priceBreakdown, paymentModeFor } from "@/lib/services/pricingService";
+import { priceBreakdown } from "@/lib/services/pricingService";
 import { createBooking, makeIdempotencyKey } from "@/lib/services/bookingService";
 import { useGuest } from "@/components/booking/GuestProvider";
 import { useToast, personalSuccess, personalError } from "@/components/ui/Toast";
@@ -42,7 +42,6 @@ export function CheckoutModal({
   const [processingHint, setProcessingHint] = useState<string>("preview.processing");
 
   const breakdown = priceBreakdown(listing, nights);
-  const pm = paymentModeFor(listing);
   const options = paymentOptions();
 
   function handleAccount() {
@@ -122,7 +121,7 @@ export function CheckoutModal({
           <>
             <h2>{t("preview.reviewConfirm")}</h2>
             <p className="lede">{listing.name} · {listing.location}</p>
-            <div className="escrow-band instant">
+            <div className="confirm-band">
               <div className="eb-ico">⚡</div>
               <div><b>{t("preview.instantConfirmation")}</b><span>{t("preview.confirmedOnSuccess")}</span></div>
             </div>
@@ -164,7 +163,7 @@ export function CheckoutModal({
               <div className="br"><span>{t("preview.amount")}</span><b>{money(booking.breakdown.total, listing.currency)}</b></div>
               <div className="br"><span>{t("preview.status")}</span><b style={{ color: "var(--teal-ink)" }}>✓ {t("bookings.status.CONFIRMED")}</b></div>
             </div>
-            <button className="btn btn-primary" onClick={() => onComplete(booking.escrowId ?? booking.id)}>{t("preview.viewBooking")}</button>
+            <button className="btn btn-primary" onClick={() => onComplete(booking.id)}>{t("preview.viewBooking")}</button>
           </>
         )}
 

@@ -6,7 +6,7 @@
  */
 
 import type {
-  PaymentProvider, EscrowProvider, KYCProvider, NotificationProvider, PaymentIntent,
+  PaymentProvider, KYCProvider, NotificationProvider, PaymentIntent,
 } from "./interfaces";
 import type { Result } from "@/lib/models";
 
@@ -28,13 +28,6 @@ export const mockPaymentProvider: PaymentProvider = {
     await delay(null, 600);
     return ok<PaymentIntent>({ reference, status: "succeeded", amount: 0, currency: "KES", provider: "mock-psp", method: "card" });
   },
-};
-
-export const mockEscrowProvider: EscrowProvider = {
-  name: "mock-escrow",
-  async hold({ reference }) { await delay(null, 300); return ok({ escrowRef: "esc_" + reference }); },
-  async release(escrowRef) { await delay(null, 300); return ok({ released: true as const }); },
-  async reverse(escrowRef) { await delay(null, 300); return ok({ reversed: true as const }); },
 };
 
 export const mockKYCProvider: KYCProvider = {

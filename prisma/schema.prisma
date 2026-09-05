@@ -1,7 +1,7 @@
 // PALTAS — data model.
 //
-// The marketplace side of PALTAS (listings, bookings, escrow) stays where it is:
-// in the service layer, backed by mock data or Supabase. What lives here is the
+// The marketplace side of PALTAS (listings, bookings) stays where it is: in the
+// service layer, backed by mock data or Supabase. What lives here is the
 // side of the product that must never be guessed at — the property portfolio and
 // Paltas Security Management — because every read and write against it is
 // authorised on the server against the permission model below.

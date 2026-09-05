@@ -14,7 +14,8 @@
  *
  *   Two of the services behind it, portals and escrow, were imported by
  *   nothing at all. The four role portals had long since moved to the real
- *   management API.
+ *   management API. (The escrow service has since been deleted outright —
+ *   PALTAS is not authorised to hold client funds.)
  *
  * A switch that does not do what its name says is worse than no switch, and a
  * live deployment reading `mock` in its own configuration cannot be reasoned

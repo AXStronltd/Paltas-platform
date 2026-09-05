@@ -50,7 +50,7 @@ const SLIDES: Slide[] = [
   {
     key: "hajj", href: "/?mode=hajj", motif: "khatam",
     promise: "promo.slide.hajj.promise",
-    proof: ["promo.proof.groupBookings", "promo.proof.escrow", "promo.proof.arabicHosts"],
+    proof: ["promo.proof.groupBookings", "promo.proof.arabicHosts"],
   },
   {
     key: "umrah", href: "/?mode=umrah", motif: "khatam",

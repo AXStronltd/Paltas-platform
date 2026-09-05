@@ -2,11 +2,16 @@
  * Provider abstraction layer.
  *
  * PALTAS is a stays/real-estate marketplace, so its integrations are the ones a
- * marketplace needs: take a booking payment, hold it in escrow, verify hosts,
- * and notify guests. These are INTERFACES — the product depends only on them,
- * never on a concrete provider. A mock provider satisfies them today; a real
- * one (a licensed PSP, an escrow/settlement partner, a KYC vendor) is dropped
- * in later by implementing the same interface. No user journey changes.
+ * marketplace needs: take a booking payment, verify hosts, and notify guests.
+ * These are INTERFACES — the product depends only on them, never on a concrete
+ * provider. A mock provider satisfies them today; a real one (a licensed PSP, a
+ * KYC vendor) is dropped in later by implementing the same interface. No user
+ * journey changes.
+ *
+ * There is no escrow provider, and adding one is not a small decision. Holding
+ * a guest's money between payment and stay is a regulated activity that PALTAS
+ * does not have permission for, so the interface was removed rather than left
+ * as an empty socket inviting somebody to plug something into it.
  *
  * This is exactly the "do not hard-code around one provider" requirement,
  * scoped to what PALTAS actually does — not a payments-transfer app.
@@ -56,14 +61,6 @@ export interface PaymentProvider {
   /** Poll/confirm an async (pending) payment such as mobile money. */
   confirm?(reference: string): Promise<Result<PaymentIntent>>;
   refund(reference: string): Promise<Result<PaymentIntent>>;
-}
-
-/** Holds booking funds until both sides confirm, then releases to the host. */
-export interface EscrowProvider {
-  readonly name: string;
-  hold(input: { reference: string; amount: number; currency: Currency }): Promise<Result<{ escrowRef: string }>>;
-  release(escrowRef: string): Promise<Result<{ released: true }>>;
-  reverse(escrowRef: string): Promise<Result<{ reversed: true }>>;
 }
 
 /** Verifies host / listing identity & ownership (the "Verified" badge). */
