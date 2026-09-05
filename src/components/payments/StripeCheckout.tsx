@@ -38,7 +38,26 @@ function getStripe(): Promise<Stripe | null> | null {
   // never appeared.
   const key = (typeof window !== "undefined" ? window.__PALTAS_PUBLIC_CONFIG__?.stripePublishableKey : "")
     || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-  if (!key) return null;
+
+  // Present is not the same as valid. Only the existence of a key was checked,
+  // so anything non-empty — a label pasted instead of a value, a truncated
+  // paste — passed straight to Stripe.js and failed at runtime, which looks
+  // like a broken checkout rather than a misconfigured one.
+  //
+  // A secret key here would be worse than useless: it would be published to
+  // every visitor. Refusing it is the one case worth being loud about, because
+  // the only fix is to roll the key, and that has to happen before anyone
+  // notices it in the page source rather than after.
+  if (!key || !key.startsWith("pk_")) {
+    if (key && typeof console !== "undefined") {
+      console.error(
+        key.startsWith("sk_") || key.startsWith("rk_")
+          ? "[paltas] A Stripe SECRET key is set as the publishable key and is now public. Roll it in Stripe immediately."
+          : "[paltas] STRIPE_PUBLISHABLE_KEY is not a Stripe publishable key — it must begin with pk_test_ or pk_live_.",
+      );
+    }
+    return null;
+  }
   if (!stripePromise) stripePromise = loadStripe(key);
   return stripePromise;
 }

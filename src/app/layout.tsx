@@ -40,6 +40,26 @@ export const viewport = {
   themeColor: "#00c4ac",
 };
 
+/**
+ * The Stripe key, if it is one, and nothing at all if it is not.
+ *
+ * Anything that is not a pk_ key is withheld: a secret key here would be
+ * published to every visitor, and a mistyped one only fails later and less
+ * clearly. The refusal is logged server-side because that is where somebody
+ * who can fix it will be looking.
+ */
+function publishableStripeKey(): string {
+  const key = (process.env.STRIPE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "").trim();
+  if (!key) return "";
+  if (key.startsWith("pk_")) return key;
+  console.error(
+    key.startsWith("sk_") || key.startsWith("rk_")
+      ? "[paltas] STRIPE_PUBLISHABLE_KEY holds a SECRET key. Not serving it. Roll that key in Stripe now."
+      : `[paltas] STRIPE_PUBLISHABLE_KEY is not a publishable key (starts "${key.slice(0, 3)}"). It must begin pk_test_ or pk_live_.`,
+  );
+  return "";
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Decided once in middleware; read here so the server's first render already
   // matches, rather than flashing English and swapping after hydration.
@@ -83,8 +103,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // service environment, so it compiled to an empty string and the form could
     // never load. Setting it in the dashboard looked right and did nothing.
     // STRIPE_PUBLISHABLE_KEY has no prefix, so it is read per request.
-    stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY
-      || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+    // Only a publishable key is ever served. A secret key set here by mistake
+    // would be broadcast to every visitor, so it is dropped rather than
+    // rendered — and the server says so in its own log, where an operator can
+    // see it, instead of in the page where an attacker would.
+    stripePublishableKey: publishableStripeKey(),
   }).replace(/</g, "\\u003c");
 
   return (
