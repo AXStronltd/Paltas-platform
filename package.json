@@ -43,7 +43,8 @@
     "test:messages": "npm run db:seed --silent && node tests/messages.e2e.mjs",
     "check:production": "node scripts/check-production.mjs",
     "test:notifications": "npm run db:seed --silent && node tests/notifications.e2e.mjs",
-    "db:backfill-coordinates": "node scripts/backfill-coordinates.mjs"
+    "db:backfill-coordinates": "node scripts/backfill-coordinates.mjs",
+    "db:repair-migrations": "node scripts/repair-migrations.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
