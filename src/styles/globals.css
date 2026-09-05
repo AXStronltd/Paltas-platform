@@ -2067,14 +2067,68 @@ body:has(.scrim) .tabbar { display: none; }
 .ob-role span { font-size: 13px; color: var(--muted); }
 
 .ob-dots { display: flex; gap: 6px; margin: 0 0 16px; }
-.ob-dots span { height: 4px; flex: 1; border-radius: 999px; background: var(--line); }
-.ob-dots span.on { background: var(--brand); }
+/* Completed steps are buttons so they can be clicked back to, but they are
+   still a progress bar: no border, no background of their own. */
+.ob-dot {
+  height: 4px; flex: 1; border: 0; padding: 0; border-radius: 999px;
+  background: var(--line); cursor: pointer; font: inherit;
+}
+.ob-dot:disabled { cursor: default; }
+.ob-dot.on { background: var(--brand); }
 
 .ob-check { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 14px; font-size: 13px; color: var(--muted); }
 .ob-check input { margin-top: 2px; flex: 0 0 auto; }
 
 .ob-actions { display: flex; gap: 8px; }
 .ob-actions .btn { flex: 1; }
+
+/* One field and everything attached to it: help text, and the error that is
+   tied to the input by aria-describedby. */
+.ob-fieldwrap { display: block; }
+.ob-hint { display: block; font-size: 12px; color: var(--muted); margin: -8px 0 12px; line-height: 1.45; }
+.ob-hint em { font-style: normal; }
+.ob-optional { font-weight: 400; font-size: 12px; color: var(--muted); }
+.ob-note { font-size: 13px; color: var(--muted); margin: -4px 0 16px; line-height: 1.5; }
+.auth-error.small { display: block; font-size: 12px; margin: -8px 0 12px; }
+
+/* A checkbox group. The fieldset carries the question, so its legend is the
+   label and the browser announces it with every option inside. */
+.ob-group { border: 0; padding: 0; margin: 0 0 4px; }
+.ob-group legend { font-size: 13px; color: var(--ink); padding: 0; margin-bottom: 8px; }
+
+.ob-toggle {
+  display: flex; gap: 10px; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink);
+}
+.ob-toggle input { order: 2; flex: 0 0 auto; }
+.ob-togglelabel { order: 1; }
+
+.ob-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: -6px 0 14px; }
+.ob-chip {
+  display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--bg-2);
+  font: inherit; font-size: 12px; color: var(--ink); cursor: pointer;
+}
+.ob-chip:hover { border-color: var(--brand); }
+
+.ob-skip {
+  display: block; width: 100%; margin-top: 12px; padding: 6px; border: 0;
+  background: none; font: inherit; font-size: 13px; color: var(--muted);
+  text-decoration: underline; cursor: pointer;
+}
+.ob-skip:hover { color: var(--ink); }
+
+/* The three next-step cards on the finish screen. */
+.ob-next { display: grid; gap: 8px; margin: 8px 0 16px; }
+.ob-nextcard {
+  display: flex; flex-direction: column; gap: 2px; text-align: left;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px;
+  background: var(--bg-1); text-decoration: none;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.ob-nextcard:hover { border-color: var(--brand); background: var(--bg-2); transform: translateY(-1px); }
+.ob-nextcard b { font-size: 15px; color: var(--ink); }
+.ob-nextcard span { font-size: 13px; color: var(--muted); }
 
 /* ── Messages ────────────────────────────────────────────────────────────────
    A list beside a thread on a wide screen; on a phone the thread slides over

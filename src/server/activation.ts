@@ -59,7 +59,11 @@ export async function activateAccount(input: {
   });
   if (!current) return { ok: false, reason: "Account not found." };
   if (current.status === "ACTIVE") return { ok: true, role: input.roleKey };
-  if (current.status !== "PENDING") {
+  // INVITED as well as PENDING: somebody an owner added from the Staff screen
+  // has been vouched for already, and completing onboarding is the point at
+  // which they become able to work. SUSPENDED and REJECTED are refused —
+  // they are decisions somebody made, and finishing a form must not undo one.
+  if (current.status !== "PENDING" && current.status !== "INVITED") {
     return { ok: false, reason: `Account is ${current.status.toLowerCase()}.` };
   }
 

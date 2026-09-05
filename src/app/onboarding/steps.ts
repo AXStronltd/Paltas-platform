@@ -11,6 +11,17 @@
  * what it will accept — a field appearing here grants nothing.
  */
 
+import { COUNTRY_CURRENCY } from "@/lib/i18n/countries";
+
+/**
+ * ISO codes rather than a curated list, because the platform is global and a
+ * "supported countries" dropdown is the thing that makes it not be. Labels are
+ * rendered from `Intl.DisplayNames` in the reader's own language, so nothing
+ * here needs translating.
+ */
+export const COUNTRY_CODES = Object.keys(COUNTRY_CURRENCY).sort();
+export const CURRENCY_CODES = Array.from(new Set(Object.values(COUNTRY_CURRENCY))).sort();
+
 export const ROLES = [
   { key: "developer", label: "Developer", blurb: "Projects, units, leads and payments" },
   { key: "landlord", label: "Landlord", blurb: "Your units, tenants and rent" },
@@ -26,16 +37,33 @@ export interface Field {
   k: string;
   l: string;
   ph?: string;
-  type?: "text" | "email" | "tel" | "select" | "check";
+  type?: "text" | "email" | "tel" | "select" | "check" | "textarea" | "url" | "number" | "checks" | "toggle" | "country" | "countries" | "timezone";
   opts?: string[];
   text?: string;
   required?: boolean;
+  /** Inline help under the field. The spec calls this microcopy. */
+  hint?: string;
+  /** Per-option explanation, rendered beside a `checks` group. */
+  optHints?: Record<string, string>;
+  /** Starting value where the spec gives one — toggles and preference selects. */
+  def?: string;
+  /** `number` only. */
+  min?: number;
 }
 
 export interface Step {
   t: string;
   d: string;
   f: Field[];
+  /**
+   * Steps the spec marks skippable. The form offers a skip link and asks
+   * nothing of the fields on the way past; Settings picks them up later.
+   */
+  skippable?: boolean;
+  /** The skip link's wording, which the spec writes per step. */
+  skipLabel?: string;
+  /** Shown under the heading, above the fields. */
+  note?: string;
 }
 
 /** Asked of everyone, because the profile and the approval queue both need it. */
@@ -51,7 +79,139 @@ const IDENTITY_STEP: Step = {
 
 const CONSENT = (text: string): Field => ({ k: "consent", l: "", type: "check", text, required: true });
 
-export const ONBOARDING: Record<RoleKey, Step[]> = {
+/* ------------------------------------------------------------------ *
+ * Business onboarding
+ *
+ * The second half of the form, from the "Onboarding — new account setup"
+ * specification. It asks for the legal entity, how the portal will be used,
+ * one real property, and alert preferences.
+ *
+ * Four of the specification's six steps are here. Step 1 (account) is already
+ * built: email, password and the terms checkbox are the sign-up form, and the
+ * identity step above collects the rest. Step 5 (invite your team) is not, and
+ * cannot be — it needs a users table and an email sender that do not exist on
+ * this side of the platform yet.
+ *
+ * Asked only of the roles that are businesses. A seller listing the house they
+ * live in has no registered address or financial year end, and a resident has
+ * neither; both would be filling in a company form to rent or sell one
+ * property. Their flows are unchanged.
+ *
+ * "Don't ask twice" is enforced by construction rather than by care: each role
+ * declares the keys its own step already collects, and those fields are
+ * dropped from the business steps instead of being asked a second time under a
+ * different heading.
+ * ------------------------------------------------------------------ */
+
+/** Businesses. Seller and resident are individuals and keep the short flow. */
+const BUSINESS_ROLES: RoleKey[] = ["developer", "landlord", "agent", "hotel"];
+
+const ENTITY_TYPES = ["Limited company", "Partnership", "Sole proprietor", "Trust", "Fund", "Other"];
+const PORTFOLIO_SIZES = ["1–10 units", "11–50", "51–200", "201–1,000", "1,000+"];
+const MANAGES = ["Residential lettings", "Sales", "Short-let / stays", "Commercial", "Development projects", "Facilities only"];
+const REFERRAL = ["Referral", "Search", "Social", "Event", "Partner", "Other"];
+const PROPERTY_KINDS = ["Residential", "Mixed use", "Commercial", "Short-let", "Land"];
+const DATE_FORMATS = ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"];
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+const COMPANY_STEP: Step = {
+  t: "Your company",
+  d: "The legal entity that owns or manages the portfolio",
+  note: "This becomes the first entity in your group structure, so it is worth getting right here.",
+  f: [
+    { k: "company", l: "Company name", ph: "e.g. Golden Park Developments", required: true },
+    { k: "trading", l: "Trading name", ph: "If you trade under something else" },
+    { k: "regCountry", l: "Country of registration", type: "country", required: true,
+      hint: "Sets your default currency, date format and compliance calendar. You can operate in other countries too." },
+    { k: "reg", l: "Company registration number", ph: "Formats differ by country",
+      hint: "Optional now. Needed before you can issue owner statements or investor reports." },
+    { k: "tax", l: "Tax / VAT number", ph: "Free text" },
+    { k: "entityType", l: "Entity type", type: "select", opts: ENTITY_TYPES, required: true },
+    { k: "address", l: "Registered address", type: "textarea", ph: "Street, city, postcode", required: true },
+    { k: "website", l: "Company website", type: "url", ph: "https://" },
+  ],
+};
+
+const USAGE_STEP: Step = {
+  t: "How you'll use the portal",
+  d: "So your dashboard isn't identical to everybody else's",
+  f: [
+    { k: "manages", l: "What do you manage?", type: "checks", opts: MANAGES, required: true,
+      hint: "We'll switch on the matching sections. Nothing is locked — you can turn the rest on any time." },
+    { k: "portfolio", l: "Portfolio size", type: "select", opts: PORTFOLIO_SIZES, required: true },
+    { k: "operatingCountries", l: "Countries you operate in", type: "countries", required: true },
+    { k: "currency", l: "Base currency", type: "select", opts: CURRENCY_CODES, required: true,
+      hint: "Everything rolls up to this. Individual properties can be held in their own currency." },
+    { k: "heardVia", l: "How did you hear about us?", type: "select", opts: REFERRAL },
+  ],
+};
+
+const PROPERTY_STEP: Step = {
+  t: "Add your first property",
+  d: "One property is enough for occupancy, valuation and the portfolio map to show something real",
+  skippable: true,
+  skipLabel: "I'll add properties later",
+  note: "Add one property now and your dashboard has real numbers from the first screen. You can bulk-import the rest from a spreadsheet afterwards.",
+  f: [
+    { k: "propName", l: "Property name", ph: "e.g. Kilimani Heights", required: true },
+    { k: "propLocation", l: "Location", ph: "City or district", required: true },
+    { k: "propCountry", l: "Country", type: "country", required: true },
+    { k: "propKind", l: "Property type", type: "select", opts: PROPERTY_KINDS, required: true },
+    { k: "propUnits", l: "Number of units", type: "number", min: 0, ph: "0" },
+    { k: "propValue", l: "Current valuation", type: "number", min: 0, ph: "In your base currency" },
+  ],
+};
+
+const PREFERENCES_STEP: Step = {
+  t: "Alerts and preferences",
+  d: "The defaults are sensible, so this screen is genuinely optional",
+  skippable: true,
+  skipLabel: "Use the defaults",
+  f: [
+    { k: "timezone", l: "Timezone", type: "timezone" },
+    { k: "dateFormat", l: "Date format", type: "select", opts: DATE_FORMATS },
+    { k: "fyEnd", l: "Financial year end", type: "select", opts: MONTHS, def: "December" },
+    { k: "alertCritical", l: "Critical alerts", type: "toggle", def: "on", hint: "Compliance breaches, blocked payments, safety incidents" },
+    { k: "alertWarning", l: "Warnings", type: "toggle", def: "on", hint: "Expiries, budget thresholds, SLA risk, arrears" },
+    { k: "alertInfo", l: "Informational", type: "toggle", def: "", hint: "Payments, bookings, signatures, task completions" },
+    { k: "digestDaily", l: "Daily digest at 07:00", type: "toggle", def: "on" },
+    { k: "digestWeekly", l: "Weekly performance summary", type: "toggle", def: "on" },
+    { k: "quietHours", l: "Quiet hours 22:00–06:00", type: "toggle", def: "on", hint: "Only critical alerts break through" },
+  ],
+};
+
+/**
+ * What each role's own step already collects, so the business steps can stop
+ * asking for it. The role's wording wins where the two overlap: a hotel's step
+ * says "Hotel name", which is a better prompt than "Company name" for someone
+ * who runs one.
+ */
+const ALREADY_ASKED: Partial<Record<RoleKey, string[]>> = {
+  developer: ["company", "reg"],
+  hotel: ["company", "reg"],
+  agent: ["trading"],
+  landlord: ["portfolio"],
+};
+
+const withoutKeys = (step: Step, drop: string[]): Step =>
+  drop.length === 0 ? step : { ...step, f: step.f.filter((field) => !drop.includes(field.k)) };
+
+/** The business half of the form, tailored to one role. */
+function businessSteps(role: RoleKey): Step[] {
+  if (!BUSINESS_ROLES.includes(role)) return [];
+  const drop = ALREADY_ASKED[role] ?? [];
+  return [COMPANY_STEP, USAGE_STEP, PROPERTY_STEP, PREFERENCES_STEP].map((step) => withoutKeys(step, drop));
+}
+
+/** Keys the business steps own, so the server knows what it is allowed to store. */
+export const BUSINESS_KEYS: string[] = Array.from(
+  new Set([COMPANY_STEP, USAGE_STEP, PROPERTY_STEP, PREFERENCES_STEP].flatMap((s) => s.f.map((f) => f.k))),
+);
+
+/** The keys that describe the first property, which is stored, not created. */
+export const PROPERTY_KEYS = PROPERTY_STEP.f.map((f) => f.k);
+
+const ROLE_STEPS: Record<RoleKey, Step[]> = {
   developer: [
     IDENTITY_STEP,
     {
@@ -183,6 +343,22 @@ export const ONBOARDING: Record<RoleKey, Step[]> = {
     },
   ],
 };
+
+/**
+ * The whole form, per role: identity, the role's own questions, the business
+ * half where it applies, and verification.
+ *
+ * Verification stays last. It ends in the attestation the approver relies on
+ * and the document uploads, and neither should be followed by questions about
+ * date formats — a person who has just signed a declaration is finished.
+ */
+export const ONBOARDING: Record<RoleKey, Step[]> = Object.fromEntries(
+  (Object.keys(ROLE_STEPS) as RoleKey[]).map((role) => {
+    const own = ROLE_STEPS[role];
+    const verification = own[own.length - 1];
+    return [role, [...own.slice(0, -1), ...businessSteps(role), verification]];
+  }),
+) as Record<RoleKey, Step[]>;
 
 /** Which documents the approval queue will insist on, per role. */
 export function requiredDocuments(role: RoleKey): ("IDENTITY" | "OWNERSHIP")[] {
