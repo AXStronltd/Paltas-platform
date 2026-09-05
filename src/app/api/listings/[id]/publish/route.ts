@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
-import { badRequest, conflict, guard, handle, notFound, ok, readJson } from "@/server/http";
+import { badRequest, conflict, fail, guard, handle, notFound, ok, readJson } from "@/server/http";
+import { publishVerification, verificationMessage } from "@/server/verification";
 import { writeAudit } from "@/server/audit";
 import { presentListing } from "@/server/presenters";
 import { PERMISSIONS } from "@/lib/security/permissions";
@@ -40,6 +41,29 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
     if (action === "publish") {
       if (listing.status === "PUBLISHED") return conflict("This listing is already live.");
+
+      /*
+       * A second line, and worth being honest that it is the second.
+       *
+       * The first is the permission itself: property_manager — the role every
+       * self-activating account receives — holds listing.view, create, update
+       * and unpublish, and not listing.publish. A host builds the advert; going
+       * live is PALTAS staff pressing the button. So the shopfront was already
+       * closed to unvetted accounts before this check existed, which I did not
+       * know when I added it and found by reading the role rather than by
+       * assuming what it contained.
+       *
+       * It stays because that is one grant away from not being true. The day
+       * somebody gives a host listing.publish to save a round trip, this is
+       * what stops an unverified account reaching guests with real money. It
+       * costs one query on a path only staff currently reach.
+       */
+      if (!g.actor.isPlatformAdmin) {
+        const state = await publishVerification(g.actor.id);
+        if (!state.verified) {
+          return fail(403, { code: "verification_required", message: verificationMessage(state.missing) });
+        }
+      }
 
       // An advert that reaches the public must actually be an advert.
       const missing: string[] = [];

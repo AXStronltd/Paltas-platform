@@ -6,6 +6,7 @@ import { badRequest, fail, guardPlatform, handle, ok, readJson } from "@/server/
 import { writeAudit } from "@/server/audit";
 import { record } from "@/server/notifications";
 import { activateAccount } from "@/server/activation";
+import { verificationOf } from "@/server/verification";
 
 export const dynamic = "force-dynamic";
 
@@ -108,12 +109,10 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const definition = SYSTEM_ROLES.find((r) => r.key === roleKey);
     if (!definition) return badRequest(`Unknown role "${roleKey}".`);
 
-    const requiredTypes = account.onboardingRole === "landlord"
-      ? ["IDENTITY", "OWNERSHIP"]
-      : account.onboardingRole === "resident" ? [] : ["IDENTITY"];
-    const approvedDocuments = await prisma.verificationDocument.findMany({ where: { userId: account.id, status: "APPROVED" }, select: { type: true } });
-    const approvedTypes = new Set(approvedDocuments.map((document) => document.type));
-    if (requiredTypes.some((type) => !approvedTypes.has(type as "IDENTITY" | "OWNERSHIP" | "SUPPORTING"))) {
+    // One definition of "verified", shared with the publish gate. Two lists of
+    // which documents a landlord owes would disagree the moment either moved.
+    const state = await verificationOf(account.id);
+    if (!state.verified) {
       return fail(409, { code: "verification_required", message: "Required identity or ownership documents must be approved before this account can be activated." });
     }
 
