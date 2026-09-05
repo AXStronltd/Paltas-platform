@@ -15,6 +15,9 @@
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
+// Server-side only, and deliberately prefers the non-public variable. A key
+// with an HTTP referrer restriction is refused outright by Google for calls
+// like this one, so the browser's key is the wrong key here even when it works.
 const key = (process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "").trim();
 const force = process.argv.includes("--force");
 

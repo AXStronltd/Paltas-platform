@@ -73,6 +73,21 @@ services:
         sync: false
       - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
         sync: false
+      # Two keys, not one, because they cannot be restricted the same way.
+      #
+      #   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY  served to the browser. Restrict it by
+      #                                    HTTP referrer to paltas.io and to the
+      #                                    Maps JavaScript and Places APIs. It is
+      #                                    public by design — the map runs in the
+      #                                    page — so the referrer restriction is
+      #                                    the only thing protecting the billing.
+      #
+      #   GOOGLE_MAPS_API_KEY              never leaves the server. Used by the
+      #                                    coordinate backfill at boot. Must NOT
+      #                                    carry a referrer restriction: Google
+      #                                    refuses referrer-restricted keys for
+      #                                    server-side calls. Restrict it to the
+      #                                    Geocoding API instead.
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         sync: false
       - key: GOOGLE_MAPS_API_KEY

@@ -46,11 +46,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const h = headers();
   const locale = h.get("x-paltas-locale") ?? "en";
   const market = h.get("x-paltas-market") ?? "KE";
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && process.env.GOOGLE_MAPS_API_KEY) {
+    console.warn(
+      "[paltas] Serving GOOGLE_MAPS_API_KEY to the browser because "
+      + "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is unset. That key cannot be referrer-restricted "
+      + "without breaking server-side geocoding. Set a second, browser-only key.",
+    );
+  }
+
   const publicConfig = JSON.stringify({
     supabaseUrl: process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     supabaseAnonKey: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY
       || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-    googleMapsKey: process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    // The browser's key, which is a different key from the server's — or should
+    // be. Maps and Places run in the page, so whatever is put here is public by
+    // design and needs an HTTP referrer restriction to be worth anything. But a
+    // referrer-restricted key cannot make a server-side call at all: Google
+    // refuses it outright, which would break the geocoding the boot does.
+    //
+    // So NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is the one that belongs here, and
+    // GOOGLE_MAPS_API_KEY stays on the server. The fallback keeps a
+    // single-key deployment working, and warns, because a setup that cannot be
+    // restricted should say so rather than look fine.
+    googleMapsKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY || "",
   }).replace(/</g, "\\u003c");
 
   return (
