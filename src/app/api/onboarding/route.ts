@@ -5,6 +5,8 @@ import { badRequest, handle, ok, unauthorized } from "@/server/http";
 import { staffDestination } from "@/lib/auth/destination";
 import { storageEnabled } from "@/server/storage";
 import { writeAudit } from "@/server/audit";
+import { activateAccount, ROLE_FOR } from "@/server/activation";
+import { record } from "@/server/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -79,12 +81,53 @@ export async function POST(req: Request): Promise<NextResponse> {
       after: { onboardingRole: body.role, status: user.status },
     });
 
+    /*
+     * Activate on completion, rather than waiting for somebody to approve.
+     *
+     * The email is already verified before this point and cannot not be: the
+     * Supabase exchange refuses any identity without email_confirmed_at, so
+     * nobody reaches this form — or signs in at all — on an unconfirmed
+     * address. Requiring a second, human approval after that was a queue that
+     * had to be staffed before a single customer could do anything.
+     *
+     * What it grants is a role over their own organisation and nothing else.
+     * Every request is authorised against the organisation the record belongs
+     * to, so this opens a workspace holding their own properties rather than
+     * any reach into another tenant's.
+     */
+    // Narrowed by the ROLES.includes check at the top of this handler, which
+    // TypeScript cannot see through — the guard tests a cast, so the original
+    // stays optional as far as the compiler is concerned.
+    const declaredRole = body.role as OnboardingRole;
+    const activated = await activateAccount({
+      userId: actor.id,
+      orgId: actor.orgId,
+      roleKey: ROLE_FOR[declaredRole] ?? "property_manager",
+      isOwner: declaredRole === "landlord",
+    });
+
+    if (activated.ok) {
+      await record({
+        userId: actor.id, kind: "APPROVAL",
+        title: "Your PALTAS account is ready",
+        body: "Your dashboard is open. Documents you upload are still reviewed.",
+        href: "/manage", entityId: `activated:${actor.id}`,
+      });
+    }
+
+    const status = activated.ok ? "ACTIVE" : user.status;
+
     // Where they go next, decided by the same helper the sign-in forms use so
     // the answer cannot drift between the two places that ask it.
     const destination = staffDestination({
-      onboardingRequired: user.status !== "ACTIVE",
+      onboardingRequired: status !== "ACTIVE",
       dashboardRole: user.onboardingRole,
     });
-    return ok({ onboardingCompleted: true, pendingApproval: user.status !== "ACTIVE", destination, user });
+    return ok({
+      onboardingCompleted: true,
+      pendingApproval: status !== "ACTIVE",
+      destination,
+      user: { ...user, status },
+    });
   });
 }

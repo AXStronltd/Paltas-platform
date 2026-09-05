@@ -5,6 +5,7 @@ import { prisma } from "@/server/db";
 import { badRequest, fail, guardPlatform, handle, ok, readJson } from "@/server/http";
 import { writeAudit } from "@/server/audit";
 import { record } from "@/server/notifications";
+import { activateAccount } from "@/server/activation";
 
 export const dynamic = "force-dynamic";
 
@@ -116,49 +117,18 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return fail(409, { code: "verification_required", message: "Required identity or ownership documents must be approved before this account can be activated." });
     }
 
-    await prisma.$transaction(async (tx) => {
-      // The organisation becomes real at the same moment its owner does.
-      await tx.organization.update({ where: { id: account.orgId }, data: { approved: true } });
-
-      const role = await tx.role.create({
-        data: {
-          orgId: account.orgId,
-          key: definition.key,
-          name: definition.name,
-          description: definition.description,
-          isSystem: true,
-          permissions: { create: definition.permissions.map((permission) => ({ permission })) },
-        },
-        select: { id: true },
-      });
-
-      await tx.roleAssignment.create({
-        data: {
-          userId: account.id,
-          roleId: role.id,
-          // Their whole organisation. They have no properties yet; this is the
-          // scope they will still hold once they add some.
-          scopeType: "ORGANIZATION",
-          scopeId: account.orgId,
-          grantedById: g.actor.id,
-        },
-      });
-
-      await tx.user.update({
-        where: { id: account.id },
-        data: {
-          status: "ACTIVE",
-          // Owner of their own organisation, which is what signing up as a
-          // business means. Never platform staff — that is ours to grant.
-          // Keyed on the same declared role the granted role came from. Reading
-          // onboardingRole alone meant a landlord who signed up through the API
-          // and was approved before onboarding became an owner of nothing.
-          isOwner: declaredRole === "landlord" && (body.isOwner ?? true),
-          approvedById: g.actor.id,
-          approvedAt: new Date(),
-        },
-      });
+    // The same function onboarding uses to activate itself. Two copies of
+    // "create the role, assign it, flip the status" would drift the moment
+    // either changed, and the difference between an approval and a
+    // self-activation is who decided, not what happens to the database.
+    const activated = await activateAccount({
+      userId: account.id,
+      orgId: account.orgId,
+      roleKey: definition.key,
+      isOwner: declaredRole === "landlord" && (body.isOwner ?? true),
+      approvedById: g.actor.id,
     });
+    if (!activated.ok) return fail(409, { code: "conflict", message: activated.reason });
 
     await writeAudit({
       actor: g.actor,
