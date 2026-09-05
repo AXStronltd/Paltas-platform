@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { ensureMembership } from "@/server/membership";
+import { ensureSubscription } from "@/server/entitlements";
 import { badRequest, fail, handle, ok, readJson } from "@/server/http";
 import { hashPassword } from "@/server/password";
 
@@ -96,6 +97,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
 
     await ensureMembership(user.id, createdOrgId, { isDefault: true });
+    await ensureSubscription(createdOrgId);
 
     return ok({
       account: user,

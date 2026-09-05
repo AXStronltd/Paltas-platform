@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { ensureMembership } from "@/server/membership";
+import { ensureSubscription } from "@/server/entitlements";
 import { hashPassword } from "@/server/password";
 import { badRequest, conflict, handle, ok, readJson } from "@/server/http";
 import { supabaseAdmin } from "@/server/supabase";
@@ -49,6 +50,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       select: { id: true, name: true, email: true, status: true, requestedRole: true },
     });
     await ensureMembership(user.id, org.id);
+    await ensureSubscription(org.id);
     return ok({ account: user, pending: true }, 201);
   });
 }
