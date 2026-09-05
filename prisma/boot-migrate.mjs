@@ -52,3 +52,28 @@ try {
 // Fatal on purpose. A container that serves a schema older than its code turns
 // a loud failure into a 500 somebody finds days later.
 run("migrate", "deploy");
+
+/**
+ * Give any property that still lacks coordinates some, once.
+ *
+ * Nothing about "nearby" can work while a property is only an address string,
+ * and the alternative — a shell command somebody has to remember to run after
+ * every batch of new inventory — is a step that will eventually be forgotten.
+ * This is the same script, invoked here, and it is cheap to leave in: it asks
+ * for properties with a null latitude, and once there are none that is a single
+ * indexed query per boot and nothing else.
+ *
+ * Non-fatal, and silent when there is no key. Geocoding is a nicety; a
+ * deployment must never refuse to serve because Google was slow.
+ */
+try {
+  const { execFileSync } = await import("node:child_process");
+  const hasKey = (process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "").trim();
+  if (hasKey) {
+    execFileSync(process.execPath, ["scripts/backfill-coordinates.mjs"], { stdio: "inherit" });
+  } else {
+    console.log("[boot] no Maps key — skipping coordinate backfill; \"nearby\" will be empty until one is set.");
+  }
+} catch {
+  console.log("[boot] coordinate backfill did not finish; continuing.");
+}

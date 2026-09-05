@@ -615,10 +615,15 @@ img { display: block; max-width: 100%; }
 /* ===== HERO (beach) — matches prototype ===== */
 .hero {
   position: relative; min-height: 420px; display: flex; align-items: center;
-  overflow: hidden; margin-bottom: 28px;
+  /* Not hidden. The destination panel hangs out of the bottom of the search
+     bar, and a hero that clips its own children clips that — the dropdown was
+     being cut off at the hero's edge on every screen wide enough to open it.
+     The photograph is inset:0 and clips itself, so nothing here needed the
+     hidden in the first place. */
+  overflow: visible; margin-bottom: 28px;
 }
 .hero-photo {
-  position: absolute; inset: 0; z-index: 0;
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
   background-image: url("https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=90&auto=format&fit=crop");
   background-size: cover; background-position: center;
   animation: heroZoom 20s ease-out forwards;
@@ -2292,8 +2297,20 @@ body:has(.scrim) .tabbar { display: none; }
 .dest-text span { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dest-hint { padding: 18px 14px; color: var(--muted); font-size: 13px; margin: 0; }
 
+/* On a phone it is a sheet that rises from the bottom, not a dropdown.
+   `position: fixed` with `top: auto` pinned it wherever it happened to land,
+   which was usually across the hero. A thumb reaches the bottom of a phone and
+   not the middle of it, so this is where the list belongs anyway. */
 @media (max-width: 560px) {
-  .dest-panel { position: fixed; inset-inline: 12px; width: auto; top: auto; max-height: 56vh; }
+  .dest-panel {
+    position: fixed; inset-inline: 0; top: auto;
+    bottom: 0; width: auto; max-height: 62vh;
+    border-radius: 18px 18px 0 0; border-bottom: 0;
+    padding: 6px 6px calc(10px + env(safe-area-inset-bottom));
+    box-shadow: 0 -14px 44px rgba(8,20,34,.26);
+    animation: dest-sheet .2s cubic-bezier(.22,1,.3,1);
+  }
+  @keyframes dest-sheet { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
 }
 @media (prefers-reduced-motion: reduce) { .dest-panel { animation: none; } }
 
@@ -2307,10 +2324,35 @@ body:has(.scrim) .tabbar { display: none; }
    ════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
 
-  /* ── The results grid ─────────────────────────────────────────────────────
-     Two columns. Everything in the card shrinks to match — a card at 172px
-     wide with 15px of padding and a 200px photograph is mostly margin. */
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0 32px; }
+  /* ── The results ──────────────────────────────────────────────────────────
+     A rail, not a grid. Two columns was already an improvement on one, but it
+     still meant scrolling down through twenty-nine rows to reach the end of the
+     catalogue. Swiping sideways through the same cards costs a thumb almost
+     nothing and keeps the sections below reachable — which is the whole shape
+     of a marketplace on a phone.
+
+     Deliberately a flex row rather than a second component: it is the same
+     ListingCard, the same data and the same click handler, laid out
+     differently under 767px. */
+  .grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    margin: 14px 0 26px;
+    padding-bottom: 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .grid::-webkit-scrollbar { display: none; }
+  /* Just over two in view, so the third is visibly cut off by the edge and the
+     row obviously keeps going. */
+  .grid > * {
+    flex: 0 0 46vw;
+    scroll-snap-align: start;
+  }
 
   .card { border-radius: 14px; }
   /* 4:3 rather than a fixed 200px. At half the screen width a fixed height is
@@ -2374,5 +2416,6 @@ body:has(.scrim) .tabbar { display: none; }
 @media (max-width: 359px) {
   .d-track { grid-auto-columns: 62vw; }
   .grid { gap: 8px; }
+  .grid > * { flex-basis: 62vw; }
   .card-body { padding: 8px 9px 10px; }
 }
