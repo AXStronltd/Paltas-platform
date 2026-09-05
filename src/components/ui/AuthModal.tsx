@@ -32,6 +32,8 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
   const [businessName, setBusinessName] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  /** Account made, address unconfirmed — the one screen this flow was missing. */
+  const [verifySent, setVerifySent] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -87,12 +89,25 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
       return;
     }
 
-    const message = accountType === "business"
+    const result = accountType === "business"
       ? await registerBusiness({ email: email.trim(), name: name.trim(), password, role, businessName: businessName.trim() })
       : await register({ email: email.trim(), name: name.trim(), password });
     setBusy(false);
 
-    if (message) return setErr(message);
+    if (result.error) return setErr(result.error);
+
+    // Supabase has issued no session because the address is unconfirmed. The
+    // account exists and there is nothing wrong — but there is nobody to sign
+    // in yet, so the form is replaced by the instruction rather than showing a
+    // red line under a signup that worked.
+    if (result.needsVerification) return setVerifySent(true);
+
+    // A session was issued, so a business account can go straight to the form
+    // that opens its dashboard. A guest has nowhere to be but where they were.
+    const destination = "destination" in result && typeof result.destination === "string"
+      ? result.destination
+      : null;
+    if (destination) { window.location.assign(destination); return; }
 
     toast.success(
       personalWelcome(t, name.trim() || email.trim()),
@@ -106,6 +121,27 @@ export function AuthModal({ onClose, onDone }: { onClose: () => void; onDone?: (
     setErr("");
     const result = await supabaseGoogleSignIn("guest");
     if (result.error) setErr(result.error);
+  }
+
+  if (verifySent) {
+    return (
+      <Portal>
+        <div className="scrim" onClick={(e) => e.target === e.currentTarget && onClose()}>
+          <div className="modal auth-modal">
+            <div className="auth-card">
+              <h1 className="auth-title">Check your email</h1>
+              <p className="auth-sub">
+                We have sent a confirmation link to <b>{email.trim()}</b>. Open it, then sign
+                in — {accountType === "business"
+                  ? "you will be taken to a short form about your business, and your dashboard opens as soon as it is done."
+                  : "you will be signed straight in."}
+              </p>
+              <button className="btn btn-primary" onClick={onClose}>Done</button>
+            </div>
+          </div>
+        </div>
+      </Portal>
+    );
   }
 
   return (

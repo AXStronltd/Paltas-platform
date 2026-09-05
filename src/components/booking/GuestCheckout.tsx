@@ -156,7 +156,8 @@ function AccountStep({
 }: {
   onDone: () => void;
   signIn: (email: string, password: string) => Promise<{ error: string | null; staff: boolean }>;
-  register: (i: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
+  register: (i: { email: string; name: string; password: string; phone?: string })
+    => Promise<{ error: string | null; needsVerification?: boolean }>;
 }) {
   const { t } = useI18n();
   const [mode, setMode] = useState<"register" | "signin">("register");
@@ -175,7 +176,7 @@ function AccountStep({
     // dashboard would throw it away.
     const msg = mode === "signin"
       ? (await signIn(email.trim(), password)).error
-      : await register({ email: email.trim(), name: name.trim(), password });
+      : (await register({ email: email.trim(), name: name.trim(), password })).error;
     setBusy(false);
     if (msg) { setError(msg); return; }
     onDone();

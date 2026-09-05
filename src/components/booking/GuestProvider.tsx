@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { currentGuest, logoutGuest, type Guest } from "@/lib/services/guestService";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { supabaseSignIn, supabaseSignUp } from "@/lib/supabase/auth";
+import { staffDestination } from "@/lib/auth/destination";
 
 /**
  * Who is browsing, if anyone.
@@ -27,8 +28,10 @@ interface GuestState {
    * finishes the booking they were in the middle of.
    */
   signIn: (email: string, password: string) => Promise<{ error: string | null; staff: boolean }>;
-  register: (input: { email: string; name: string; password: string; phone?: string }) => Promise<string | null>;
-  registerBusiness: (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string }) => Promise<string | null>;
+  register: (input: { email: string; name: string; password: string; phone?: string })
+    => Promise<{ error: string | null; needsVerification?: boolean }>;
+  registerBusiness: (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string })
+    => Promise<{ error: string | null; needsVerification?: boolean; destination?: string }>;
   signOut: () => Promise<void>;
 }
 
@@ -56,18 +59,35 @@ export function GuestProvider({ children }: { children: React.ReactNode }) {
     return { error: null, staff: Boolean(res.data.staff) };
   }, []);
 
+  /*
+   * Returns an outcome, not a message.
+   *
+   * Both of these used to return a string in every case, and the caller showed
+   * any string as an error — so "Account created, please verify your email" was
+   * rendered in red beneath the form, the modal stayed open, and a signup that
+   * had just succeeded looked exactly like one that had failed. Nothing moved
+   * on, because there was no way for the caller to tell the difference.
+   */
   const register = useCallback(async (input: { email: string; name: string; password: string; phone?: string }) => {
     const res = await supabaseSignUp({ ...input, audience: "guest" });
-    if ("error" in res && res.error) return res.error;
-    if ("needsVerification" in res) return "Account created. Please verify your email, then sign in.";
+    if ("error" in res && res.error) return { error: res.error };
+    // Supabase issues no session until the address is confirmed, so there is
+    // nobody to sign in yet. That is a step in the journey, not a failure.
+    if ("needsVerification" in res) return { error: null, needsVerification: true };
     setGuest(res.data.guest);
-    return null;
+    return { error: null };
   }, []);
 
   const registerBusiness = useCallback(async (input: { email: string; name: string; password: string; role: "landlord" | "agent" | "hotel" | "developer"; businessName?: string }) => {
     const res = await supabaseSignUp({ ...input, audience: "staff" });
-    if ("error" in res && res.error) return res.error;
-    return "Application received. Please verify your email; PALTAS will review your account before access is granted.";
+    if ("error" in res && res.error) return { error: res.error };
+    if ("needsVerification" in res) return { error: null, needsVerification: true };
+    // Where a session was issued straight away — email confirmation switched
+    // off in Supabase — the account exists and the next step is the onboarding
+    // form, which is what actually opens the dashboard. It used to say PALTAS
+    // would review the account first, which stopped being true when onboarding
+    // began activating accounts itself.
+    return { error: null, destination: staffDestination(res.data) };
   }, []);
 
   const signOut = useCallback(async () => {
