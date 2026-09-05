@@ -92,7 +92,27 @@ services:
       # inlines NEXT_PUBLIC_* at build time, and Render builds the Dockerfile
       # without the service environment — so that variable compiles to an empty
       # string, looks correctly set in the dashboard, and does nothing.
+      # Three keys, because the restrictions they need contradict each other.
+      #
+      #   GOOGLE_MAPS_BROWSER_KEY   served to the browser. MUST be restricted by
+      #                             HTTP referrer to paltas.io, or anyone can
+      #                             lift it off the page and spend the quota.
+      #                             Maps JavaScript + Places.
+      #
+      #   GOOGLE_GEOCODING_API_KEY  server-side only, for turning a property's
+      #                             address into coordinates at boot. MUST NOT
+      #                             carry a referrer restriction — Google
+      #                             refuses those for the Geocoding web service
+      #                             outright — so restrict it by IP, or by API
+      #                             only. Without it "nearby" cannot work for
+      #                             newly added properties.
+      #
+      #   GOOGLE_MAPS_API_KEY       the older single key. Still read as a
+      #                             fallback for both, which only works while it
+      #                             is unrestricted.
       - key: GOOGLE_MAPS_BROWSER_KEY
+        sync: false
+      - key: GOOGLE_GEOCODING_API_KEY
         sync: false
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         sync: false

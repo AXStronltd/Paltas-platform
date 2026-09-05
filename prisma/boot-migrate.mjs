@@ -68,12 +68,19 @@ run("migrate", "deploy");
  */
 try {
   const { execFileSync } = await import("node:child_process");
-  const hasKey = (process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "").trim();
+  const hasKey = (
+    process.env.GOOGLE_GEOCODING_API_KEY
+    || process.env.GOOGLE_MAPS_API_KEY
+    || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    || ""
+  ).trim();
   if (hasKey) {
     execFileSync(process.execPath, ["scripts/backfill-coordinates.mjs"], { stdio: "inherit" });
   } else {
-    console.log("[boot] no Maps key — skipping coordinate backfill; \"nearby\" will be empty until one is set.");
+    console.log("[boot] no geocoding key — skipping backfill; \"nearby\" stays empty until GOOGLE_GEOCODING_API_KEY is set.");
   }
 } catch {
-  console.log("[boot] coordinate backfill did not finish; continuing.");
+  // The script prints the reason itself, including the referrer-restriction
+  // case — the one that otherwise looks like nothing happening at all.
+  console.log("[boot] coordinate backfill did not finish — see the lines above. Continuing to serve.");
 }

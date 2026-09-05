@@ -15,15 +15,50 @@
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
-// Server-side only, and deliberately prefers the non-public variable. A key
-// with an HTTP referrer restriction is refused outright by Google for calls
-// like this one, so the browser's key is the wrong key here even when it works.
-const key = (process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "").trim();
+/*
+ * Server-side only, and it needs a key that carries no HTTP referrer
+ * restriction — Google refuses those outright for the Geocoding web service,
+ * whatever else the key is allowed to do.
+ *
+ * GOOGLE_GEOCODING_API_KEY exists because that requirement is the opposite of
+ * the browser's. The browser key must be referrer-restricted or anybody can
+ * lift it off the page and spend your quota; this one must not be, or it
+ * cannot make this call at all. One key cannot satisfy both, and trying to
+ * make it is how geocoding quietly stopped working while the map kept going.
+ *
+ * It falls back to GOOGLE_MAPS_API_KEY for deployments where that key is still
+ * unrestricted, which is the older single-key arrangement.
+ */
+const key = (
+  process.env.GOOGLE_GEOCODING_API_KEY
+  || process.env.GOOGLE_MAPS_API_KEY
+  || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  || ""
+).trim();
 const force = process.argv.includes("--force");
 
 if (!key) {
-  console.error("GOOGLE_MAPS_API_KEY is not set. Nothing to geocode with.");
+  console.error("No geocoding key. Set GOOGLE_GEOCODING_API_KEY (server-side, no referrer restriction).");
   process.exit(1);
+}
+
+/**
+ * The one failure worth interrupting for.
+ *
+ * A referrer-restricted key does not fail per address, it fails for every
+ * address identically — so reporting it once and stopping beats printing the
+ * same refusal beside each of a hundred properties, and beats the previous
+ * behaviour of failing quietly enough that nobody noticed for a day.
+ */
+function fatalKeyProblem(message) {
+  if (!/referer restrictions/i.test(message ?? "")) return false;
+  console.error("\n  The geocoding key has an HTTP referrer restriction, which Google refuses");
+  console.error("  for server-side calls. This is expected of the browser key and wrong for");
+  console.error("  this one.\n");
+  console.error("  Fix: create a second key in Google Cloud with NO application restriction");
+  console.error("  (or an IP restriction), limit it to the Geocoding API, and set it in");
+  console.error("  Render as GOOGLE_GEOCODING_API_KEY. Leave GOOGLE_MAPS_BROWSER_KEY alone.\n");
+  return true;
 }
 
 /** Google asks for no more than 50 requests a second; this is well under. */
@@ -71,6 +106,7 @@ for (const property of properties) {
   }
 
   const result = await geocode(address, property.country);
+  if (fatalKeyProblem(result.error)) { failed++; break; }
   if (result.error || result.latitude == null) {
     console.log(`  ✗ ${property.name} (${address}): ${result.error ?? "no result"}`);
     failed++;
