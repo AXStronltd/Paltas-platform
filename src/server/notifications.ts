@@ -3,6 +3,7 @@ import { enqueueAndSend, appUrl } from "@/server/mail";
 import { dedupeKey } from "@/lib/mail/outbox";
 import { bookingConfirmed, bookingCancelled, passwordReset } from "@/lib/mail/templates";
 import { DEFAULT_MARKET } from "@/lib/i18n/locales";
+import type { NotificationKind } from "@prisma/client";
 
 /**
  * The events worth telling somebody about.
@@ -18,10 +19,58 @@ import { DEFAULT_MARKET } from "@/lib/i18n/locales";
  * Stripe then retries.
  */
 
+/**
+ * Record something in the recipient's in-app notifications.
+ *
+ * Lives beside the email functions rather than in a module of its own, because
+ * "a booking was confirmed" is one event with two ways of being told about it.
+ * Splitting them is how a platform ends up emailing about something its own
+ * notification bell has never heard of.
+ *
+ * Best-effort and never throws, for the same reason the mail functions are not:
+ * a booking is confirmed whether or not anyone could be told, and a failed
+ * insert must not turn a successful payment into a 500 that Stripe retries.
+ *
+ * Idempotent on (recipient, kind, entityId), so a webhook delivered twice — or
+ * a script noticing the gap later — records one notification, and re-delivery
+ * never marks a read one unread.
+ */
+export async function record(input: {
+  guestId?: string | null;
+  userId?: string | null;
+  kind: NotificationKind;
+  title: string;
+  body?: string;
+  href?: string;
+  entityId?: string;
+}): Promise<void> {
+  if (!input.guestId && !input.userId) return;
+  const entityId = input.entityId ?? "";
+  try {
+    await prisma.notification.upsert({
+      where: input.guestId
+        ? { guestId_kind_entityId: { guestId: input.guestId, kind: input.kind, entityId } }
+        : { userId_kind_entityId: { userId: input.userId!, kind: input.kind, entityId } },
+      update: {},
+      create: {
+        guestId: input.guestId ?? null,
+        userId: input.userId ?? null,
+        kind: input.kind,
+        title: input.title,
+        body: input.body ?? null,
+        href: input.href ?? null,
+        entityId,
+      },
+    });
+  } catch {
+    // Deliberately silent. See above.
+  }
+}
+
 const BOOKING_FIELDS = {
   id: true, reference: true, checkIn: true, checkOut: true,
   nights: true, guests: true, total: true, currency: true,
-  guest: { select: { name: true, email: true, locale: true, country: true } },
+  guest: { select: { id: true, name: true, email: true, locale: true, country: true } },
   listing: { select: { title: true, city: true, country: true } },
 } as const;
 
@@ -69,6 +118,13 @@ export async function notifyBookingConfirmed(bookingId: string): Promise<void> {
         helpUrl: `${appUrl()}/help`,
       }),
     });
+
+    await record({
+      guestId: booking.guest.id, kind: "BOOKING",
+      title: "Your booking is confirmed",
+      body: `${booking.listing.title} — ${booking.reference}`,
+      href: "/bookings", entityId: `confirmed:${booking.id}`,
+    });
   } catch {
     /* A booking is confirmed whether or not we could write about it. */
   }
@@ -100,6 +156,13 @@ export async function notifyBookingCancelled(bookingId: string): Promise<void> {
         bookingUrl: `${appUrl()}/bookings`,
         helpUrl: `${appUrl()}/help`,
       }),
+    });
+
+    await record({
+      guestId: booking.guest.id, kind: "BOOKING",
+      title: "Your booking was cancelled",
+      body: `${booking.listing.title} — ${booking.reference}`,
+      href: "/bookings", entityId: `cancelled:${booking.id}`,
     });
   } catch {
     /* Cancelling worked; telling them about it is separate. */

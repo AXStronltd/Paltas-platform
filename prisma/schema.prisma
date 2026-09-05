@@ -140,6 +140,7 @@ model User {
   payslips        Payslip[]
   verificationDocuments VerificationDocument[]
   messageThreads        MessageThread[]
+  notifications         Notification[]
 
   @@index([orgId])
 }
@@ -1493,6 +1494,7 @@ model Guest {
   bookings Booking[]
   reviews  Review[]
   threads  MessageThread[]
+  notifications Notification[]
 
   @@index([email])
 }
@@ -2348,4 +2350,47 @@ model Message {
   thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@index([threadId, createdAt])
+}
+
+enum NotificationKind {
+  BOOKING
+  APPROVAL
+  VERIFICATION
+  MESSAGE
+  PRICE_DROP
+  NEW_LISTING
+  AVAILABILITY
+  SYSTEM
+}
+
+/// Something the platform wants to tell one person about, in the product.
+///
+/// Deliberately addressed to one recipient rather than broadcast. A "new
+/// property" row written once per listing and fanned out to every guest would
+/// be a table that grows by inventory times audience, and most of it would
+/// never be read. What everyone can see — newly published listings — is read
+/// from the listings themselves; this table is only for what is true about
+/// *you*: your booking, your approval, your documents.
+model Notification {
+  id       String           @id @default(cuid())
+  /// Exactly one of these is set — the same two-sided audience messaging has.
+  guestId  String?
+  userId   String?
+  kind     NotificationKind
+  title    String
+  body     String?
+  /// Where tapping it should go. Null when there is nothing to open.
+  href     String?
+  /// What it concerns, so the same event cannot be recorded twice.
+  entityId String?
+  readAt   DateTime?
+  createdAt DateTime @default(now())
+
+  guest Guest? @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guestId, readAt, createdAt])
+  @@index([userId, readAt, createdAt])
+  @@unique([guestId, kind, entityId])
+  @@unique([userId, kind, entityId])
 }

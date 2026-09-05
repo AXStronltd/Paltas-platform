@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { prisma } from "@/server/db";
 import { badRequest, fail, guardPlatform, handle, ok, readJson } from "@/server/http";
 import { writeAudit } from "@/server/audit";
+import { record } from "@/server/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,13 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         summary: `Rejected ${account.name} <${account.email}> — ${body.reason.trim()}`,
         before: { status: "PENDING" },
         after: { status: "REJECTED" },
+      });
+
+      await record({
+        userId: account.id, kind: "APPROVAL",
+        title: "Your PALTAS account was not approved",
+        body: body.reason.trim().slice(0, 200),
+        href: "/onboarding", entityId: `rejected:${account.id}`,
       });
 
       return ok({ rejected: true });
@@ -161,6 +169,14 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         + (account.requestedRole ? ` (asked for: ${account.requestedRole})` : "") + ".",
       before: { status: "PENDING" },
       after: { status: "ACTIVE", role: definition.key },
+    });
+
+    // The one notification anybody in this system is actually waiting for.
+    await record({
+      userId: account.id, kind: "APPROVAL",
+      title: "Your PALTAS account is approved",
+      body: `You now have ${definition.name} access. Your dashboard is ready.`,
+      href: "/manage", entityId: `approved:${account.id}`,
     });
 
     return ok({ approved: true, role: definition.key });

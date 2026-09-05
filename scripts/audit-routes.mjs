@@ -49,6 +49,21 @@ const UNGUARDED_BY_DESIGN = {
 };
 
 /** Mutating endpoints that record to the access history rather than the audit log. */
+/**
+ * Mutations that are deliberately not in the audit trail.
+ *
+ * Separate from UNGUARDED_BY_DESIGN, which answers a different question. Until
+ * now the only way to excuse a missing audit entry was to declare the route
+ * unauthenticated, which is untrue of every route that would want it — so the
+ * two are no longer the same list.
+ *
+ * The bar is that the mutation changes nothing anyone could later need to
+ * account for, and that recording it would cost more than it tells.
+ */
+const NOT_AUDITABLE = {
+  "/notifications/route.ts": "marks the caller's own notifications read. It changes one timestamp on rows addressed to them, grants nothing and touches nobody else's data. An audit entry per notification opened would be the noisiest action on the platform, and would bury the entries that matter.",
+};
+
 const LOGS_TO_ACCESS_HISTORY = {
   "/security/passes/verify/route.ts": "gate scan — written to AccessEvent",
   "/security/cards/verify/route.ts": "gate scan — written to AccessEvent",
@@ -121,13 +136,13 @@ for (const file of files) {
     // entry beside it would duplicate the row it describes, and a log of who
     // said what to whom is a privacy cost rather than an operational one.
     src.includes("message.create(");
-  if (mutates && !logs && !exempt) unlogged.push(route);
+  if (mutates && !logs && !exempt && !(route in NOT_AUDITABLE)) unlogged.push(route);
 
   rows.push({
     route,
     methods: methods.join(","),
     auth: guards ? `guard ×${guards}` : guestGuards ? `guest ×${guestGuards}` : usesActor ? "currentActor()" : "—",
-    note: UNGUARDED_BY_DESIGN[route] ?? LOGS_TO_ACCESS_HISTORY[route] ?? GUEST_AUTHORITY[route] ?? "",
+    note: UNGUARDED_BY_DESIGN[route] ?? LOGS_TO_ACCESS_HISTORY[route] ?? NOT_AUDITABLE[route] ?? GUEST_AUTHORITY[route] ?? "",
   });
 }
 

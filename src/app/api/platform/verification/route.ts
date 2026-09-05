@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
 import { badRequest, fail, guardPlatform, handle, ok, readJson } from "@/server/http";
 import { writeAudit } from "@/server/audit";
+import { record } from "@/server/notifications";
 import { presignGet } from "@/server/storage";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,18 @@ export async function PATCH(req: Request): Promise<NextResponse> {
     if (!document) return fail(404, { code: "not_found", message: "Document not found." });
     const updated = await prisma.verificationDocument.update({ where: { id }, data: { status: body.status, reviewNote: body.reviewNote?.trim().slice(0, 400) || null, reviewedById: gate.actor.id, reviewedAt: new Date() }, select: { id: true, status: true } });
     await writeAudit({ actor: gate.actor, action: `verification.document.${body.status.toLowerCase()}`, entityType: "VerificationDocument", entityId: id, summary: `${body.status === "APPROVED" ? "Approved" : "Rejected"} a verification document`, before: { status: document.status }, after: { status: updated.status } });
+    // Whoever uploaded it has been waiting to hear; without this the only way
+    // to learn a document was rejected is to guess and upload another.
+    const owner = await prisma.verificationDocument.findUnique({ where: { id }, select: { userId: true, type: true } });
+    await record({
+      userId: owner?.userId, kind: "VERIFICATION",
+      title: body.status === "APPROVED" ? "Your document was verified" : "Your document needs attention",
+      body: body.status === "APPROVED"
+        ? `Your ${owner?.type.toLowerCase()} document has been approved.`
+        : body.reviewNote?.trim().slice(0, 200),
+      href: "/onboarding", entityId: `${body.status.toLowerCase()}:${id}`,
+    });
+
     return ok({ document: updated });
   });
 }
