@@ -601,5 +601,11 @@
   "verification.p2": "Unaendelea kusambazwa, haujakamilika. Matangazo mengi leo hayana alama kabisa, na ndivyo kutokuwepo kwa alama kunamaanisha — hakuna ukaguzi bado, si uliofeli.",
   "verification.title": "Jinsi uthibitisho unavyofanyika",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

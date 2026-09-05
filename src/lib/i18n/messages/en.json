@@ -589,5 +589,11 @@
   "verification.p2": "It is being rolled out rather than finished. Most listings today carry no badges at all, and that is what the absence of a badge means — no check yet, not a failed one.",
   "verification.title": "How verification works",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

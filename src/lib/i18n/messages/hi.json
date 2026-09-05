@@ -600,5 +600,11 @@
   "verification.p2": "यह लागू हो रहा है, पूरा नहीं हुआ। आज अधिकांश लिस्टिंग पर कोई बैज नहीं है, और बैज की अनुपस्थिति का यही अर्थ है — अभी जाँच नहीं हुई, असफल नहीं हुई।",
   "verification.title": "सत्यापन कैसे होता है",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

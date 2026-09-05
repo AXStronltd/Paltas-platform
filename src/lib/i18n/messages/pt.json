@@ -609,5 +609,11 @@
   "verification.p2": "Está sendo implantada, não concluída. Hoje a maioria dos anúncios não tem selo algum, e é isso que a ausência significa — ainda sem checagem, não uma que falhou.",
   "verification.title": "Como funciona a verificação",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

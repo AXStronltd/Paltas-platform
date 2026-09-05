@@ -601,5 +601,11 @@
   "verification.p2": "Ji diegiama, o ne baigta. Šiandien daugumoje skelbimų ženklų iš viso nėra, ir būtent tai jų nebuvimas reiškia — patikros dar nebuvo, o ne kad ji nepavyko.",
   "verification.title": "Kaip vyksta patikra",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

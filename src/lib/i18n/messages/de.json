@@ -611,5 +611,11 @@
   "verification.p2": "Sie wird ausgerollt, nicht abgeschlossen. Die meisten Inserate tragen heute gar kein Siegel, und genau das bedeutet sein Fehlen — noch keine Prüfung, keine gescheiterte.",
   "verification.title": "Wie die Prüfung funktioniert",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

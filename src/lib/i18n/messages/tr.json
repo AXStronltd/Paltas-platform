@@ -600,5 +600,11 @@
   "verification.p2": "Yayılıyor, tamamlanmış değil. Bugün ilanların çoğunda hiç rozet yok ve rozetin yokluğu tam da bunu anlatır — henüz kontrol edilmedi, başarısız olmadı.",
   "verification.title": "Doğrulama nasıl işler",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

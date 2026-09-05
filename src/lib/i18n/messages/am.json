@@ -598,5 +598,11 @@
   "verification.p2": "እየተስፋፋ ነው እንጂ አልተጠናቀቀም። ዛሬ አብዛኞቹ ማስታወቂያዎች ምንም ምልክት የላቸውም፤ የምልክቱ አለመኖርም ይህንኑ ያመለክታል — ገና ምርመራ አልተደረገም እንጂ ያልተሳካ አይደለም።",
   "verification.title": "ማረጋገጫ እንዴት እንደሚከናወን",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

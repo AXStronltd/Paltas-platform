@@ -608,5 +608,11 @@
   "verification.p2": "È in corso di attivazione, non conclusa. Oggi la maggior parte degli annunci non ha alcun badge, ed è questo che la sua assenza vuol dire: nessun controllo ancora, non uno fallito.",
   "verification.title": "Come funziona la verifica",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

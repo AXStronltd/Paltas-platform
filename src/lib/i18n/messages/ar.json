@@ -598,5 +598,11 @@
   "verification.p2": "وهو قيد التوسّع لا مكتمل. معظم الإعلانات اليوم بلا شارات إطلاقًا، وهذا ما يعنيه غياب الشارة — لم يُجرَ فحص بعد، لا أن فحصًا أخفق.",
   "verification.title": "كيف يتم التحقق",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

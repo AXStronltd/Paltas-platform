@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n/LocaleProvider";
 import type { SearchFilters } from "@/lib/models";
-import { loadGoogleMaps } from "@/components/maps/googleMaps";
+import { DestinationPanel, type Chosen } from "./DestinationPanel";
 
 /**
  * Where, when, how many.
@@ -18,9 +18,11 @@ import { loadGoogleMaps } from "@/components/maps/googleMaps";
  */
 const today = () => new Date().toISOString().slice(0, 10);
 
-export function SearchBar({ onSearch, busy }: {
+export function SearchBar({ onSearch, busy, viewport }: {
   onSearch: (f: SearchFilters) => void;
   busy?: boolean;
+  /** What the map is showing, when there is one. Biases predictions. */
+  viewport?: { north: number; south: number; east: number; west: number } | null;
 }) {
   const { t } = useI18n();
   const [where, setWhere] = useState("");
@@ -28,31 +30,55 @@ export function SearchBar({ onSearch, busy }: {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(2);
   const whereInput = useRef<HTMLInputElement>(null);
+  const whereBox = useRef<HTMLDivElement>(null);
   const [selectedCity, setSelectedCity] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [chosen, setChosen] = useState<Chosen | null>(null);
+  const [near, setNear] = useState<{ latitude: number; longitude: number } | null>(null);
 
+  /*
+   * Where the visitor is, asked for only when they open the field.
+   *
+   * Requesting geolocation on page load is the prompt everybody denies out of
+   * reflex, and a denial is permanent for the origin. Asked at the moment it
+   * obviously helps — they have just said they are looking for somewhere — it
+   * is a question with a visible reason, and a refusal costs nothing: the panel
+   * simply shows popular destinations instead of nearby ones.
+   */
   useEffect(() => {
-    if (!whereInput.current) return;
-    void loadGoogleMaps().then(() => {
-      if (!whereInput.current || !window.google?.maps?.places) return;
-      const autocomplete = new google.maps.places.Autocomplete(whereInput.current, { fields: ["address_components", "formatted_address", "name"], types: ["(regions)"] });
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        const city = place.address_components?.find((part) => part.types.includes("locality"))?.long_name
-          ?? place.address_components?.find((part) => part.types.includes("administrative_area_level_1"))?.long_name
-          ?? place.name ?? "";
-        setSelectedCity(city);
-        if (place.formatted_address) setWhere(place.formatted_address);
-      });
-    }).catch(() => undefined);
-  }, []);
+    if (!panelOpen || near || typeof navigator === "undefined" || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (position) => setNear({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
+      () => { /* declined, or unavailable. Popular destinations still work. */ },
+      { timeout: 8000, maximumAge: 300_000 },
+    );
+  }, [panelOpen, near]);
+
+  // Click-away, so the panel is not something you close by reloading.
+  useEffect(() => {
+    if (!panelOpen) return;
+    const away = (e: MouseEvent) => {
+      if (whereBox.current && !whereBox.current.contains(e.target as Node)) setPanelOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setPanelOpen(false); };
+    document.addEventListener("mousedown", away);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
+  }, [panelOpen]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     onSearch({
-      city: selectedCity || where.trim() || undefined,
+      city: chosen?.city || selectedCity || where.trim() || undefined,
       guests: guests > 0 ? guests : undefined,
       checkIn: checkIn || undefined,
       checkOut: checkOut || undefined,
+      // Coordinates when a real place was chosen, so the search can be a radius
+      // around a point rather than a string match on a city name — the whole
+      // reason for fetching Place Details.
+      ...(chosen?.latitude != null && chosen?.longitude != null
+        ? { latitude: chosen.latitude, longitude: chosen.longitude, radiusKm: chosen.radiusKm }
+        : {}),
     });
     // The results are further down the page; take the visitor to them.
     document.querySelector(".marketplace")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -60,7 +86,7 @@ export function SearchBar({ onSearch, busy }: {
 
   return (
     <form className="hero-search" onSubmit={submit} role="search">
-      <div className="hs-field">
+      <div className="hs-field hs-where" ref={whereBox}>
         <span className="hs-ico" aria-hidden="true">📍</span>
         <div className="hs-body">
           <label htmlFor="hs-where">{t("search.where")}</label>
@@ -68,11 +94,29 @@ export function SearchBar({ onSearch, busy }: {
             id="hs-where"
             value={where}
             ref={whereInput}
-            onChange={(e) => { setWhere(e.target.value); setSelectedCity(""); }}
+            onChange={(e) => { setWhere(e.target.value); setSelectedCity(""); setChosen(null); setPanelOpen(true); }}
+            onFocus={() => setPanelOpen(true)}
             placeholder={t("search.wherePlaceholder")}
             autoComplete="off"
+            role="combobox"
+            aria-expanded={panelOpen}
+            aria-autocomplete="list"
           />
         </div>
+        {panelOpen && (
+          <DestinationPanel
+            query={where}
+            near={near}
+            viewport={viewport}
+            onChoose={(c) => {
+              setChosen(c);
+              setWhere(c.label);
+              setSelectedCity(c.city ?? "");
+              whereInput.current?.blur();
+            }}
+            onClose={() => setPanelOpen(false)}
+          />
+        )}
       </div>
 
       <div className="hs-divider" />

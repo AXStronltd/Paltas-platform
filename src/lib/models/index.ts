@@ -292,6 +292,19 @@ export interface SearchFilters {
   /** Dates, when the visitor has chosen them. Only meaningful for stays. */
   checkIn?: string;
   checkOut?: string;
+  /**
+   * A point to search around, set only when a real place was chosen from the
+   * destination panel rather than typed.
+   *
+   * Present alongside `city` rather than instead of it: a name is what the
+   * visitor recognises in the results header, and coordinates are what the
+   * inventory is actually filtered by. Losing either would mean either a
+   * heading nobody asked for, or a radius nobody can name.
+   */
+  latitude?: number;
+  longitude?: number;
+  /** Scaled to what was chosen — a country is not a street. */
+  radiusKm?: number;
 }
 
 /** Uniform result wrapper — mirrors what a real API layer returns. */

@@ -605,5 +605,11 @@
   "verification.p2": "Den rullas ut, den är inte klar. De flesta annonser bär i dag inga märken alls, och det är just vad frånvaron betyder — ingen kontroll än, inte en misslyckad.",
   "verification.title": "Så fungerar verifieringen",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

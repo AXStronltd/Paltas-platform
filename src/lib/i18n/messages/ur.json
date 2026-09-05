@@ -598,5 +598,11 @@
   "verification.p2": "یہ نافذ ہو رہی ہے، مکمل نہیں ہوئی۔ آج زیادہ تر اشتہارات پر کوئی نشان نہیں، اور نشان کی غیر موجودگی کا یہی مطلب ہے — ابھی جانچ نہیں ہوئی، ناکام نہیں ہوئی۔",
   "verification.title": "تصدیق کیسے ہوتی ہے",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

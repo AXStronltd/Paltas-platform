@@ -597,5 +597,11 @@
   "verification.p2": "它正在推进，尚未完成。今天大多数房源没有任何徽章，而徽章的缺失正是此意——尚未核查，而非核查未通过。",
   "verification.title": "核验如何进行",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

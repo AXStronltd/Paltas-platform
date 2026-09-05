@@ -601,5 +601,11 @@
   "verification.p2": "Waa la fidinayaa, ma dhammaanin. Maanta liisaska badankood calaamad gabi ahaanba ma laha, taasina waa waxa maqnaanshaheedu ka dhigan yahay — weli hubin lama samayn, ma aha mid guuldarraysatay.",
   "verification.title": "Sida xaqiijintu u shaqeyso",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }

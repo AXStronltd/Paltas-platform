@@ -607,5 +607,11 @@
   "verification.p2": "Elle se déploie ; elle n'est pas achevée. Aujourd'hui la plupart des annonces ne portent aucun badge, et c'est ce que veut dire son absence : pas encore de contrôle, pas un contrôle raté.",
   "verification.title": "Comment fonctionne la vérification",
   "row.seeAll": "See all",
-  "search.collapse": "Close search"
+  "search.collapse": "Close search",
+  "search.recent": "Recent searches",
+  "search.nearby": "Nearby",
+  "search.popular": "Popular destinations",
+  "search.noPlaces": "No places match that yet.",
+  "search.typeToSearch": "Type a city, area or country.",
+  "search.staysCount": "{count} stays"
 }
