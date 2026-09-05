@@ -60,6 +60,28 @@ jobs:
       PALTAS_URL: http://localhost:3000
       SEED_PASSWORD: ci-only-not-a-real-password
 
+      # Object storage, declared so that storageEnabled() is true.
+      #
+      # Not a real bucket, and it does not need to be: no suite here uploads
+      # anything. What they need is for the platform to *believe* storage
+      # exists, because the identity-document gates disable themselves when it
+      # does not — which is right in production, where demanding a document
+      # nobody can upload would strand every applicant, and wrong here, where
+      # it silently skipped the checks meant to prove the gate works.
+      #
+      # test:approval failed for ten commits because of exactly that. The gate
+      # was never exercised, so approval succeeded where the suite expects a
+      # refusal.
+      #
+      # test:photos is deliberately not run in this job: it asserts the
+      # opposite — that unconfigured storage answers 503 — and the two cannot
+      # share an environment. See test:all:storage and test:all:nostorage.
+      S3_ENDPOINT: https://storage.invalid
+      S3_BUCKET: ci-not-a-real-bucket
+      S3_ACCESS_KEY_ID: ci-not-a-real-key
+      S3_SECRET_ACCESS_KEY: ci-not-a-real-secret
+      S3_REGION: auto
+
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -97,6 +119,9 @@ jobs:
       - run: npm run test:enquiry
       - run: npm run test:trip
       - run: npm run test:approval
+      # Added this session and never wired in, so nothing was checking them.
+      - run: npm run test:messages
+      - run: npm run test:notifications
 
   # A secret reaching the repository is the one failure that cannot be undone by
   # reverting, so it is checked on every push rather than trusted to review.
