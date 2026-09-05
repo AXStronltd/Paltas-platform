@@ -100,4 +100,4 @@ ENV HOSTNAME=0.0.0.0
 # `exec` so that node replaces the shell and becomes PID 1: without it SIGTERM
 # reaches sh, which does not pass it on, and every shutdown is a ten-second
 # wait for the kill that follows.
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && { node prisma/first-boot.mjs || echo '[boot] seed step failed; continuing'; } && exec node server.js"]
+CMD ["sh", "-c", "node prisma/boot-migrate.mjs && { node prisma/first-boot.mjs || echo '[boot] seed step failed; continuing'; } && exec node server.js"]
