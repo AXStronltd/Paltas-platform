@@ -364,7 +364,7 @@
   "nav.agent": "Agentas",
   "nav.bookings": "Mano rezervacijos",
   "nav.buySell": "Pirkti / Parduoti",
-  "nav.developer": "Vystytojas",
+  "nav.developer": "Nekilnojamojo turto valdymas",
   "nav.hotel": "Viešbutis",
   "nav.landlord": "Nuomotojas",
   "nav.management": "Valdymas",
@@ -699,5 +699,7 @@
   "ob.f.whereIsProperty": "Kur yra jūsų objektas?",
   "ob.optional": "Neprivaloma",
   "ob.required": "{field} yra privalomas.",
-  "ob.thisField": "Šis laukas"
+  "ob.thisField": "Šis laukas",
+  "ob.role.developer": "Nekilnojamojo turto valdymas",
+  "ob.role.developerBlurb": "Projektai, vienetai, potencialūs klientai ir mokėjimai"
 }

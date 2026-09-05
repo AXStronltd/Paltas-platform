@@ -364,7 +364,7 @@
   "nav.agent": "Wakiil",
   "nav.bookings": "Buugiisyadayda",
   "nav.buySell": "Iibso / Iibi",
-  "nav.developer": "Horumariye",
+  "nav.developer": "Maaraynta Hantida",
   "nav.hotel": "Hoteel",
   "nav.landlord": "Mulkiile",
   "nav.management": "Maaraynta",
@@ -699,5 +699,7 @@
   "ob.f.whereIsProperty": "Halkee hantidaadu ku taallaa?",
   "ob.optional": "Ikhtiyaari",
   "ob.required": "{field} waa loo baahan yahay.",
-  "ob.thisField": "Goobtan"
+  "ob.thisField": "Goobtan",
+  "ob.role.developer": "Maaraynta Hantida",
+  "ob.role.developerBlurb": "Mashaariic, guryo, macaamiil iyo lacag-bixin"
 }

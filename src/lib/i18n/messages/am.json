@@ -361,7 +361,7 @@
   "nav.agent": "ወኪል",
   "nav.bookings": "የእኔ ቦታ ማስያዣዎች",
   "nav.buySell": "ግዛ / ሽጥ",
-  "nav.developer": "አልሚ",
+  "nav.developer": "የንብረት አስተዳደር",
   "nav.hotel": "ሆቴል",
   "nav.landlord": "አከራይ",
   "nav.management": "አስተዳደር",
@@ -696,5 +696,7 @@
   "ob.f.whereIsProperty": "ንብረትዎ የት ነው?",
   "ob.optional": "አማራጭ",
   "ob.required": "{field} ያስፈልጋል።",
-  "ob.thisField": "ይህ መስክ"
+  "ob.thisField": "ይህ መስክ",
+  "ob.role.developer": "የንብረት አስተዳደር",
+  "ob.role.developerBlurb": "ፕሮጀክቶች፣ ክፍሎች፣ አጋጣሚዎች እና ክፍያዎች"
 }

@@ -370,7 +370,7 @@
   "nav.agent": "Agent",
   "nav.bookings": "Mes réservations",
   "nav.buySell": "Acheter / Vendre",
-  "nav.developer": "Promoteur",
+  "nav.developer": "Gestion immobilière",
   "nav.hotel": "Hôtel",
   "nav.landlord": "Propriétaire",
   "nav.management": "Gestion",
@@ -705,5 +705,7 @@
   "ob.f.whereIsProperty": "Où se trouve votre bien ?",
   "ob.optional": "Facultatif",
   "ob.required": "{field} est requis.",
-  "ob.thisField": "Ce champ"
+  "ob.thisField": "Ce champ",
+  "ob.role.developer": "Gestion immobilière",
+  "ob.role.developerBlurb": "Projets, lots, prospects et paiements"
 }

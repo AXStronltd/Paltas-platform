@@ -363,7 +363,7 @@
   "nav.agent": "Emlakçı",
   "nav.bookings": "Rezervasyonlarım",
   "nav.buySell": "Al / Sat",
-  "nav.developer": "Müteahhit",
+  "nav.developer": "Mülk Yönetimi",
   "nav.hotel": "Otel",
   "nav.landlord": "Ev sahibi",
   "nav.management": "Yönetim",
@@ -698,5 +698,7 @@
   "ob.f.whereIsProperty": "Mülkünüz nerede?",
   "ob.optional": "İsteğe bağlı",
   "ob.required": "{field} gereklidir.",
-  "ob.thisField": "Bu alan"
+  "ob.thisField": "Bu alan",
+  "ob.role.developer": "Mülk Yönetimi",
+  "ob.role.developerBlurb": "Projeler, birimler, adaylar ve ödemeler"
 }

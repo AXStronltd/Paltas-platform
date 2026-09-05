@@ -35,16 +35,16 @@ export function Header() {
         </Link>
 
         <nav className="header-nav">
+          {/* Public navigation is the shopfront only. The role dashboards used
+              to sit here as five more links, which offered every visitor four
+              doors they had no key to: signed out they showed a sign-in form,
+              and signed in they showed somebody else's dashboard or a refusal.
+              A dashboard is reached by having a role, not by clicking a menu —
+              signing in now takes you to yours, and the account menu below
+              keeps the way back. The routes, portals and components are all
+              untouched. */}
           <Link href="/" className="header-link active">{t("nav.stays")}</Link>
           <Link href="/buy-sell" className="header-link">{t("nav.buySell")}</Link>
-          <Link href="/portal/developer" className="header-link">{t("nav.developer")}</Link>
-          <Link href="/portal/landlord" className="header-link">{t("nav.landlord")}</Link>
-          <Link href="/portal/agent" className="header-link">{t("nav.agent")}</Link>
-          <Link href="/portal/hotel" className="header-link">{t("nav.hotel")}</Link>
-          {/* The staff side of PALTAS. Kept in the main nav on purpose: owners,
-              managers and guards arrive at the same front door as everyone else,
-              and /manage decides what they may see once they are signed in. */}
-          <Link href="/manage" className="header-link header-link-manage">{t("nav.management")}</Link>
         </nav>
 
         <div className="header-right">

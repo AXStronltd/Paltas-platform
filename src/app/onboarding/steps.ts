@@ -23,7 +23,11 @@ export const COUNTRY_CODES = Object.keys(COUNTRY_CURRENCY).sort();
 export const CURRENCY_CODES = Array.from(new Set(Object.values(COUNTRY_CURRENCY))).sort();
 
 export const ROLES = [
-  { key: "developer", label: "Developer", blurb: "Projects, units, leads and payments" },
+  // Label only. The key stays "developer": it is what every existing account
+  // carries, what ROLE_FOR grants from and what ROLE_DASHBOARDS routes on, so
+  // renaming it would be a data migration for a change of wording. The portal,
+  // its unit-stock and buyer screens, and every permission are untouched.
+  { key: "developer", label: "ob.role.developer", blurb: "ob.role.developerBlurb" },
   { key: "landlord", label: "Landlord", blurb: "Your units, tenants and rent" },
   { key: "agent", label: "Agent", blurb: "Listings and leads pipeline" },
   { key: "hotel", label: "Hotel", blurb: "Rooms, rates and availability" },

@@ -371,7 +371,7 @@
   "nav.agent": "Agente",
   "nav.bookings": "Le mie prenotazioni",
   "nav.buySell": "Compra / Vendi",
-  "nav.developer": "Costruttore",
+  "nav.developer": "Gestione immobiliare",
   "nav.hotel": "Hotel",
   "nav.landlord": "Proprietario",
   "nav.management": "Gestione",
@@ -706,5 +706,7 @@
   "ob.f.whereIsProperty": "Dov'è la tua proprietà?",
   "ob.optional": "Facoltativo",
   "ob.required": "{field} è obbligatorio.",
-  "ob.thisField": "Questo campo"
+  "ob.thisField": "Questo campo",
+  "ob.role.developer": "Gestione immobiliare",
+  "ob.role.developerBlurb": "Progetti, unità, contatti e pagamenti"
 }

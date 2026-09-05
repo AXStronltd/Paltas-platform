@@ -320,7 +320,7 @@
   "nav.agent": "Agent",
   "nav.bookings": "My bookings",
   "nav.buySell": "Buy / Sell",
-  "nav.developer": "Developer",
+  "nav.developer": "Property Management",
   "nav.hotel": "Hotel",
   "nav.landlord": "Landlord",
   "nav.management": "Management",
@@ -687,5 +687,7 @@
   "ob.f.whereIsProperty": "Where is your property?",
   "ob.optional": "Optional",
   "ob.required": "{field} is required.",
-  "ob.thisField": "This field"
+  "ob.thisField": "This field",
+  "ob.role.developer": "Property Management",
+  "ob.role.developerBlurb": "Projects, units, leads and payments"
 }

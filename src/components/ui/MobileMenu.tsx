@@ -19,11 +19,17 @@ const GUEST = [
   { href: "/bookings", key: "menu.myBookings", icon: "calendar" },
   { href: "/buy-sell", key: "nav.buySell", icon: "home" },
 ];
+/*
+ * Kept as one entry, not five.
+ *
+ * This list existed because the header hides its links on a phone, so the four
+ * role portals were "otherwise unreachable" there. They are not reachable from
+ * the header on any width now, and offering a visitor four dashboards they may
+ * hold no role for was never navigation — it was four ways to meet a sign-in
+ * form. Management stays: it is the one door that decides for itself what the
+ * person behind it may see.
+ */
 const PORTALS = [
-  { href: "/portal/hotel", key: "nav.hotel", icon: "hotel" },
-  { href: "/portal/landlord", key: "nav.landlord", icon: "landlord" },
-  { href: "/portal/agent", key: "nav.agent", icon: "agent" },
-  { href: "/portal/developer", key: "nav.developer", icon: "developer" },
   { href: "/manage", key: "nav.management", icon: "landlord" },
 ];
 

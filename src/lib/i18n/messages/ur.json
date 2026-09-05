@@ -361,7 +361,7 @@
   "nav.agent": "ایجنٹ",
   "nav.bookings": "میری بکنگ",
   "nav.buySell": "خریدیں / بیچیں",
-  "nav.developer": "ڈویلپر",
+  "nav.developer": "جائیداد کا انتظام",
   "nav.hotel": "ہوٹل",
   "nav.landlord": "مالک مکان",
   "nav.management": "انتظام",
@@ -696,5 +696,7 @@
   "ob.f.whereIsProperty": "آپ کی جائیداد کہاں ہے؟",
   "ob.optional": "اختیاری",
   "ob.required": "{field} ضروری ہے۔",
-  "ob.thisField": "یہ خانہ"
+  "ob.thisField": "یہ خانہ",
+  "ob.role.developer": "جائیداد کا انتظام",
+  "ob.role.developerBlurb": "منصوبے، یونٹس، لیڈز اور ادائیگیاں"
 }

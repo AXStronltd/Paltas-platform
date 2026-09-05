@@ -363,7 +363,7 @@
   "nav.agent": "एजेंट",
   "nav.bookings": "मेरी बुकिंग",
   "nav.buySell": "खरीदें / बेचें",
-  "nav.developer": "डेवलपर",
+  "nav.developer": "संपत्ति प्रबंधन",
   "nav.hotel": "होटल",
   "nav.landlord": "मकान मालिक",
   "nav.management": "प्रबंधन",
@@ -698,5 +698,7 @@
   "ob.f.whereIsProperty": "आपकी संपत्ति कहाँ है?",
   "ob.optional": "वैकल्पिक",
   "ob.required": "{field} आवश्यक है।",
-  "ob.thisField": "यह फ़ील्ड"
+  "ob.thisField": "यह फ़ील्ड",
+  "ob.role.developer": "संपत्ति प्रबंधन",
+  "ob.role.developerBlurb": "परियोजनाएँ, इकाइयाँ, लीड और भुगतान"
 }

@@ -196,13 +196,13 @@ const COLUMNS: { key: string; links: { key: string; href: string }[] }[] = [
   },
   {
     key: "owners",
+    // The five dashboard links that used to sit here are gone for the same
+    // reason as the ones in the header: a footer cannot grant a role, so they
+    // led a visitor to a sign-in form or a refusal. "List your property" stays,
+    // because /sell is genuinely public and is how somebody becomes a host in
+    // the first place. Every portal route still exists and is unchanged.
     links: [
       { key: "listProperty", href: "/sell" },
-      { key: "becomeHost", href: "/portal/landlord" },
-      { key: "becomeAgent", href: "/portal/agent" },
-      { key: "landlordTools", href: "/portal/landlord" },
-      { key: "developerTools", href: "/portal/developer" },
-      { key: "hotelTools", href: "/portal/hotel" },
     ],
   },
   {

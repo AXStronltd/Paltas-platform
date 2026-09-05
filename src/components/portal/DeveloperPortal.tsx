@@ -121,7 +121,7 @@ export function DeveloperPortal() {
 
   return (
     <PortalShell
-      title="Developer Pro"
+      title="Property Management"
       subtitle="Developments, unit stock and sales"
       badge={projects ? `${totalSold}/${totalUnits} sold` : "Loading…"}
       tabs={[

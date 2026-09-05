@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/i18n/LocaleProvider";
+import { staffDestination } from "@/lib/auth/destination";
 import { ONBOARDING, ROLES, COUNTRY_CODES, requiredDocuments, type Field, type RoleKey } from "./steps";
 import { currencyForCountry } from "@/lib/i18n/countries";
 
@@ -274,30 +275,25 @@ export default function OnboardingPage() {
   }
 
   if (done) {
-    const dashboard = role ? (ROLES.find((r) => r.key === role) ? `/portal/${role}` : "/manage") : "/manage";
+    /*
+     * Where this person's dashboard actually is, from the one table that knows.
+     *
+     * This used to build the path from the role picker — `/portal/${role}` for
+     * anything in ROLES — and ROLES contains "resident", for which there is no
+     * portal. A tenant finishing onboarding was sent to /portal/resident and
+     * met a 404 at the end of the flow. ROLE_DASHBOARDS holds only the five
+     * that exist and falls back to /manage, which is where a resident belongs.
+     *
+     * The three "next step" cards are gone. This screen confirms that
+     * onboarding is done; it is not where somebody picks or is assigned a
+     * dashboard, and offering three side doors made it look like one.
+     */
+    const dashboard = staffDestination({ dashboardRole: role || null });
     return <main className="auth-page"><div className="auth-card">
       <h1 className="auth-title">{t("ob.doneTitle")}</h1>
       <p className="auth-sub">
         {t("ob.doneSub")}
       </p>
-      {/* Pointed at screens this application actually has. The patch named
-          /properties, /documents and /settings, which belong to a different
-          product — all three answer 404 here, and three dead ends is a worse
-          welcome than no suggestions at all. */}
-      <div className="ob-next">
-        <a className="ob-nextcard" href="/manage/portfolio">
-          <b>{t("ob.nextProperties")}</b>
-          <span>{t("ob.nextPropertiesSub")}</span>
-        </a>
-        <a className="ob-nextcard" href="/manage/listings">
-          <b>{t("ob.nextListing")}</b>
-          <span>{t("ob.nextListingSub")}</span>
-        </a>
-        <a className="ob-nextcard" href="/manage/staff">
-          <b>{t("ob.nextTeam")}</b>
-          <span>{t("ob.nextTeamSub")}</span>
-        </a>
-      </div>
       <div className="ob-actions">
         <button className="btn btn-primary" onClick={() => window.location.assign(dashboard)}>{t("ob.goDashboard")}</button>
       </div>
@@ -312,7 +308,11 @@ export default function OnboardingPage() {
       <div className="ob-roles">
         {ROLES.map((r) => (
           <button type="button" key={r.key} className="ob-role" onClick={() => { setRole(r.key); setStep(0); }}>
-            <b>{r.label}</b><span>{r.blurb}</span>
+            {/* Developer's label and blurb are message keys; the other five are
+                still plain English. t() returns a key it cannot find unchanged,
+                so both render correctly — but that is a transitional state, not
+                a design. The remaining five want keys of their own. */}
+            <b>{t(r.label)}</b><span>{t(r.blurb)}</span>
           </button>
         ))}
       </div>

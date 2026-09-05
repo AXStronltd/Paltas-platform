@@ -364,7 +364,7 @@
   "nav.agent": "Wakala",
   "nav.bookings": "Nafasi zangu",
   "nav.buySell": "Nunua / Uza",
-  "nav.developer": "Mwendelezaji",
+  "nav.developer": "Usimamizi wa mali",
   "nav.hotel": "Hoteli",
   "nav.landlord": "Mwenye nyumba",
   "nav.management": "Usimamizi",
@@ -699,5 +699,7 @@
   "ob.f.whereIsProperty": "Mali yako iko wapi?",
   "ob.optional": "Si lazima",
   "ob.required": "{field} inahitajika.",
-  "ob.thisField": "Sehemu hii"
+  "ob.thisField": "Sehemu hii",
+  "ob.role.developer": "Usimamizi wa mali",
+  "ob.role.developerBlurb": "Miradi, vyumba, wateja na malipo"
 }

@@ -368,7 +368,7 @@
   "nav.agent": "Mäklare",
   "nav.bookings": "Mina bokningar",
   "nav.buySell": "Köp / Sälj",
-  "nav.developer": "Byggherre",
+  "nav.developer": "Fastighetsförvaltning",
   "nav.hotel": "Hotell",
   "nav.landlord": "Hyresvärd",
   "nav.management": "Förvaltning",
@@ -703,5 +703,7 @@
   "ob.f.whereIsProperty": "Var ligger din fastighet?",
   "ob.optional": "Valfritt",
   "ob.required": "{field} krävs.",
-  "ob.thisField": "Det här fältet"
+  "ob.thisField": "Det här fältet",
+  "ob.role.developer": "Fastighetsförvaltning",
+  "ob.role.developerBlurb": "Projekt, enheter, leads och betalningar"
 }

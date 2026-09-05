@@ -360,7 +360,7 @@
   "nav.agent": "经纪人",
   "nav.bookings": "我的预订",
   "nav.buySell": "买卖",
-  "nav.developer": "开发商",
+  "nav.developer": "物业管理",
   "nav.hotel": "酒店",
   "nav.landlord": "房东",
   "nav.management": "管理",
@@ -695,5 +695,7 @@
   "ob.f.whereIsProperty": "您的房产在哪里？",
   "ob.optional": "可选",
   "ob.required": "请填写{field}。",
-  "ob.thisField": "此字段"
+  "ob.thisField": "此字段",
+  "ob.role.developer": "物业管理",
+  "ob.role.developerBlurb": "项目、单元、客户线索与付款"
 }
