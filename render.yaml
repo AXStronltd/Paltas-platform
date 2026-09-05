@@ -88,6 +88,12 @@ services:
       #                                    refuses referrer-restricted keys for
       #                                    server-side calls. Restrict it to the
       #                                    Geocoding API instead.
+      # GOOGLE_MAPS_BROWSER_KEY, not NEXT_PUBLIC_GOOGLE_MAPS_API_KEY. Next
+      # inlines NEXT_PUBLIC_* at build time, and Render builds the Dockerfile
+      # without the service environment — so that variable compiles to an empty
+      # string, looks correctly set in the dashboard, and does nothing.
+      - key: GOOGLE_MAPS_BROWSER_KEY
+        sync: false
       - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         sync: false
       - key: GOOGLE_MAPS_API_KEY
