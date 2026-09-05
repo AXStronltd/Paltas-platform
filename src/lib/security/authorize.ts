@@ -25,6 +25,7 @@
  * guesses at the shape of the tree.
  */
 
+import { moduleEntitles } from "./modules";
 import { WILDCARD } from "./permissions";
 import type { Actor, Decision, Grant, Scope, ScopeFilter, ScopeType } from "./types";
 
@@ -101,6 +102,18 @@ export function decide(actor: Actor, permission: string, chain: Scope[]): Decisi
     return { allowed: false, reason: "Outside your organisation." };
   }
 
+  // What the organisation has bought, checked before what the person may do.
+  //
+  // Below the platform-admin escape and above the owner one, deliberately.
+  // Paltas staff operate the service and must reach a customer's account
+  // whatever its billing state; an owner is absolute inside their own
+  // organisation but cannot own their way out of a plan they are not on.
+  // Putting this after the owner check would have left every owner un-gateable,
+  // and owners are most of the accounts that matter.
+  if (actor.entitledModules && !moduleEntitles(actor.entitledModules, permission)) {
+    return { allowed: false, reason: "Your plan does not include this module." };
+  }
+
   if (actor.isOwner) {
     return {
       allowed: true,
@@ -155,6 +168,9 @@ export function can(actor: Actor, permission: string, chain: Scope[]): boolean {
 export function canAnywhere(actor: Actor, permission: string): boolean {
   if (actor.status !== "ACTIVE") return false;
   if (actor.isPlatformAdmin) return true;
+  // Before the owner shortcut, matching decide(): a module nobody bought should
+  // not put a tab on screen whose every call would then be refused.
+  if (actor.entitledModules && !moduleEntitles(actor.entitledModules, permission)) return false;
   if (actor.isOwner) return true;
   const applicable = actor.grants.filter((g) => permissionMatches(g.permission, permission));
   const allows = applicable.filter((g) => g.effect === "ALLOW");
@@ -174,6 +190,11 @@ export function canAnywhere(actor: Actor, permission: string): boolean {
 export function scopeFilterFor(actor: Actor, permission: string): ScopeFilter {
   if (actor.status !== "ACTIVE") return { kind: "none" };
   if (actor.isPlatformAdmin) return { kind: "platform" };
+  // The gate belongs on every authorisation path, not just the scoped one.
+  // decide() alone leaves every list endpoint ungated, because those ask this
+  // function instead — which is exactly how the first version of this passed
+  // its unit tests and still served finance data on a plan without finance.
+  if (actor.entitledModules && !moduleEntitles(actor.entitledModules, permission)) return { kind: "none" };
   if (actor.isOwner) return { kind: "all" };
 
   const applicable = actor.grants.filter((g) => permissionMatches(g.permission, permission));

@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { entitledModulesFor } from "./entitlements";
 import { currentUserId } from "./session";
 import type { Actor, Grant } from "@/lib/security/types";
 
@@ -64,6 +65,10 @@ export async function loadActor(userId: string): Promise<Actor | null> {
       scopeId: a.scopeId,
     })),
     grants,
+    // Loaded here so every authorisation decision in the request already knows
+    // what the organisation has bought. One query per request, alongside the
+    // grants it sits next to.
+    entitledModules: await entitledModulesFor(user.orgId),
   };
 }
 

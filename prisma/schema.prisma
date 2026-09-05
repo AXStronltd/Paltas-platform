@@ -93,6 +93,8 @@ model Organization {
   projects         Project[]
   serviceOfferings ServiceOffering[]
   memberships Membership[]
+  subscription Subscription?
+  entitlements Entitlement[]
 }
 
 /// Every human the system authenticates: the owner, staff, guards and the
@@ -2436,5 +2438,78 @@ model Membership {
   /// A person belongs to an organisation once, or not at all.
   @@unique([userId, orgId])
   @@index([userId])
+  @@index([orgId])
+}
+
+/// A commercial package. The module keys it grants use the same vocabulary the
+/// permission catalogue is namespaced by, so a plan cannot sell something that
+/// does not exist.
+model Plan {
+  id         String   @id @default(cuid())
+  /// Stable handle used in code and on pricing pages: "starter", "professional".
+  key        String   @unique
+  name       String
+  /// Module keys from src/lib/security/modules.ts. "core" is implied everywhere
+  /// and does not need listing.
+  modules    String[]
+  priceCents Int      @default(0)
+  currency   String   @default("KES")
+  /// "month" | "year". A string rather than an enum because a pricing
+  /// experiment should not need a migration.
+  interval   String   @default("month")
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  subscriptions Subscription[]
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
+/// What an organisation is currently paying for. One live subscription each —
+/// two at once would leave "which modules do they have" without a single
+/// answer, and every entitlement question depends on there being one.
+model Subscription {
+  id                   String             @id @default(cuid())
+  orgId                String             @unique
+  planId               String
+  status               SubscriptionStatus @default(ACTIVE)
+  /// Null while a plan has no billing attached to it yet.
+  currentPeriodEnd     DateTime?
+  stripeSubscriptionId String?            @unique
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  org  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  plan Plan         @relation(fields: [planId], references: [id])
+
+  @@index([planId])
+  @@index([status])
+}
+
+/// A deliberate exception to the plan, in either direction: a module granted to
+/// one client as part of a deal, or withheld while something is investigated.
+///
+/// Only exceptions live here. Copying every plan module into a row per
+/// organisation would be a second copy of the same fact, and the day the two
+/// disagree there is no way to tell which is true.
+model Entitlement {
+  id        String    @id @default(cuid())
+  orgId     String
+  module    String
+  /// True adds the module beyond the plan; false withholds it despite the plan.
+  granted   Boolean   @default(true)
+  /// Why, for whoever finds this in a year.
+  note      String?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  org Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, module])
   @@index([orgId])
 }

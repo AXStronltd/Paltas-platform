@@ -1144,6 +1144,18 @@ Seed complete.
  * and no membership — the exact gap that went unnoticed until the count came up
  * eleven short.
  */
+async function syncSubscriptions() {
+  await prisma.$executeRawUnsafe(`
+    INSERT INTO "Subscription" ("id", "orgId", "planId", "status", "createdAt", "updatedAt")
+    SELECT 'sub_' || "o"."id", "o"."id", 'plan_enterprise', 'ACTIVE', NOW(), NOW()
+    FROM "Organization" AS "o"
+    WHERE NOT EXISTS (
+      SELECT 1 FROM "Subscription" AS "s" WHERE "s"."orgId" = "o"."id"
+    )
+    ON CONFLICT ("orgId") DO NOTHING
+  `);
+}
+
 async function syncMemberships() {
   await prisma.$executeRawUnsafe(`
     INSERT INTO "Membership" ("id", "userId", "orgId", "isDefault", "createdAt")
@@ -1159,6 +1171,7 @@ async function syncMemberships() {
 
 main()
   .then(syncMemberships)
+  .then(syncSubscriptions)
   .catch((e) => {
     console.error(e);
     process.exit(1);

@@ -119,3 +119,30 @@ try {
 } catch {
   console.log("[boot] membership sync did not run. Continuing to serve.");
 }
+
+/**
+ * Give every organisation the subscription the migration would have given it.
+ *
+ * Same shape as the membership sweep above, for the same reason: the migration
+ * grandfathered the organisations that existed when it ran, and the four routes
+ * that create organisations are four chances to forget. An organisation with no
+ * subscription is treated as unrestricted rather than locked out, so this
+ * corrects the record without any customer noticing either way.
+ */
+try {
+  const { PrismaClient } = await import("@prisma/client");
+  const db = new PrismaClient();
+  const added = await db.$executeRawUnsafe(`
+    INSERT INTO "Subscription" ("id", "orgId", "planId", "status", "createdAt", "updatedAt")
+    SELECT 'sub_' || "o"."id", "o"."id", 'plan_enterprise', 'ACTIVE', NOW(), NOW()
+    FROM "Organization" AS "o"
+    WHERE NOT EXISTS (
+      SELECT 1 FROM "Subscription" AS "s" WHERE "s"."orgId" = "o"."id"
+    )
+    ON CONFLICT ("orgId") DO NOTHING
+  `);
+  if (added > 0) console.log(`[boot] recorded ${added} missing subscription(s).`);
+  await db.$disconnect();
+} catch {
+  console.log("[boot] subscription sync did not run. Continuing to serve.");
+}

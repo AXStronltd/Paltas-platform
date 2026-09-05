@@ -56,6 +56,15 @@ export interface Actor {
   onboardingRole: string | null;
   roles: ActorRole[];
   grants: Grant[];
+  /**
+   * Modules the organisation has bought, from its subscription.
+   *
+   * Optional on purpose. Undefined means "not loaded", and an unloaded value
+   * must not be read as "bought nothing" — a code path that forgets to fetch
+   * entitlements would otherwise lock every customer out of every module at
+   * once. Absent means unrestricted; present and empty means genuinely nothing.
+   */
+  entitledModules?: string[];
 }
 
 export interface Decision {

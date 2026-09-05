@@ -325,3 +325,97 @@ test("the accountant's authority is fully enumerated", () => {
     assert.ok(!acct.permissions.includes(p), `the finance role must not hold ${p}`);
   }
 });
+
+/* ---------------------------------------------------------------------------
+ * Entitlements: what the organisation bought, as distinct from what the person
+ * may do. Both gates must pass, and neither substitutes for the other.
+ * ------------------------------------------------------------------------- */
+
+test("entitlements absent means unrestricted, not refused", () => {
+  // The single most important case here. Every caller that does not load
+  // entitlements — and every actor built before this existed — must behave
+  // exactly as it did, or introducing billing becomes an outage.
+  const a = withRole("accountant", "ORGANIZATION", ORG);
+  assert.equal(a.entitledModules, undefined);
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainOrg), true);
+});
+
+test("a module the organisation has not bought is refused", () => {
+  const a = withRole("accountant", "ORGANIZATION", ORG);
+  a.entitledModules = ["bookings"];
+  const d = decide(a, PERMISSIONS.FINANCE_VIEW, chainOrg);
+  assert.equal(d.allowed, false);
+  assert.match(d.reason, /plan/i);
+});
+
+test("the same permission is allowed once the module is bought", () => {
+  const a = withRole("accountant", "ORGANIZATION", ORG);
+  a.entitledModules = ["finance"];
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainOrg), true);
+});
+
+test("an owner cannot own their way out of the plan", () => {
+  // Owners are absolute inside their organisation, which is exactly why the
+  // gate sits above them: otherwise most accounts would be un-gateable.
+  const a = actor({ isOwner: true, entitledModules: ["bookings"] });
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainOrg), false);
+  assert.equal(can(a, PERMISSIONS.PROPERTY_VIEW, chainOrg), true); // core
+});
+
+test("Paltas staff reach a customer whatever the billing says", () => {
+  // Support must be able to open the account of a customer whose card failed —
+  // that is often the reason they are opening it.
+  const a = actor({ isPlatformAdmin: true, entitledModules: [] });
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainOrg), true);
+});
+
+test("core survives a plan with nothing in it", () => {
+  const a = withRole("property_manager", "ORGANIZATION", ORG);
+  a.entitledModules = [];
+  assert.equal(can(a, PERMISSIONS.PROPERTY_VIEW, chainOrg), true);
+  assert.equal(can(a, PERMISSIONS.STAFF_VIEW, chainOrg), true);
+});
+
+test("entitlement does not grant what the role never held", () => {
+  // The gate subtracts; it must never add. Buying the finance module does not
+  // make a guard an accountant.
+  const a = withRole("security_guard", "PROPERTY", PROP_A);
+  a.entitledModules = ["finance", "security"];
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainPropA), false);
+});
+
+test("a denied grant stays denied inside a bought module", () => {
+  const a = withRole("accountant", "ORGANIZATION", ORG,
+    [grant(PERMISSIONS.FINANCE_VIEW, "ORGANIZATION", ORG, "DENY")]);
+  a.entitledModules = ["finance"];
+  assert.equal(can(a, PERMISSIONS.FINANCE_VIEW, chainOrg), false);
+});
+
+test("the gate covers every authorisation path, not only the scoped one", () => {
+  // This is the test that was missing. decide() was gated and the unit tests
+  // were green, while every list endpoint in the product went through
+  // scopeFilterFor and served the module anyway. A gate on one of three
+  // entry points is not a gate.
+  const a = withRole("accountant", "ORGANIZATION", ORG);
+  a.entitledModules = ["bookings"];
+  assert.equal(decide(a, PERMISSIONS.CHARGE_VIEW, chainOrg).allowed, false, "decide");
+  assert.equal(scopeFilterFor(a, PERMISSIONS.CHARGE_VIEW).kind, "none", "scopeFilterFor");
+  assert.equal(canAnywhere(a, PERMISSIONS.CHARGE_VIEW), false, "canAnywhere");
+});
+
+test("an owner is gated on the list path too", () => {
+  const a = actor({ isOwner: true, entitledModules: ["bookings"] });
+  assert.equal(scopeFilterFor(a, PERMISSIONS.CHARGE_VIEW).kind, "none");
+  assert.equal(scopeFilterFor(a, PERMISSIONS.PROPERTY_VIEW).kind, "all"); // core
+});
+
+test("Paltas staff keep the platform filter whatever the plan", () => {
+  const a = actor({ isPlatformAdmin: true, entitledModules: [] });
+  assert.equal(scopeFilterFor(a, PERMISSIONS.CHARGE_VIEW).kind, "platform");
+});
+
+test("unloaded entitlements leave the list path exactly as it was", () => {
+  const a = withRole("accountant", "ORGANIZATION", ORG);
+  assert.equal(scopeFilterFor(a, PERMISSIONS.CHARGE_VIEW).kind, "all");
+  assert.equal(canAnywhere(a, PERMISSIONS.CHARGE_VIEW), true);
+});
