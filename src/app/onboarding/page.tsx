@@ -149,7 +149,7 @@ export default function OnboardingPage() {
     if (f.type === "toggle" || f.type === "check") {
       return f.required && value !== "yes" ? "Please tick this to continue." : "";
     }
-    if (!value) return f.required ? `${f.l || "This"} is required.` : "";
+    if (!value) return f.required ? t("ob.required", { field: f.l ? t(f.l) : t("ob.thisField") }) : "";
     if (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
       return "Enter a valid email address, like name@company.com";
     }
@@ -331,7 +331,7 @@ export default function OnboardingPage() {
       setFieldErrors((e) => ({ ...e, [f.k]: validate(f, data[f.k] ?? "") }));
     };
     const optional = !f.required && f.type !== "toggle" && f.type !== "check";
-    const label = <>{f.l}{optional && <span className="ob-optional"> Optional</span>}</>;
+    const label = <>{t(f.l)}{optional && <span className="ob-optional"> {t("ob.optional")}</span>}</>;
 
     const help = (
       <>
@@ -363,7 +363,7 @@ export default function OnboardingPage() {
         <label className="ob-toggle" htmlFor={id}>
           <input {...common} type="checkbox" ref={(el) => { inputRefs.current[f.k] = el; }}
             checked={data[f.k] === "on"} onChange={(e) => set(f.k, e.target.checked ? "on" : "")} />
-          <span className="ob-togglelabel">{f.l}</span>
+          <span className="ob-togglelabel">{t(f.l)}</span>
         </label>
         {help}
       </div>;
